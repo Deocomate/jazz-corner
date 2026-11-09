@@ -18,6 +18,7 @@
 - [x] Today: Word of the Day (bộ 20 từ chọn lọc, ổn định theo ngày, lưu không trùng), Đọc tiếp, Tiếp tục làm bài / Xem lại lỗi
 - [x] Books: tải PDF/EPUB (báo lỗi rõ), thư viện có bìa + tiến độ, trình đọc: mục lục, bookmark, highlight, ghi chú, sáng/tối, cỡ chữ EPUB, zoom PDF, tự lưu vị trí, báo trang PDF thiếu lớp văn bản
 - [x] Bôi chọn trong sách → Highlight / Ghi chú / Lưu vào Notebook / Luyện nói (giữ trích đoạn, tên sách, vị trí; mở lại đúng chỗ và tô sáng)
+- [x] Notebook dạng sổ tay: mỗi ngày một trang giấy kẻ dòng, ô ghi nhanh "Hôm nay bạn học được gì?", loại Ghi chép tự do (chỉ vào hàng ôn khi chọn, bật/tắt ở trang chi tiết)
 - [x] Notebook: 4 loại mục ngôn ngữ + lỗi IELTS, tìm kiếm, lọc loại/nguồn/nhãn, thêm/sửa/xoá, hàng ôn theo ngày (Đã nhớ 1→3→7→15… ngày, Ôn lại = ngày mai)
 - [x] IELTS Reading: kho đề, soạn đề thủ công, nhập JSON → bản nháp, duyệt (kiểm tra lỗi đề), gắn PDF nguồn; MCQ / TFNG / Matching Headings / Completion (giới hạn từ + biến thể); Luyện (kiểm tra từng câu) và Làm đề (hẹn giờ, giữ hạn nộp khi tải lại, tự nộp khi hết giờ); kết quả có bằng chứng + giải thích; lưu câu sai kèm lý do; bôi chọn → Luyện nói (Luyện/kết quả)
 - [x] Speaking: bài mẫu từ/câu/đoạn có audio tổng hợp + mốc thời gian; tự nhập; từ Notebook / Books / IELTS (chỉnh được, giữ bản gốc); Pronunciation (IPA chỉ khi có dữ liệu đáng tin cậy, đoán từ loại theo câu gốc), Rhythm and Intonation (cụm ý, nhấn, đọc nhẹ, nối âm, chỉnh tay), Read Aloud theo câu, Shadowing 3 bước; minimal pairs; ghi âm, nghe lại, so sánh với mẫu, ghi chú, cần ôn; xử lý micro bị chặn
@@ -35,7 +36,7 @@
 | _migrations | (hệ thống) các migration đã chạy |
 | books | sách tải lên (tệp ở data/uploads/books), vị trí đọc, tiến độ |
 | bookmarks, highlights | đánh dấu trong sách (highlight không tự vào hàng ôn) |
-| notebook_items | mục ngôn ngữ + lỗi IELTS, nguồn/vị trí, lịch ôn, dedupe_key chống trùng |
+| notebook_items | ghi chép tự do (note) + mục ngôn ngữ + lỗi IELTS, due_date NULL = không ôn, nguồn/vị trí, lịch ôn, dedupe_key chống trùng |
 | ielts_tests / ielts_passages / ielts_groups / ielts_questions | đề tương tác (tách khỏi PDF nguồn; có cột audio/transcript/hình để dành cho Listening) |
 | ielts_attempts | lượt làm bài: câu trả lời, đánh dấu, hạn nộp, ảnh chụp kết quả lúc nộp |
 | speaking_items | bài luyện nói, nguồn, audio mẫu + mốc thời gian, chỉnh trọng âm |
@@ -51,5 +52,6 @@
 
 ## Nhật ký thay đổi
 <!-- Mới nhất ở trên. Mỗi dòng: ngày — thay đổi — ai yêu cầu (nếu biết) -->
+- 2026-11-09 — Notebook thành sổ tay theo ngày + ghi nhanh + loại Ghi chép (migration 005 dựng lại bảng để thêm loại) — người dùng yêu cầu.
 - 2026-11-09 — Bản đầu: Today, Books, Notebook, IELTS Reading, Speaking, Progress, dữ liệu mẫu, 38 test.
 - 2026-11-09 — Khởi tạo dự án.

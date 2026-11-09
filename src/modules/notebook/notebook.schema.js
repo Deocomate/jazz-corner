@@ -2,11 +2,12 @@ import { z } from 'zod';
 import { emptyToUndefined } from '#lib/validate.js';
 
 export const KIND_OPTIONS = [
-  { value: 'word', label: 'Từ & collocation', badge: 'badge-red' },
-  { value: 'pattern', label: 'Mẫu câu & ngữ pháp', badge: 'badge-yellow' },
-  { value: 'idiom', label: 'Idiom & cách diễn đạt', badge: 'badge-blue' },
-  { value: 'discourse', label: 'Cách triển khai ý', badge: 'badge-green' },
-  { value: 'ielts_mistake', label: 'Lỗi IELTS', badge: 'badge-gray' },
+  { value: 'note', label: 'Ghi chép', badge: 'badge-gray', dot: 'bg-slate-400' },
+  { value: 'word', label: 'Từ & collocation', badge: 'badge-red', dot: 'bg-brand-500' },
+  { value: 'pattern', label: 'Mẫu câu & ngữ pháp', badge: 'badge-yellow', dot: 'bg-amber-500' },
+  { value: 'idiom', label: 'Idiom & cách diễn đạt', badge: 'badge-blue', dot: 'bg-lav-700' },
+  { value: 'discourse', label: 'Cách triển khai ý', badge: 'badge-green', dot: 'bg-emerald-600' },
+  { value: 'ielts_mistake', label: 'Lỗi IELTS', badge: 'badge-red', dot: 'bg-red-700' },
 ];
 export const LANGUAGE_KINDS = KIND_OPTIONS.filter((k) => k.value !== 'ielts_mistake');
 
@@ -40,6 +41,16 @@ export const itemSchema = z.object({
   example: optionalText(2000),
   excerpt: optionalText(5000),
   tags: tagsField,
+  // Ghi chép tự do chỉ vào hàng ôn khi người dùng chọn; các loại khác luôn vào hàng ôn.
+  review: z.preprocess((v) => (v === undefined ? undefined : v === 'on' || v === 'true' || v === true), z.boolean().optional()),
+});
+
+// Ghi nhanh trong sổ tay: một ô chữ, dòng đầu là tiêu đề, phần còn lại là nội dung.
+export const quickSchema = z.object({
+  text: z.string({ error: 'Hãy viết điều bạn vừa học' }).trim().min(1, 'Hãy viết điều bạn vừa học').max(5000, 'Ghi chép quá dài (tối đa 5000 ký tự)'),
+  kind: z.enum(KIND_OPTIONS.filter((k) => k.value !== 'ielts_mistake').map((k) => k.value)).default('note'),
+  tags: tagsField,
+  review: z.preprocess((v) => v === 'on' || v === 'true' || v === true, z.boolean()),
 });
 
 // Trường nguồn chỉ được gửi từ code (API), không hiện trong form sửa.

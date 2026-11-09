@@ -12,6 +12,13 @@ const isoDateFormatter = new Intl.DateTimeFormat('en-CA', {
 /** Ngày hôm nay dạng YYYY-MM-DD theo múi giờ app. */
 export const todayISO = () => isoDateFormatter.format(new Date());
 
+/** Thời điểm UTC của SQLite ("YYYY-MM-DD HH:MM:SS") -> ngày YYYY-MM-DD theo múi giờ app. */
+export function localDateOf(sqliteUtc) {
+  if (!sqliteUtc) return null;
+  const date = new Date(`${String(sqliteUtc).replace(' ', 'T')}Z`);
+  return Number.isNaN(date.getTime()) ? null : isoDateFormatter.format(date);
+}
+
 /** Cộng/trừ ngày cho chuỗi YYYY-MM-DD. */
 export function addDays(isoDate, days) {
   const date = new Date(`${isoDate}T00:00:00Z`);

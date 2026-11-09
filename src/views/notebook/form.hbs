@@ -19,6 +19,7 @@
   {{> form/textarea name="excerpt" label="Câu / trích đoạn gốc" value=values.excerpt error=errors.excerpt rows=3}}
   {{> form/textarea name="example" label="Ví dụ của tôi / câu biến thể" value=values.example error=errors.example rows=2 hint="VD: dùng lại mẫu câu cho một chủ đề khác."}}
   {{> form/textarea name="note" label="Ghi chú (giọng điệu, mức trang trọng, ngữ cảnh, collocations…)" value=values.note error=errors.note rows=3}}
+  {{#unless item}}<label class="flex items-center gap-2 text-sm"><input type="checkbox" name="review" {{checked values.review}} class="accent-brand-600"> Đưa vào hàng ôn <span class="text-xs text-muted">(từ, mẫu câu, idiom luôn được ôn; tuỳ chọn này dành cho “Ghi chép”)</span></label>{{/unless}}
   <div class="flex justify-end gap-2">
     <button type="submit" class="btn-primary">{{#if item}}Lưu thay đổi{{else}}Thêm vào Notebook{{/if}}</button>
   </div>

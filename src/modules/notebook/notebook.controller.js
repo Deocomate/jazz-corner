@@ -1,9 +1,21 @@
 // Trang Notebook: danh sách + lọc, thêm/sửa/xoá, chi tiết, ôn tập.
 import { buildPagination, parsePage } from '#lib/pagination.js';
+import { localDateOf } from '#lib/dates.js';
 import { KIND_OPTIONS, LANGUAGE_KINDS, SOURCE_OPTIONS, SUGGESTED_TAGS } from './notebook.schema.js';
 import * as service from './notebook.service.js';
 
-const FILTER_KINDS = [{ value: 'language', label: 'Tất cả kiến thức ngôn ngữ' }, ...KIND_OPTIONS];
+const FILTER_KINDS = [{ value: 'language', label: 'Tất cả trừ lỗi IELTS' }, ...KIND_OPTIONS];
+
+/** Gom mục theo ngày ghi (giờ Việt Nam) để hiển thị như từng trang sổ tay. */
+function groupByDay(items) {
+  const days = [];
+  for (const item of items) {
+    const date = localDateOf(item.created_at);
+    if (days.at(-1)?.date !== date) days.push({ date, items: [] });
+    days.at(-1).items.push(item);
+  }
+  return days;
+}
 
 const renderForm = (res, { item = null, values = {}, errors = {}, status = 200 }) =>
   res.status(status).render('notebook/form', {
@@ -31,6 +43,8 @@ export async function index(req, res) {
   res.render('notebook/index', {
     title: 'Notebook',
     items,
+    days: groupByDay(items),
+    quickKinds: LANGUAGE_KINDS,
     total,
     dueCount,
     filters,
@@ -42,14 +56,31 @@ export async function index(req, res) {
   });
 }
 
+export async function quickCapture(req, res) {
+  const result = await service.quickCapture(req.body);
+  if (!result.ok) {
+    req.flash('error', Object.values(result.errors)[0]);
+    return res.redirect('/notebook');
+  }
+  req.flash('success', result.data.due_date ? 'Đã ghi vào sổ và thêm vào hàng ôn.' : 'Đã ghi vào sổ.');
+  res.redirect(`/notebook#item-${result.data.id}`);
+}
+
+export async function toggleQueue(req, res) {
+  const on = req.body.on === '1';
+  await service.setInQueue(req.params.id, on);
+  req.flash('success', on ? 'Đã đưa vào hàng ôn từ hôm nay.' : 'Đã bỏ khỏi hàng ôn.');
+  res.redirect(`/notebook/${req.params.id}`);
+}
+
 export function newForm(req, res) {
-  renderForm(res, { values: { kind: req.query.kind || 'word' } });
+  renderForm(res, { values: { kind: req.query.kind || 'note' } });
 }
 
 export async function create(req, res) {
   const result = await service.createItem({ ...req.body, source_type: 'manual' });
   if (!result.ok) return renderForm(res, { values: req.body, errors: result.errors, status: 422 });
-  req.flash('success', 'Đã thêm vào Notebook. Mục này có trong hàng ôn hôm nay.');
+  req.flash('success', result.data.due_date ? 'Đã ghi vào sổ. Mục này có trong hàng ôn hôm nay.' : 'Đã ghi vào sổ.');
   res.redirect(`/notebook/${result.data.id}`);
 }
 

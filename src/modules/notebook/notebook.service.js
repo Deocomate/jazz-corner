@@ -3,7 +3,7 @@ import { notFound } from '#lib/errors.js';
 import { validate } from '#lib/validate.js';
 import { todayISO, addDays } from '#lib/dates.js';
 import * as repo from './notebook.repo.js';
-import { itemSchema, sourceSchema, reviewSchema, KIND_OPTIONS } from './notebook.schema.js';
+import { itemSchema, sourceSchema, reviewSchema, quickSchema, KIND_OPTIONS } from './notebook.schema.js';
 
 const kindInfo = Object.fromEntries(KIND_OPTIONS.map((k) => [k.value, k]));
 const parseJson = (s) => {
@@ -54,7 +54,8 @@ export async function createItem(input, { origin = 'mine', dedupeKey = null } = 
   const fields = validate(itemSchema, input);
   const source = validate(sourceSchema, input);
   if (!fields.ok || !source.ok) return { ok: false, errors: { ...source.errors, ...fields.errors } };
-  const id = await repo.createItem({ ...fields.data, ...source.data, origin, dedupe_key: dedupeKey, due_date: todayISO() });
+  const inQueue = fields.data.kind !== 'note' || fields.data.review === true;
+  const id = await repo.createItem({ ...fields.data, ...source.data, origin, dedupe_key: dedupeKey, due_date: inQueue ? todayISO() : null });
   if (!id) return { ok: true, data: decorate(await repo.findByDedupeKey(dedupeKey)), duplicate: true };
   return { ok: true, data: await getItem(id) };
 }
@@ -87,6 +88,24 @@ export async function createMistake({ attemptId, testTitle, result, reason }) {
     due_date: todayISO(),
   });
   return id ? getItem(id) : decorate(await repo.findByDedupeKey(`mistake:${attemptId}:${result.questionId}`));
+}
+
+/** Ghi nhanh: dòng đầu thành nội dung chính, phần còn lại thành ghi chú. */
+export async function quickCapture(input) {
+  const result = validate(quickSchema, input);
+  if (!result.ok) return result;
+  const { text, kind, tags, review } = result.data;
+  const [firstLine, ...rest] = text.split(/\r?\n/);
+  const title = firstLine.trim();
+  const content = title.length > 200 ? `${title.slice(0, 199)}…` : title;
+  const body = [title.length > 200 ? title : '', ...rest].join('\n').trim();
+  return createItem({ kind, content, note: body || undefined, tags, review, source_type: 'manual' });
+}
+
+/** Bật/tắt một mục trong hàng ôn (dùng cho ghi chép tự do). */
+export async function setInQueue(id, on) {
+  await getItem(id);
+  await repo.setDue(id, on ? todayISO() : null);
 }
 
 export const findByDedupeKey = async (key) => decorate(await repo.findByDedupeKey(key));

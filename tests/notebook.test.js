@@ -18,7 +18,7 @@ test('lịch ôn: Đã nhớ giãn dần 1→3→7 ngày, Ôn lại gặp lại 
 test('Notebook trống có hướng dẫn', async () => {
   const res = await agent.get('/notebook');
   assert.equal(res.status, 200);
-  assert.match(res.text, /Notebook đang trống/);
+  assert.match(res.text, /Cuốn sổ còn trống/);
 });
 
 test('lưu đoạn từ sách (API) giữ trích đoạn, nguồn, vị trí; mở lại và ôn được', async () => {
@@ -67,6 +67,25 @@ test('thêm thủ công, lọc theo loại/nhãn/tìm kiếm, sửa, xoá; thi�
   assert.match((await agent.get(`/notebook/${id}`)).text, /con dao hai lưỡi/);
   await postForm(agent, `/notebook/${id}/delete`, {}, { from: '/notebook' });
   assert.equal((await agent.get(`/notebook/${id}`)).status, 404);
+});
+
+test('ghi nhanh vào sổ: dòng đầu là tiêu đề, ghi chép không vào hàng ôn trừ khi chọn; gom theo ngày', async () => {
+  const empty = await postForm(agent, '/notebook/quick', { text: '  ' }, { from: '/notebook' });
+  assert.equal(empty.status, 302);
+  const res = await postForm(agent, '/notebook/quick', { text: 'Inversion after "Rarely"\nRarely had I seen such a sky.\nDùng để nhấn mạnh.', kind: 'note', tags: 'Văn chương' }, { from: '/notebook' });
+  assert.equal(res.status, 302);
+  const id = Number(res.headers.location.match(/item-(\d+)/)[1]);
+  const row = await get('SELECT kind, content, note, due_date FROM notebook_items WHERE id = ?', [id]);
+  assert.deepEqual([row.kind, row.content, row.due_date], ['note', 'Inversion after "Rarely"', null]);
+  assert.match(row.note, /Rarely had I seen/);
+  const page = await agent.get('/notebook');
+  assert.match(page.text, /nb-page/);
+  assert.match(page.text, /không ôn/);
+  await postForm(agent, `/notebook/${id}/queue`, { on: '1' }, { from: '/notebook' });
+  assert.equal((await get('SELECT due_date FROM notebook_items WHERE id = ?', [id])).due_date, todayISO());
+  const reviewed = await postForm(agent, '/notebook/quick', { text: 'curb emissions', kind: 'word' }, { from: '/notebook' });
+  const wid = Number(reviewed.headers.location.match(/item-(\d+)/)[1]);
+  assert.equal((await get('SELECT due_date FROM notebook_items WHERE id = ?', [wid])).due_date, todayISO());
 });
 
 test('liên kết nguồn ra ngoài ứng dụng bị từ chối', async () => {

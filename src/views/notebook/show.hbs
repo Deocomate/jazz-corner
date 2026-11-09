@@ -1,5 +1,5 @@
 <p class="mb-4"><a href="/notebook" class="text-sm text-muted hover:text-ink">← Notebook</a></p>
-<article class="card card-body max-w-3xl space-y-5">
+<article class="nb-page max-w-3xl space-y-4">
   <div class="flex flex-wrap items-center gap-1.5">
     <span class="{{item.kindInfo.badge}}">{{item.kindInfo.label}}</span>
     {{> origin-tag origin=item.origin}}
@@ -20,12 +20,12 @@
     {{#if item.meaning}}<div><dt class="eyebrow mb-1">Nghĩa / tác dụng</dt><dd>{{item.meaning}}</dd></div>{{/if}}
     {{#if item.excerpt}}{{#unless item.ielts}}<div><dt class="eyebrow mb-1">Trích đoạn gốc</dt><dd class="font-serif text-lg italic" lang="en">“{{item.excerpt}}”</dd></div>{{/unless}}{{/if}}
     {{#if item.example}}<div><dt class="eyebrow mb-1">Ví dụ của tôi</dt><dd lang="en">{{item.example}}</dd></div>{{/if}}
-    {{#if item.note}}<div><dt class="eyebrow mb-1">{{#if item.ielts}}Lý do sai{{else}}Ghi chú{{/if}}</dt><dd class="whitespace-pre-line">{{item.note}}</dd></div>{{/if}}
+    {{#if item.note}}<div><dt class="eyebrow mb-1">{{#if item.ielts}}Lý do sai{{else if (eq item.kind "note")}}Nội dung{{else}}Ghi chú{{/if}}</dt><dd class="whitespace-pre-line">{{item.note}}</dd></div>{{/if}}
   </dl>
 
   <p class="text-sm text-muted">
     {{#if item.source_label}}Nguồn: {{item.source_label}}{{else}}Nguồn: tự thêm{{/if}}
-    · Ôn tiếp: {{formatDay item.due_date}} · Đã ôn {{item.review_count}} lần
+    · Ghi ngày {{formatDay item.created_at}} · {{#if item.due_date}}Ôn tiếp: {{formatDay item.due_date}}{{else}}Không nằm trong hàng ôn{{/if}} · Đã ôn {{item.review_count}} lần
   </p>
 
   <div class="flex flex-wrap gap-2 border-t border-line pt-4">
@@ -36,6 +36,7 @@
         <button type="submit" class="btn-secondary btn-sm">Luyện nói</button>
       </form>
     {{/unless}}
+    <form method="post" action="/notebook/{{item.id}}/queue">{{> form/csrf}}<input type="hidden" name="on" value="{{#if item.due_date}}0{{else}}1{{/if}}"><button type="submit" class="btn-secondary btn-sm">{{#if item.due_date}}Bỏ khỏi hàng ôn{{else}}Đưa vào hàng ôn{{/if}}</button></form>
     <a href="/notebook/{{item.id}}/edit" class="btn-secondary btn-sm">Sửa</a>
     {{> form/delete-button action=(concat "/notebook/" item.id "/delete") confirm="Xoá mục này khỏi Notebook?"}}
   </div>

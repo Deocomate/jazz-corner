@@ -168,3 +168,16 @@ dialog::backdrop { background: rgba(43, 33, 37, 0.35); }
 .phrase.is-playing, .sentence.is-playing { background: #fdf0c4; border-radius: 6px; box-shadow: 0 0 0 3px #fdf0c4; }
 [data-transcript].is-hidden-text .phrase { color: transparent; text-shadow: 0 0 10px rgba(43, 33, 37, 0.35); }
 .record-on { background: #b91c1c !important; }
+
+/* ---------- Notebook: trang sổ tay kẻ dòng ---------- */
+.nb-page { position: relative; background-color: #fffdf8; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 31px, #eee3d6 31px, #eee3d6 32px); background-position: 0 31px; border: 1px solid var(--color-line); border-radius: 0.25rem 1rem 1rem 0.25rem; box-shadow: 0 1px 0 #e9dfd8, 0 6px 18px -10px rgba(43, 33, 37, 0.25); padding: 32px 1.25rem 32px 3.75rem; line-height: 32px; }
+.nb-page::before { content: ""; position: absolute; top: 0; bottom: 0; left: 2.75rem; border-left: 2px solid #f1c3cd; }
+.nb-page .nb-date { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 600; color: var(--color-brand-700); line-height: 32px; }
+.nb-entry { position: relative; padding-bottom: 32px; }
+.nb-entry:last-child { padding-bottom: 0; }
+.nb-entry .nb-dot { position: absolute; left: -2.15rem; top: 12px; width: 8px; height: 8px; border-radius: 9999px; }
+.nb-entry h3 { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; line-height: 32px; }
+.nb-entry p, .nb-entry li { line-height: 32px; }
+.nb-meta { font-size: 0.75rem; color: var(--color-muted); line-height: 32px; }
+.nb-kind { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+@media (max-width: 640px) { .nb-page { padding-left: 2.5rem; } .nb-page::before { left: 1.75rem; } .nb-entry .nb-dot { left: -1.4rem; } }

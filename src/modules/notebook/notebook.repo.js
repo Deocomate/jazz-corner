@@ -70,6 +70,9 @@ export const updateItem = (id, d) =>
     [d.kind, d.content, d.meaning ?? null, d.note ?? null, d.example ?? null, d.excerpt ?? null, d.tags ?? null, id],
   );
 
+export const setDue = (id, dueDate) =>
+  run(`UPDATE notebook_items SET due_date = ?, updated_at = datetime('now') WHERE id = ?`, [dueDate, id]);
+
 export const deleteItem = (id) => run('DELETE FROM notebook_items WHERE id = ?', [id]);
 
 // --- Hàng ôn ---

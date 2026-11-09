@@ -1,4 +1,4 @@
-# Study Hub
+# Jazz Corner
 
 > Sổ tay dự án. Claude đọc file này ĐẦU mỗi phiên làm việc và cập nhật CUỐI mỗi nhiệm vụ,
 > để lần sau (hoặc người khác) tiếp tục được ngay mà không phải hỏi lại.
@@ -54,6 +54,7 @@
 
 ## Nhật ký thay đổi
 <!-- Mới nhất ở trên. Mỗi dòng: ngày — thay đổi — ai yêu cầu (nếu biết) -->
+- 2026-11-09 — Đổi tên app thành Jazz Corner (tên hiển thị; thư mục/tên gói kỹ thuật vẫn là study-hub) — người dùng yêu cầu.
 - 2026-11-09 — Word of the Day hiện nghĩa Merriam-Webster ngay trên trang (thay link Cambridge) — người dùng yêu cầu.
 - 2026-11-09 — Giao diện chuyển hoàn toàn sang tiếng Anh; Notebook có trang đánh số + lật trang + mục lục; Word of the Day lấy từ sách và đề (pdf.js chạy cả phía server) — người dùng yêu cầu.
 - 2026-11-09 — Notebook thành sổ tay theo ngày + ghi nhanh + loại Ghi chép (migration 005 dựng lại bảng để thêm loại) — người dùng yêu cầu.

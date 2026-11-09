@@ -2,7 +2,7 @@
   "name": "study-hub",
   "version": "0.1.0",
   "private": true,
-  "description": "Study Hub",
+  "description": "Jazz Corner",
   "type": "module",
   "engines": {
     "node": ">=22"

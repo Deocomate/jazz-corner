@@ -157,7 +157,7 @@ export function buildSampleEpub(chapters = STORY_CHAPTERS, title = STORY_TITLE) 
   <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
     <dc:identifier id="uid">study-hub-sample-story</dc:identifier>
     <dc:title>${xmlEscape(title)}</dc:title>
-    <dc:creator>Study Hub</dc:creator>
+    <dc:creator>Jazz Corner</dc:creator>
     <dc:language>en</dc:language>
   </metadata>
   <manifest>

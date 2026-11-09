@@ -1,4 +1,4 @@
-# Study Hub — tự học tiếng Anh C1–C2 & IELTS Academic
+# Jazz Corner — tự học tiếng Anh C1–C2 & IELTS Academic
 
 Website cá nhân, chạy local cho một người (giao diện tiếng Anh): đọc sách như Kindle, Notebook có lịch ôn, IELTS Reading tương tác, luyện nói (phát âm, nhịp điệu, đọc to, shadowing). Các luồng chính dùng được **không cần AI**.
 

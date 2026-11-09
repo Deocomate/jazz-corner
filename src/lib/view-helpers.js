@@ -38,6 +38,11 @@ export const helpers = {
   or: (...args) => args.slice(0, -1).some(Boolean),
   not: (value) => !value,
   gt: (a, b) => Number(a) > Number(b),
+  // Cắt chuỗi dài: (truncate text 90)
+  truncate: (value, max) => {
+    const s = String(value ?? '');
+    return s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s;
+  },
   add: (a, b) => Number(a) + Number(b),
   // Ngày giờ: "28/10/2026, 14:30"
   formatDate: (value) => {
@@ -56,7 +61,8 @@ export const helpers = {
   selected: (a, b) => (a == b ? 'selected' : ''),
   checked: (value) => (value ? 'checked' : ''),
   // Giữ giá trị cũ khi form lỗi: {{default values.title ''}}
-  default: (value, fallback) => value ?? fallback,
+  // Chuỗi rỗng cũng coi như chưa có (VD: câu bỏ trống -> hiện "(bỏ trống)").
+  default: (value, fallback) => (value === undefined || value === null || value === '' ? fallback : value),
   // Link menu đang active: "/" chỉ khớp chính xác, link khác khớp theo tiền tố.
   isActive: (currentPath, href) =>
     href === '/' ? currentPath === '/' : currentPath === href || currentPath?.startsWith(`${href}/`),

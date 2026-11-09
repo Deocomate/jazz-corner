@@ -7,7 +7,7 @@
       {{> origin-tag origin=item.origin}}
       <span class="chip">Nguồn: {{item.sourceLabel}}</span>
     </div>
-    <h1 class="font-serif text-2xl leading-snug font-semibold sm:text-3xl" lang="en">{{#if (eq item.kind "word")}}{{item.text}}{{else}}{{default item.title "Bài luyện nói"}}{{/if}}</h1>
+    <h1 class="font-serif text-2xl leading-snug font-semibold sm:text-3xl" lang="en">{{#if (eq item.kind "word")}}{{item.text}}{{else}}{{default item.title (truncate item.text 90)}}{{/if}}</h1>
     {{#if item.source_url}}<p class="mt-2 text-sm"><a href="{{item.source_url}}">Mở bản gốc: {{item.source_label}}</a></p>{{/if}}
     {{#if item.original_text}}{{#unless (eq item.original_text item.text)}}
       <details class="mt-2 text-sm"><summary class="cursor-pointer text-muted">Xem đoạn gốc (trước khi chỉnh)</summary><p class="mt-2 rounded-lg bg-paper p-3 font-serif" lang="en">{{item.original_text}}</p></details>

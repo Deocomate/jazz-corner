@@ -140,7 +140,7 @@
 .selection-bar button:hover, .selection-bar button:focus-visible { background: rgba(255,255,255,.14); }
 
 /* Hộp thoại */
-dialog.modal { width: min(36rem, calc(100vw - 2rem)); border-radius: 1rem; border: 1px solid var(--color-line); padding: 0; color: var(--color-ink); }
+dialog.modal { margin: auto; max-height: calc(100vh - 2rem); overflow-y: auto; width: min(36rem, calc(100vw - 2rem)); border-radius: 1rem; border: 1px solid var(--color-line); padding: 0; color: var(--color-ink); }
 dialog.side-panel { margin: 0 0 0 auto; height: 100vh; max-height: 100vh; width: min(24rem, 100vw); border: 0; border-left: 1px solid var(--color-line); padding: 0; color: var(--color-ink); display: none; flex-direction: column; }
 dialog.side-panel[open] { display: flex; }
 dialog::backdrop { background: rgba(43, 33, 37, 0.35); }

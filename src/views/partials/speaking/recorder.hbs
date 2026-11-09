@@ -1,11 +1,11 @@
-{{!-- Ghi âm bằng micro trình duyệt. Bản ghi được lưu ngay khi dừng. --}}
+{{!-- Recording with the browser microphone. Saved as soon as you press Stop. --}}
 <section class="card card-body space-y-3" aria-labelledby="rec-title">
-  <h2 id="rec-title" class="section-title text-base">Ghi âm</h2>
-  <p class="text-sm">Đang tập: <span class="font-serif" lang="en" data-target-label>{{#if (eq item.kind "word")}}{{item.text}}{{else}}toàn bộ nội dung{{/if}}</span></p>
+  <h2 id="rec-title" class="section-title text-base">Record</h2>
+  <p class="text-sm">Practising: <span class="font-serif" data-target-label>{{#if (eq item.kind "word")}}{{item.text}}{{else}}the whole text{{/if}}</span></p>
   <div class="flex items-center gap-3">
-    <button type="button" class="btn-primary" data-record aria-pressed="false">● Ghi âm</button>
+    <button type="button" class="btn-primary" data-record aria-pressed="false">● Record</button>
     <span class="font-mono text-sm text-muted" data-rec-timer>00:00</span>
   </div>
-  <p class="text-xs text-muted" data-rec-status role="status" aria-live="polite">Bản ghi được lưu ngay khi bấm Dừng.</p>
+  <p class="text-xs text-muted" data-rec-status role="status" aria-live="polite">Recordings are saved as soon as you press Stop. Shortcut: R</p>
   <div class="alert-error text-sm" data-mic-error role="alert" hidden></div>
 </section>

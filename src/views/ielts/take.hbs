@@ -4,36 +4,36 @@
     <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
       <div class="min-w-0 flex-1">
         <p class="truncate font-serif text-base font-semibold">{{test.title}}</p>
-        <p class="text-xs text-muted">Reading · {{attempt.modeLabel}} · <span data-save-status>Đã lưu</span></p>
+        <p class="text-xs text-muted">Reading · {{attempt.modeLabel}} · <span data-save-status>Saved</span></p>
       </div>
       {{#if attempt.deadline_at}}
         <p class="rounded-full bg-brand-50 px-3 py-1 font-mono text-sm font-semibold text-brand-700" role="timer" aria-live="off" data-timer>--:--</p>
       {{else}}
-        <p class="text-xs text-muted">Không giới hạn giờ</p>
+        <p class="text-xs text-muted">No time limit</p>
       {{/if}}
-      <button type="button" class="btn-primary btn-sm" data-open-submit>Nộp bài</button>
+      <button type="button" class="btn-primary btn-sm" data-open-submit>Submit</button>
     </div>
-    <nav class="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 pb-2" aria-label="Chuyển nhanh tới câu hỏi">
+    <nav class="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 pb-2" aria-label="Jump to a question">
       {{#each questions}}
-        <a href="#q-{{id}}" class="q-pill" data-pill="{{id}}" aria-label="Câu {{number}}">{{number}}</a>
+        <a href="#q-{{id}}" class="q-pill" data-pill="{{id}}" aria-label="Question {{number}}">{{number}}</a>
       {{/each}}
     </nav>
-    <div class="flex border-t border-line lg:hidden" role="tablist" aria-label="Vùng hiển thị">
-      <button type="button" role="tab" class="flex-1 py-2.5 text-sm font-medium" data-tab="passage" aria-selected="true">Bài đọc</button>
-      <button type="button" role="tab" class="flex-1 py-2.5 text-sm font-medium" data-tab="questions" aria-selected="false">Câu hỏi</button>
+    <div class="flex border-t border-line lg:hidden" role="tablist" aria-label="View">
+      <button type="button" role="tab" class="flex-1 py-2.5 text-sm font-medium" data-tab="passage" aria-selected="true">Passage</button>
+      <button type="button" role="tab" class="flex-1 py-2.5 text-sm font-medium" data-tab="questions" aria-selected="false">Questions</button>
     </div>
   </div>
 
   <div class="mx-auto grid max-w-7xl gap-6 px-4 py-6 lg:grid-cols-2">
-    <section class="take-pane lg:sticky lg:top-32 lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto lg:pr-2" data-pane="passage" aria-label="Bài đọc" {{#if (eq attempt.mode "practice")}}data-allow-speak{{/if}}>
+    <section class="take-pane lg:sticky lg:top-32 lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto lg:pr-2" data-pane="passage" aria-label="Passage" {{#if (eq attempt.mode "practice")}}data-allow-speak{{/if}}>
       {{#each passages}}<div class="card card-body mb-6">{{> ielts/passage passage=this}}</div>{{/each}}
     </section>
-    <section class="take-pane space-y-8" data-pane="questions" aria-label="Câu hỏi">
+    <section class="take-pane space-y-8" data-pane="questions" aria-label="Questions">
       {{#each passages}}
         {{#each groups}}
           <div class="space-y-3">
             <div class="rounded-xl bg-paper p-4">
-              <p class="eyebrow mb-1">{{typeLabel}}{{#if word_limit}} · tối đa {{word_limit}} từ{{/if}}</p>
+              <p class="eyebrow mb-1">{{typeLabel}}{{#if word_limit}} · max {{word_limit}} words{{/if}}</p>
               <p class="text-sm italic" lang="en">{{instructions}}</p>
               {{#if (eq type "headings")}}<ul class="mt-2 text-sm" lang="en">{{#each options}}<li><strong>{{key}}</strong>. {{text}}</li>{{/each}}</ul>{{/if}}
             </div>
@@ -49,18 +49,18 @@
   <form method="post" action="/ielts/attempts/{{attempt.id}}/submit" class="space-y-4 p-6" data-submit-form>
     {{> form/csrf}}
     <input type="hidden" name="answers_json" data-answers-json>
-    <h2 id="submit-title" class="section-title">Nộp bài?</h2>
+    <h2 id="submit-title" class="section-title">Submit your answers?</h2>
     <p data-unanswered-text class="text-sm"></p>
-    <p class="text-sm text-muted">Sau khi nộp, bạn không sửa được câu trả lời. Đáp án, giải thích và bằng chứng sẽ hiện ở trang kết quả.</p>
+    <p class="text-sm text-muted">After submitting you cannot change your answers. Answers, explanations and evidence appear on the results page.</p>
     <div class="flex justify-end gap-2">
-      <button type="button" class="btn-ghost" data-dialog-cancel>Làm tiếp</button>
-      <button type="submit" class="btn-primary">Nộp bài</button>
+      <button type="button" class="btn-ghost" data-dialog-cancel>Keep working</button>
+      <button type="submit" class="btn-primary">Submit</button>
     </div>
   </form>
 </dialog>
 
-<div class="selection-bar" data-selection-bar role="toolbar" aria-label="Thao tác với đoạn đã chọn" hidden>
-  <button type="button" data-sel-action="speak">Luyện nói</button>
-  <button type="button" data-sel-action="notebook">Lưu vào Notebook</button>
+<div class="selection-bar" data-selection-bar role="toolbar" aria-label="Actions for the selected text" hidden>
+  <button type="button" data-sel-action="speak">Practise speaking</button>
+  <button type="button" data-sel-action="notebook">Save to Notebook</button>
 </div>
 {{> notebook/save-dialog}}

@@ -11,7 +11,7 @@ export function notFoundHandler(req, res, next) {
 
 export function errorHandler(err, req, res, next) {
   const status = err.status ?? err.statusCode ?? 500;
-  const message = err.expose || status < 500 ? err.message : 'Đã có lỗi xảy ra. Vui lòng thử lại sau.';
+  const message = err.expose || status < 500 ? err.message : 'Something went wrong. Please try again later.';
 
   if (status >= 500 && !config.isTest) console.error(err);
   if (res.headersSent) return next(err);
@@ -19,7 +19,7 @@ export function errorHandler(err, req, res, next) {
   res.status(status);
   if (wantsJson(req)) return res.json({ error: message });
   res.render(status === 404 ? 'errors/404' : 'errors/error', {
-    title: status === 404 ? 'Không tìm thấy' : 'Có lỗi',
+    title: status === 404 ? 'Not found' : 'Error',
     status,
     message,
     stack: config.isProd ? null : err.stack,

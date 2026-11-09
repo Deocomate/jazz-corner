@@ -21,13 +21,13 @@ export function createPlayer({ audioUrl, audioVoice, segments, onStatus, onSegme
   const useFile = () => Boolean(audio) && accent === 'us';
 
   function describe() {
-    if (useFile()) return onStatus(`Đang dùng: audio tổng hợp từ tệp — ${audioVoice || 'giọng máy'}. Không phải người đọc.`);
-    if (!tts) return onStatus('Trình duyệt này không hỗ trợ giọng đọc tổng hợp — hãy dùng Chrome/Edge, hoặc chỉ luyện ghi âm.', true);
+    if (useFile()) return onStatus(`Playing: synthetic audio file — ${audioVoice || 'computer voice'}. Not a human speaker.`);
+    if (!tts) return onStatus('This browser has no speech synthesis — use Chrome or Edge, or practise recording only.', true);
     const v = pickVoice(voices, lang());
-    if (v) return onStatus(`Đang dùng: giọng tổng hợp của trình duyệt — ${v.name} (${v.lang}). Không phải người đọc.`);
+    if (v) return onStatus(`Playing: your browser’s synthetic voice — ${v.name} (${v.lang}). Not a human speaker.`);
     const fallback = pickVoice(voices, 'en-US') || voices.find((x) => x.lang?.startsWith('en'));
-    if (fallback) return onStatus(`Thiết bị không có giọng ${lang()} — tạm dùng ${fallback.name} (${fallback.lang}).`, true);
-    return onStatus(voices.length ? 'Thiết bị chưa có giọng tiếng Anh nào cho trình duyệt.' : 'Đang tải danh sách giọng đọc…', true);
+    if (fallback) return onStatus(`No ${lang()} voice on this device — using ${fallback.name} (${fallback.lang}) instead.`, true);
+    return onStatus(voices.length ? 'This device has no English voice for the browser.' : 'Loading voices…', true);
   }
 
   if (tts) {

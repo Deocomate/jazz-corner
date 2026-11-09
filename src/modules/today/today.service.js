@@ -1,35 +1,10 @@
 // Gom dữ liệu cho trang Today và Progress từ các module khác (không có SQL riêng).
-import { todayISO } from '#lib/dates.js';
 import * as books from '#modules/books/books.service.js';
 import * as notebook from '#modules/notebook/notebook.service.js';
 import * as attempts from '#modules/ielts/attempts.service.js';
 import { getStructure } from '#modules/ielts/ielts.service.js';
 import * as speaking from '#modules/speaking/speaking.service.js';
-import { wordForDate } from './words.js';
-
-const wotdKey = (w) => `wotd:${w.word.toLowerCase()}`;
-
-export async function wordOfTheDay() {
-  const word = wordForDate(todayISO());
-  const saved = await notebook.findByDedupeKey(wotdKey(word));
-  return { ...word, saved };
-}
-
-export async function saveWordOfTheDay() {
-  const word = wordForDate(todayISO());
-  return notebook.createItem(
-    {
-      kind: ['idiom', 'phrase'].includes(word.pos) ? 'idiom' : 'word',
-      content: word.word,
-      meaning: `${word.meaning} (${word.vi})`,
-      note: `${word.nuance}\nCollocations: ${word.collocations.join('; ')}`,
-      example: word.example,
-      source_type: 'word_of_day',
-      source_label: `Word of the Day · ${todayISO()}`,
-    },
-    { origin: 'sample', dedupeKey: wotdKey(word) },
-  );
-}
+import { wordOfTheDay } from './word-of-the-day.js';
 
 export async function todayData() {
   const [wotd, book, open, mistakes, dueCount] = await Promise.all([

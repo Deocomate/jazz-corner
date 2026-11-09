@@ -1,22 +1,22 @@
-{{#> page-header title=(concat (default group.typeLabel "Nhóm câu hỏi mới")) eyebrow=test.title subtitle="Một nhóm = một dạng câu hỏi với chung một hướng dẫn trả lời."}}
-  <a href="/ielts/tests/{{test.id}}/edit" class="btn-ghost">Huỷ</a>
+{{#> page-header title=(default group.typeLabel "New question group") eyebrow=test.title subtitle="A group is one question type that shares the same instructions."}}
+  <a href="/ielts/tests/{{test.id}}/edit" class="btn-ghost">Cancel</a>
 {{/page-header}}
 <form method="post" action="/ielts/tests/{{test.id}}/groups{{#if group}}/{{group.id}}{{/if}}" class="card card-body max-w-3xl space-y-5">
   {{> form/csrf}}
   <div class="grid gap-4 sm:grid-cols-3">
-    {{> form/select name="type" label="Dạng câu hỏi" options=typeOptions value=values.type error=errors.type required=true}}
+    {{> form/select name="type" label="Question type" options=typeOptions value=values.type error=errors.type required=true}}
     <div class="field">
-      <label for="f-passage_id" class="label">Bài đọc</label>
+      <label for="f-passage_id" class="label">Passage</label>
       <select id="f-passage_id" name="passage_id" class="input">
-        <option value="">— Chưa gán —</option>
+        <option value="">— None —</option>
         {{#each passages}}<option value="{{id}}" {{selected id ../values.passage_id}}>{{position}}. {{title}}</option>{{/each}}
       </select>
       {{#if errors.passage_id}}<p class="field-error">{{errors.passage_id}}</p>{{/if}}
     </div>
-    {{> form/field name="position" type="number" label="Thứ tự nhóm" value=values.position error=errors.position}}
+    {{> form/field name="position" type="number" label="Group order" value=values.position error=errors.position}}
   </div>
-  {{> form/textarea name="instructions" label="Hướng dẫn trả lời (như trong đề)" value=values.instructions error=errors.instructions rows=2 required=true placeholder="VD: Do the following statements agree with the information given in the passage?"}}
-  {{> form/textarea name="options_text" label="Danh sách tiêu đề — chỉ cho Matching Headings" value=values.options_text error=errors.options_text rows=7 hint="Mỗi dòng một tiêu đề, bắt đầu bằng ký hiệu: i. … / ii. … / iii. …"}}
-  {{> form/field name="word_limit" type="number" label="Giới hạn số từ — chỉ cho Completion" value=values.word_limit error=errors.word_limit hint="VD: 2 cho NO MORE THAN TWO WORDS. Câu trả lời dài hơn sẽ bị tính sai."}}
-  <div class="flex justify-end"><button type="submit" class="btn-primary">Lưu nhóm</button></div>
+  {{> form/textarea name="instructions" label="Instructions (as written in the test)" value=values.instructions error=errors.instructions rows=2 required=true placeholder="E.g. Do the following statements agree with the information given in the passage?"}}
+  {{> form/textarea name="options_text" label="List of headings — Matching Headings only" value=values.options_text error=errors.options_text rows=7 hint="One heading per line, starting with its label: i. … / ii. … / iii. …"}}
+  {{> form/field name="word_limit" type="number" label="Word limit — Completion only" value=values.word_limit error=errors.word_limit hint="E.g. 2 for NO MORE THAN TWO WORDS. Longer answers are marked wrong."}}
+  <div class="flex justify-end"><button type="submit" class="btn-primary">Save group</button></div>
 </form>

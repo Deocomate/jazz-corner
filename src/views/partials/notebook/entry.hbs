@@ -1,0 +1,18 @@
+{{!-- One entry on a notebook page. Context: a decorated notebook item. --}}
+<li id="item-{{id}}" class="nb-entry scroll-mt-24">
+  <span class="nb-dot {{kindInfo.dot}}" aria-hidden="true"></span>
+  <p class="nb-kind text-muted">{{kindInfo.label}}{{#each tagList}} · {{this}}{{/each}}</p>
+  <h3><a href="/notebook/{{id}}" class="hover:text-brand-700" lang="en">{{content}}</a></h3>
+  {{#if ielts}}
+    <p class="text-[15px]">You chose <strong>{{default ielts.myAnswer "(blank)"}}</strong> · answer <strong>{{ielts.correctAnswer}}</strong>{{#if note}} — <span class="text-muted">{{note}}</span>{{/if}}</p>
+  {{else}}
+    {{#if meaning}}<p class="text-[15px]">{{meaning}}</p>{{/if}}
+    {{#if note}}<p class="line-clamp-4 text-[15px] whitespace-pre-line">{{note}}</p>{{/if}}
+    {{#if example}}<p class="text-[15px]">→ {{example}}</p>{{/if}}
+  {{/if}}
+  {{#if excerpt}}<p class="line-clamp-2 font-serif text-[15px] text-muted italic">“{{excerpt}}”</p>{{/if}}
+  <p class="nb-meta">
+    {{#if source_url}}<a href="{{source_url}}">{{default source_label "Open source"}}</a>{{else}}{{default source_label "Written by me"}}{{/if}}
+    · {{#if due_date}}{{#if isDue}}<span class="font-semibold text-amber-800">due for review</span>{{else}}next review {{formatDay due_date}}{{/if}}{{else}}not in review{{/if}}
+  </p>
+</li>

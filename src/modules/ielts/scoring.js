@@ -21,7 +21,7 @@ export const countWords = (value) => (normalizeAnswer(value).match(/[^\s]+/g) ||
  */
 export function gradeAnswer(question, group, rawAnswer) {
   const given = normalizeAnswer(rawAnswer);
-  if (!given) return { isCorrect: false, note: 'Bỏ trống' };
+  if (!given) return { isCorrect: false, note: 'Blank' };
   const expected = normalizeAnswer(question.answer);
 
   switch (group.type) {
@@ -29,7 +29,7 @@ export function gradeAnswer(question, group, rawAnswer) {
       return { isCorrect: (TFNG_ALIASES[given] ?? given) === (TFNG_ALIASES[expected] ?? expected), note: null };
     case 'completion': {
       if (group.word_limit && countWords(rawAnswer) > group.word_limit) {
-        return { isCorrect: false, note: `Vượt giới hạn ${group.word_limit} từ` };
+        return { isCorrect: false, note: `Over the ${group.word_limit}-word limit` };
       }
       const accepted = [expected, ...(question.accepted || []).map(normalizeAnswer)].filter(Boolean);
       return { isCorrect: accepted.includes(given), note: null };
@@ -41,7 +41,7 @@ export function gradeAnswer(question, group, rawAnswer) {
 
 /** Hiển thị đáp án chuẩn cho người học (kèm biến thể được chấp nhận). */
 export function correctDisplay(question, group) {
-  if (group.type === 'completion' && question.accepted?.length) return `${question.answer} (chấp nhận: ${question.accepted.join(' / ')})`;
+  if (group.type === 'completion' && question.accepted?.length) return `${question.answer} (also accepted: ${question.accepted.join(' / ')})`;
   if (group.type === 'mcq' || group.type === 'headings') {
     const opts = group.type === 'mcq' ? question.options : group.options;
     const hit = (opts || []).find((o) => normalizeAnswer(o.key) === normalizeAnswer(question.answer));

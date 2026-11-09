@@ -181,3 +181,9 @@ dialog::backdrop { background: rgba(43, 33, 37, 0.35); }
 .nb-meta { font-size: 0.75rem; color: var(--color-muted); line-height: 32px; }
 .nb-kind { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 @media (max-width: 640px) { .nb-page { padding-left: 2.5rem; } .nb-page::before { left: 1.75rem; } .nb-entry .nb-dot { left: -1.4rem; } }
+/* A stack of sheets behind the open page, and a short page-turn motion. */
+.nb-book .nb-sheet { box-shadow: 0 1px 0 #e9dfd8, 4px 5px 0 -1px #fbf6ee, 4px 5px 0 0 #e6dbd1, 8px 10px 0 -1px #f7f0e5, 8px 10px 0 0 #e6dbd1; animation: nb-page-in 0.28s ease-out; }
+.nb-book.is-turning .nb-sheet { transform: translateX(-18px) rotateY(6deg); opacity: 0.4; transition: transform 0.2s, opacity 0.2s; }
+.nb-book.is-turning-back .nb-sheet { transform: translateX(18px) rotateY(-6deg); opacity: 0.4; transition: transform 0.2s, opacity 0.2s; }
+@keyframes nb-page-in { from { opacity: 0.35; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .nb-book .nb-sheet, .nb-book.is-turning .nb-sheet, .nb-book.is-turning-back .nb-sheet { animation: none; transition: none; transform: none; } }

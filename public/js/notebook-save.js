@@ -10,7 +10,7 @@ export function openNotebookDialog({ content = '', excerpt = '', kind = 'word', 
   form.kind.value = kind;
   form.content.value = content.slice(0, 500);
   form.excerpt.value = excerpt;
-  dialog.querySelector('[data-nb-source]').textContent = source.label ? `Nguồn: ${source.label}` : '';
+  dialog.querySelector('[data-nb-source]').textContent = source.label ? `Source: ${source.label}` : '';
 
   return new Promise((resolve) => {
     const onSubmit = async (event) => {

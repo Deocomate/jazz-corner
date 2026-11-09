@@ -8,8 +8,8 @@ export class AppError extends Error {
   }
 }
 
-export const notFound = (message = 'Không tìm thấy trang hoặc dữ liệu bạn yêu cầu.') =>
+export const notFound = (message = 'The page or item you asked for was not found.') =>
   new AppError(404, message);
-export const forbidden = (message = 'Bạn không có quyền thực hiện thao tác này.') =>
+export const forbidden = (message = 'You are not allowed to do this.') =>
   new AppError(403, message);
-export const badRequest = (message = 'Yêu cầu không hợp lệ.') => new AppError(400, message);
+export const badRequest = (message = 'Invalid request.') => new AppError(400, message);

@@ -1,12 +1,12 @@
-{{#> page-header title="Books" eyebrow="Thư viện của bạn" subtitle="Tải sách PDF hoặc EPUB lên để đọc như trên Kindle: bôi chọn, highlight, ghi chú, lưu vào Notebook và chuyển sang Speaking."}}{{/page-header}}
+{{#> page-header title="Books" eyebrow="Your library" subtitle="Upload PDF or EPUB books and read them like on a Kindle: select text, highlight, take notes, save to your Notebook and practise speaking."}}{{/page-header}}
 
 <section class="mb-10" aria-labelledby="upload-title">
-  <h2 id="upload-title" class="sr-only">Tải sách lên</h2>
+  <h2 id="upload-title" class="sr-only">Upload a book</h2>
   <label class="flex cursor-pointer flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-brand-200 bg-brand-50/50 px-6 py-10 text-center hover:bg-brand-50" data-dropzone>
     <svg class="h-9 w-9 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
-    <span class="font-serif text-xl font-semibold">Kéo thả hoặc chọn tệp sách</span>
-    <span class="text-sm text-muted">PDF (có hoặc không có lớp văn bản) và EPUB · tối đa 200 MB</span>
-    <span class="btn-primary mt-1">Chọn tệp</span>
+    <span class="font-serif text-xl font-semibold">Drag and drop or choose a book</span>
+    <span class="text-sm text-muted">PDF (with or without a text layer) and EPUB · up to 200 MB</span>
+    <span class="btn-primary mt-1">Choose a file</span>
     <input type="file" accept=".pdf,.epub,application/pdf,application/epub+zip" class="sr-only" data-upload-input data-upload-url="/api/books">
   </label>
   <p class="mt-3 text-sm text-muted" data-upload-status role="status" aria-live="polite"></p>
@@ -31,7 +31,7 @@
           <a href="/books/{{id}}" class="line-clamp-2 font-serif text-base leading-snug font-semibold hover:text-brand-700">{{title}}</a>
           {{#if author}}<p class="mt-0.5 truncate text-xs text-muted">{{author}}</p>{{/if}}
           <div class="mt-2 flex items-center gap-2">
-            <div class="progress" role="progressbar" aria-valuenow="{{percent}}" aria-valuemin="0" aria-valuemax="100" aria-label="Tiến độ đọc"><span style="width: {{percent}}%"></span></div>
+            <div class="progress" role="progressbar" aria-valuenow="{{percent}}" aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress"><span style="width: {{percent}}%"></span></div>
             <span class="shrink-0 text-xs text-muted">{{percent}}%</span>
           </div>
           <div class="mt-2 flex flex-wrap items-center gap-1.5">
@@ -41,11 +41,11 @@
           {{#if location_label}}<p class="mt-1 truncate text-xs text-muted">{{location_label}}</p>{{/if}}
         </div>
         <div class="mt-2">
-          {{> form/delete-button action=(concat "/books/" id "/delete") confirm="Xoá sách này cùng bookmark và highlight? Mục đã lưu vào Notebook vẫn được giữ."}}
+          {{> form/delete-button action=(concat "/books/" id "/delete") confirm="Delete this book with its bookmarks and highlights? Entries saved to your Notebook are kept."}}
         </div>
       </li>
     {{/each}}
   </ul>
 {{else}}
-  {{> empty-state title="Chưa có sách nào" text="Tải một tệp PDF hoặc EPUB ở trên để bắt đầu đọc. Muốn thử nhanh, chạy lệnh npm run seed để nạp sách mẫu."}}
+  {{> empty-state title="No books yet" text="Upload a PDF or EPUB above to start reading. To try it quickly, run npm run seed to load sample books."}}
 {{/if}}

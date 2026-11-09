@@ -23,7 +23,7 @@ export async function runMigrations({ log = console.info } = {}) {
     const sql = await fs.readFile(path.join(MIGRATIONS_DIR, file), 'utf8');
     await db.executeMultiple(sql);
     await db.execute({ sql: 'INSERT INTO _migrations (name) VALUES (?)', args: [file] });
-    log(`[migrate] đã chạy ${file}`);
+    log(`[migrate] applied ${file}`);
   }
 }
 

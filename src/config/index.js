@@ -14,7 +14,7 @@ export const config = Object.freeze({
   port: Number(env.PORT ?? 3000),
   appName: env.APP_NAME ?? 'Study Hub',
   timezone: env.APP_TIMEZONE || 'Asia/Ho_Chi_Minh',
-  locale: env.APP_LOCALE || 'vi-VN',
+  locale: env.APP_LOCALE || 'en-GB',
   sessionSecret: env.SESSION_SECRET ?? DEV_SECRET,
   db: Object.freeze({
     // Local: file SQLite. Production free: Turso (libsql://...), cùng API.
@@ -29,5 +29,5 @@ export const config = Object.freeze({
 });
 
 if (config.isProd && config.sessionSecret === DEV_SECRET) {
-  throw new Error('SESSION_SECRET chưa được đặt cho môi trường production.');
+  throw new Error('SESSION_SECRET must be set in production.');
 }

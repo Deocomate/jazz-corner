@@ -1,6 +1,6 @@
 # Study Hub — tự học tiếng Anh C1–C2 & IELTS Academic
 
-Website cá nhân, chạy local cho một người: đọc sách như Kindle, Notebook có lịch ôn, IELTS Reading tương tác, luyện nói (phát âm, nhịp điệu, đọc to, shadowing). Các luồng chính dùng được **không cần AI**.
+Website cá nhân, chạy local cho một người (giao diện tiếng Anh): đọc sách như Kindle, Notebook có lịch ôn, IELTS Reading tương tác, luyện nói (phát âm, nhịp điệu, đọc to, shadowing). Các luồng chính dùng được **không cần AI**.
 
 Menu: **Today · Books · IELTS · Speaking · Notebook · Progress**. Trang `/status` liệt kê tính năng đã có và tính năng giai đoạn sau.
 
@@ -17,6 +17,8 @@ npm run dev                 # mở http://localhost:3000
 
 - Dữ liệu nằm trong `data/`: `data/app.db` (SQLite) và `data/uploads/` (sách, PDF đề, bản ghi âm). Sao lưu = chép thư mục `data/`.
 - Đề Reading mẫu và bài luyện nói mẫu được tự tạo khi khởi động; `npm run seed` thêm 2 sách mẫu. Chạy nhiều lần không tạo trùng. Mọi dữ liệu mẫu có nhãn **Dữ liệu mẫu**.
+- Word of the Day được chọn mỗi ngày từ sách bạn đang đọc và các đề IELTS đã duyệt; khi chưa có sách/đề thì dùng bộ từ chọn lọc.
+- Notebook là một cuốn sổ: mỗi ngày một trang, lật bằng nút hoặc phím ←/→, có mục lục.
 - Ghi âm cần quyền micro: dùng Chrome/Edge/Firefox mở `http://localhost:3000` và bấm **Cho phép** khi được hỏi.
 
 ## Lệnh

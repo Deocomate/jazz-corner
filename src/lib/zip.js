@@ -18,14 +18,14 @@ export function readZipIndex(buffer) {
       break;
     }
   }
-  if (eocd < 0) throw new ZipError('Không phải tệp ZIP/EPUB hợp lệ.');
+  if (eocd < 0) throw new ZipError('Not a valid ZIP/EPUB file.');
 
   const count = buffer.readUInt16LE(eocd + 10);
   let pos = buffer.readUInt32LE(eocd + 16);
   const entries = new Map();
   for (let i = 0; i < count; i++) {
     if (pos + 46 > buffer.length || buffer.readUInt32LE(pos) !== CENTRAL_SIGNATURE) {
-      throw new ZipError('Mục lục ZIP bị hỏng.');
+      throw new ZipError('The ZIP index is damaged.');
     }
     const method = buffer.readUInt16LE(pos + 10);
     const compressedSize = buffer.readUInt32LE(pos + 20);
@@ -45,10 +45,10 @@ export function extractEntry(buffer, entries, name) {
   const entry = entries.get(name);
   if (!entry) return null;
   const { offset, method, compressedSize } = entry;
-  if (buffer.readUInt32LE(offset) !== LOCAL_SIGNATURE) throw new ZipError(`Tệp ${name} trong ZIP bị hỏng.`);
+  if (buffer.readUInt32LE(offset) !== LOCAL_SIGNATURE) throw new ZipError(`The file ${name} inside the ZIP is damaged.`);
   const start = offset + 30 + buffer.readUInt16LE(offset + 26) + buffer.readUInt16LE(offset + 28);
   const data = buffer.subarray(start, start + compressedSize);
   if (method === 0) return Buffer.from(data);
   if (method === 8) return zlib.inflateRawSync(data);
-  throw new ZipError(`Kiểu nén ${method} chưa được hỗ trợ.`);
+  throw new ZipError(`Compression method ${method} is not supported.`);
 }

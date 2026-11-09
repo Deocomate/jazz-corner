@@ -6,13 +6,13 @@
       {{#if (eq group.type "headings")}}
         <label for="ans-{{q.id}}" class="font-medium" lang="en">{{q.prompt}}</label>
         <select id="ans-{{q.id}}" class="input mt-2" data-answer data-qid="{{q.id}}">
-          <option value="">— Chọn tiêu đề —</option>
+          <option value="">— Choose a heading —</option>
           {{#each group.options}}<option value="{{key}}" {{selected key ../q.value}}>{{key}}. {{text}}</option>{{/each}}
         </select>
       {{else if (eq group.type "completion")}}
         <label for="ans-{{q.id}}" class="block" lang="en">{{q.prompt}}</label>
         <input id="ans-{{q.id}}" class="input mt-2" value="{{q.value}}" autocomplete="off" spellcheck="false" data-answer data-qid="{{q.id}}" {{#if group.word_limit}}data-word-limit="{{group.word_limit}}"{{/if}}>
-        {{#if group.word_limit}}<p class="hint mt-1" data-word-count>Tối đa {{group.word_limit}} từ</p>{{/if}}
+        {{#if group.word_limit}}<p class="hint mt-1" data-word-count>Max {{group.word_limit}} words</p>{{/if}}
       {{else}}
         <fieldset>
           <legend class="mb-2" lang="en">{{q.prompt}}</legend>
@@ -35,9 +35,9 @@
       {{/if}}
       <div class="mt-3 flex flex-wrap items-center gap-2">
         <label class="inline-flex cursor-pointer items-center gap-2 text-xs text-muted">
-          <input type="checkbox" data-flag data-qid="{{q.id}}" {{#if q.flagged}}checked{{/if}} class="accent-brand-600"> Đánh dấu xem lại
+          <input type="checkbox" data-flag data-qid="{{q.id}}" {{#if q.flagged}}checked{{/if}} class="accent-brand-600"> Flag for review
         </label>
-        {{#if practice}}<button type="button" class="btn-ghost btn-sm ml-auto" data-check="{{q.id}}">Kiểm tra</button>{{/if}}
+        {{#if practice}}<button type="button" class="btn-ghost btn-sm ml-auto" data-check="{{q.id}}">Check</button>{{/if}}
       </div>
       <div class="mt-2 rounded-lg p-3 text-sm" data-feedback hidden></div>
     </div>

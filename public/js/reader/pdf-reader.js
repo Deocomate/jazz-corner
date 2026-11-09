@@ -88,7 +88,7 @@ setupReader((ctx) => {
     ctx.showNotice(
       hasText
         ? ''
-        : 'Trang này không có lớp văn bản (có thể là trang scan): vẫn đọc được nhưng chưa bôi chọn, highlight hay lưu được. Nhận dạng chữ (OCR) thuộc giai đoạn sau.',
+        : 'This page has no text layer (it is probably a scan): you can read it, but you cannot select, highlight or save text yet. OCR comes in a later phase.',
     );
     ctx.rendered();
   }
@@ -133,7 +133,7 @@ setupReader((ctx) => {
       render();
     },
     location: () => ({ page, zoom }),
-    label: () => (doc ? `Trang ${page}/${doc.numPages}` : ''),
+    label: () => (doc ? `Page ${page}/${doc.numPages}` : ''),
     progress: () => (doc ? page / doc.numPages : 0),
     sameUnit: (a, b) => Boolean(a && b && a.page === b.page),
     roots: () => (textDiv ? [textDiv] : []),

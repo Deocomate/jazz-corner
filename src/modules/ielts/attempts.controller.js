@@ -9,7 +9,7 @@ export async function start(req, res) {
     req.flash('error', result.errors._form);
     return res.redirect(`/ielts/tests/${req.params.id}/review`);
   }
-  if (result.data.resumed) req.flash('info', 'Bạn đang có lượt làm dở ở chế độ này — tiếp tục từ chỗ đã lưu.');
+  if (result.data.resumed) req.flash('info', 'You already have an attempt in progress in this mode — continuing where you left off.');
   res.redirect(`/ielts/attempts/${result.data.id}`);
 }
 
@@ -52,7 +52,7 @@ export async function submit(req, res) {
     answers = undefined;
   }
   await attempts.submit(req.params.id, answers);
-  req.flash('success', 'Đã nộp bài.');
+  req.flash('success', 'Submitted.');
   res.redirect(`/ielts/attempts/${req.params.id}/result`);
 }
 
@@ -63,7 +63,7 @@ export async function result(req, res) {
   const [structure, saved] = await Promise.all([getStructure(attempt.test_id), attempts.savedMistakeIds(attempt)]);
   const results = attempt.results.map((r) => ({ ...r, saved: saved.has(r.questionId) }));
   res.render('ielts/result', {
-    title: `Kết quả: ${attempt.test_title}`,
+    title: `Results: ${attempt.test_title}`,
     attempt,
     results,
     wrong: results.filter((r) => !r.isCorrect).length,
@@ -75,6 +75,6 @@ export async function result(req, res) {
 
 export async function saveMistake(req, res) {
   await attempts.saveMistake(req.params.id, req.params.questionId, req.body.reason);
-  req.flash('success', 'Đã lưu câu sai vào Notebook.');
+  req.flash('success', 'Mistake saved to your Notebook.');
   res.redirect(`/ielts/attempts/${req.params.id}/result#q-${req.params.questionId}`);
 }

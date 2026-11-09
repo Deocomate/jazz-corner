@@ -8,10 +8,10 @@ const errorBox = document.querySelector('[data-upload-error]');
 async function upload(file) {
   if (!file) return;
   errorBox.hidden = true;
-  status.textContent = `Đang tải lên “${file.name}”…`;
+  status.textContent = `Uploading “${file.name}”…`;
   try {
     const data = await window.uploadFile(input.dataset.uploadUrl, file, file.name);
-    status.textContent = 'Đã tải lên. Đang mở…';
+    status.textContent = 'Uploaded. Opening…';
     window.location.href = data.url;
   } catch (err) {
     status.textContent = '';

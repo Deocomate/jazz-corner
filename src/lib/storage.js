@@ -9,7 +9,7 @@ const KINDS = new Set(['books', 'covers', 'ielts', 'recordings']);
 const SAFE_NAME = /^[a-f0-9]{32}\.[a-z0-9]{1,5}$/;
 
 function dirFor(kind) {
-  if (!KINDS.has(kind)) throw new Error(`Loại tệp không hợp lệ: ${kind}`);
+  if (!KINDS.has(kind)) throw new Error(`Invalid file kind: ${kind}`);
   const dir = path.resolve(config.uploadDir, kind);
   fs.mkdirSync(dir, { recursive: true });
   return dir;

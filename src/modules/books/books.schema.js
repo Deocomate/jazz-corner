@@ -21,13 +21,13 @@ export const positionSchema = z.object({
 
 export const bookmarkSchema = z.object({
   location: locationSchema,
-  label: z.string({ error: 'Thiếu tên bookmark' }).trim().min(1, 'Thiếu tên bookmark').max(200),
+  label: z.string({ error: 'The bookmark needs a name' }).trim().min(1, 'The bookmark needs a name').max(200),
 });
 
 export const highlightSchema = z.object({
   location: locationSchema,
   label: z.preprocess(emptyToUndefined, z.string().trim().max(200).optional()),
-  text: z.string({ error: 'Chưa chọn đoạn văn' }).trim().min(1, 'Chưa chọn đoạn văn').max(5000),
+  text: z.string({ error: 'No text selected' }).trim().min(1, 'No text selected').max(5000),
   note: z.preprocess(emptyToUndefined, z.string().trim().max(5000).optional()),
 });
 

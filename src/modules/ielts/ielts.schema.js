@@ -16,22 +16,22 @@ export const TFNG_OPTIONS = [
 ];
 
 export const MODES = [
-  { value: 'practice', label: 'Luyện', hint: 'Không giới hạn giờ, kiểm tra từng câu và xem giải thích ngay.' },
-  { value: 'exam', label: 'Làm đề', hint: 'Có hẹn giờ, chỉ mở đáp án sau khi nộp.' },
+  { value: 'practice', label: 'Practice', hint: 'No time limit; check each question and see the explanation straight away.' },
+  { value: 'exam', label: 'Exam', hint: 'Timed; answers are shown only after you submit.' },
 ];
 
 const optionalText = (max) => z.preprocess(emptyToUndefined, z.string().trim().max(max).optional());
 
 export const testSchema = z.object({
-  title: z.string({ error: 'Vui lòng nhập tên đề' }).trim().min(1, 'Vui lòng nhập tên đề').max(200),
+  title: z.string({ error: 'Please enter a test title' }).trim().min(1, 'Please enter a test title').max(200),
   description: optionalText(2000),
-  time_limit_minutes: z.coerce.number({ error: 'Phải là số phút' }).int('Phải là số nguyên').min(1, 'Ít nhất 1 phút').max(240, 'Tối đa 240 phút'),
+  time_limit_minutes: z.coerce.number({ error: 'Enter a number of minutes' }).int('Use a whole number').min(1, 'At least 1 minute').max(240, 'At most 240 minutes'),
 });
 
 export const passageSchema = z.object({
-  title: z.string({ error: 'Vui lòng nhập tiêu đề bài đọc' }).trim().min(1, 'Vui lòng nhập tiêu đề bài đọc').max(300),
+  title: z.string({ error: 'Please enter a passage title' }).trim().min(1, 'Please enter a passage title').max(300),
   position: z.coerce.number().int().min(1).max(10).default(1),
-  body: z.string({ error: 'Vui lòng dán nội dung bài đọc' }).trim().min(20, 'Bài đọc quá ngắn').max(30000),
+  body: z.string({ error: 'Please paste the passage text' }).trim().min(20, 'The passage is too short').max(30000),
 });
 
 /** "A. text" / "i) text" mỗi dòng một lựa chọn -> [{ key, text }]. */
@@ -52,23 +52,23 @@ export const groupSchema = z
   .object({
     passage_id: z.preprocess(emptyToUndefined, z.coerce.number().int().positive().optional()),
     position: z.coerce.number().int().min(1).max(50).default(1),
-    type: z.enum(QUESTION_TYPES.map((t) => t.value), { error: 'Chọn dạng câu hỏi' }),
-    instructions: z.string({ error: 'Vui lòng nhập hướng dẫn' }).trim().min(1, 'Vui lòng nhập hướng dẫn').max(2000),
+    type: z.enum(QUESTION_TYPES.map((t) => t.value), { error: 'Choose a question type' }),
+    instructions: z.string({ error: 'Please enter the instructions' }).trim().min(1, 'Please enter the instructions').max(2000),
     options_text: optionalText(5000),
     word_limit: z.preprocess(emptyToUndefined, z.coerce.number().int().min(1).max(10).optional()),
   })
   .superRefine((g, ctx) => {
     if (g.type !== 'headings') return;
     const opts = parseOptionLines(g.options_text);
-    if (opts.length < 2) ctx.addIssue({ code: 'custom', path: ['options_text'], message: 'Cần ít nhất 2 tiêu đề, mỗi dòng một tiêu đề (VD: i. ...)' });
-    else if (opts.some((o) => !o.key)) ctx.addIssue({ code: 'custom', path: ['options_text'], message: 'Mỗi dòng phải bắt đầu bằng ký hiệu, VD: "iv. The cost of change"' });
+    if (opts.length < 2) ctx.addIssue({ code: 'custom', path: ['options_text'], message: 'Add at least 2 headings, one per line (e.g. i. ...)' });
+    else if (opts.some((o) => !o.key)) ctx.addIssue({ code: 'custom', path: ['options_text'], message: 'Each line must start with a label, e.g. "iv. The cost of change"' });
   });
 
 export const questionSchema = z.object({
-  number: z.coerce.number({ error: 'Số câu phải là số' }).int().min(1, 'Số câu từ 1').max(200),
-  prompt: z.string({ error: 'Vui lòng nhập câu hỏi' }).trim().min(1, 'Vui lòng nhập câu hỏi').max(2000),
+  number: z.coerce.number({ error: 'The question number must be a number' }).int().min(1, 'Numbers start at 1').max(200),
+  prompt: z.string({ error: 'Please enter the question' }).trim().min(1, 'Please enter the question').max(2000),
   options_text: optionalText(3000),
-  answer: z.string({ error: 'Vui lòng nhập đáp án' }).trim().min(1, 'Vui lòng nhập đáp án').max(300),
+  answer: z.string({ error: 'Please enter the answer' }).trim().min(1, 'Please enter the answer').max(300),
   accepted_text: optionalText(2000),
   explanation: optionalText(3000),
   evidence: optionalText(3000),

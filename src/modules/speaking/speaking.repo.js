@@ -30,6 +30,9 @@ export const updateSampleAudio = (id, i) =>
     i.audio_url, i.audio_kind, i.audio_voice, JSON.stringify(i.segments), id,
   ]);
 
+export const refreshSampleText = (id, i) =>
+  run('UPDATE speaking_items SET title = ?, notes = ?, source_label = ?, audio_voice = ? WHERE id = ?', [i.title, i.notes, i.source_label, i.audio_voice, id]);
+
 export const saveMarkup = (id, markup) =>
   run(`UPDATE speaking_items SET markup_json = ?, updated_at = datetime('now') WHERE id = ?`, [JSON.stringify(markup), id]);
 

@@ -19,7 +19,7 @@ test('healthz trả về ok', async () => {
 test('trang không tồn tại trả 404 thân thiện', async () => {
   const res = await agent.get('/khong-ton-tai');
   assert.equal(res.status, 404);
-  assert.match(res.text, /Không tìm thấy/);
+  assert.match(res.text, /Not found/);
 });
 
 test('POST thiếu CSRF bị chặn', async () => {

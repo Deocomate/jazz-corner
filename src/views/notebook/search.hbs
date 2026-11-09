@@ -1,0 +1,22 @@
+{{#> page-header title="Notebook" eyebrow="Search results" subtitle=(concat total " matching entries across your notebook")}}
+  <a href="/notebook" class="btn-secondary">Back to the notebook</a>
+{{/page-header}}
+
+<div class="mb-8">{{> notebook/filters}}</div>
+
+{{#if days.length}}
+  <div class="mx-auto max-w-3xl space-y-8">
+    {{#each days}}
+      <section class="nb-page" aria-label="{{formatWeekday date}}">
+        <header class="flex items-baseline justify-between gap-3">
+          <h2 class="nb-date">{{formatWeekday date}}</h2>
+          {{#if page}}<a href="/notebook?page={{page}}" class="nb-meta">Go to page {{page}} →</a>{{/if}}
+        </header>
+        <ol>{{#each items}}{{> notebook/entry}}{{/each}}</ol>
+      </section>
+    {{/each}}
+  </div>
+  {{> pagination pagination}}
+{{else}}
+  {{> empty-state title="Nothing matches" text="Try another keyword or clear the filters." actionHref="/notebook" actionLabel="Back to the notebook"}}
+{{/if}}

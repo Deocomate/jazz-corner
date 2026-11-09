@@ -50,7 +50,7 @@ function parseToc(zip, entries, manifest, opfDir, spinePaths) {
       .map((m) => ({ label: stripTags(m[1]), path: resolveHref(dir, m[2]) }));
     if (items.length) return items;
   }
-  return spinePaths.map((p, i) => ({ label: `Phần ${i + 1}`, path: p }));
+  return spinePaths.map((p, i) => ({ label: `Part ${i + 1}`, path: p }));
 }
 
 /**
@@ -60,11 +60,11 @@ function parseToc(zip, entries, manifest, opfDir, spinePaths) {
 export function parseEpub(zip) {
   const entries = readZipIndex(zip);
   const container = extractEntry(zip, entries, 'META-INF/container.xml');
-  if (!container) throw new ZipError('Thiếu META-INF/container.xml — tệp không phải EPUB chuẩn.');
+  if (!container) throw new ZipError('META-INF/container.xml is missing — this is not a standard EPUB file.');
   const rootTag = container.toString('utf8').match(/<rootfile\s[^>]*>/i)?.[0];
   const opfPath = rootTag && attr(rootTag, 'full-path');
   const opfBuf = opfPath && extractEntry(zip, entries, opfPath);
-  if (!opfBuf) throw new ZipError('Không tìm thấy tệp OPF mô tả sách.');
+  if (!opfBuf) throw new ZipError('The OPF file that describes the book was not found.');
 
   const opf = opfBuf.toString('utf8');
   const opfDir = path.posix.dirname(opfPath) === '.' ? '' : path.posix.dirname(opfPath);
@@ -79,7 +79,7 @@ export function parseEpub(zip) {
     .map((m) => byId.get(attr(m[0], 'idref')))
     .filter((m) => m && entries.has(m.path))
     .map((m) => m.path);
-  if (!spine.length) throw new ZipError('EPUB không có chương nào đọc được.');
+  if (!spine.length) throw new ZipError('The EPUB has no readable chapters.');
 
   const coverMeta = opf.match(/<meta\s[^>]*name\s*=\s*["']cover["'][^>]*>/i)?.[0];
   const coverItem =

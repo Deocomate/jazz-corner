@@ -53,7 +53,7 @@ root.addEventListener('click', (e) => {
     pendingStress[word.dataset.wordIndex] = on;
     const save = $('[data-save-markup]');
     save.disabled = false;
-    save.textContent = 'Lưu chỉnh sửa';
+    save.textContent = 'Save changes';
   }
 });
 $('[data-save-markup]')?.addEventListener('click', async (e) => {
@@ -61,10 +61,10 @@ $('[data-save-markup]')?.addEventListener('click', async (e) => {
   const existing = $$('.rw-edited').reduce((acc, w) => ({ ...acc, [w.dataset.wordIndex]: w.classList.contains('rw-stress') }), {});
   try {
     await window.api(`/api/speaking/items/${config.id}/markup`, { method: 'PUT', body: { stress: { ...existing, ...pendingStress } } });
-    btn.textContent = 'Đã lưu ✓';
+    btn.textContent = 'Saved ✓';
     btn.disabled = true;
   } catch (err) {
-    btn.textContent = `Lỗi: ${err.message}`;
+    btn.textContent = `Error: ${err.message}`;
   }
 });
 
@@ -84,7 +84,7 @@ root.addEventListener('click', (e) => {
   }
   if (e.target.closest('[data-target-all]')) {
     target = null;
-    targetLabel.textContent = 'toàn bộ đoạn (đọc liền)';
+    targetLabel.textContent = 'the whole passage';
     $$('.sentence').forEach((el) => el.classList.remove('is-playing'));
   }
   const compare = e.target.closest('[data-compare-model]');
@@ -107,25 +107,25 @@ root.addEventListener('click', async (e) => {
   player.stop();
   const run = (shadowRun = {});
   if (step === '1') {
-    setShadowStatus('Bước 1: nghe toàn bộ…');
+    setShadowStatus('Step 1: listening to the whole text…');
     await player.playAll(config.text, config.phrases);
-    if (shadowRun === run) setShadowStatus('Xong bước 1. Sang bước 2 để nhắc lại từng cụm.');
+    if (shadowRun === run) setShadowStatus('Step 1 done. Go to step 2 to repeat phrase by phrase.');
   }
   if (step === '2') {
     for (let i = 0; i < config.phrases.length && shadowRun === run; i++) {
-      setShadowStatus(`Bước 2: nghe cụm ${i + 1}/${config.phrases.length}…`);
+      setShadowStatus(`Step 2: listen to phrase ${i + 1}/${config.phrases.length}…`);
       const startedAt = Date.now();
       await player.playSegment(i, config.phrases[i]);
       if (shadowRun !== run) return;
       highlight(i);
-      setShadowStatus(`Nhắc lại cụm ${i + 1}: “${config.phrases[i]}”`);
+      setShadowStatus(`Repeat phrase ${i + 1}: “${config.phrases[i]}”`);
       await wait(Math.max(1200, (Date.now() - startedAt) * 1.4));
     }
-    if (shadowRun === run) setShadowStatus('Xong bước 2. Sang bước 3 để nói bám theo.');
+    if (shadowRun === run) setShadowStatus('Step 2 done. Go to step 3 to shadow the audio.');
     highlight(-1);
   }
   if (step === '3') {
-    setShadowStatus('Bước 3: đang ghi âm — nói bám theo audio…');
+    setShadowStatus('Step 3: recording — speak along with the audio…');
     const ok = await startRecording('shadowing');
     if (!ok) return setShadowStatus('');
     await player.playAll(config.text, config.phrases);
@@ -153,20 +153,20 @@ async function startRecording(mode = config.mode) {
     return false;
   }
   recordMode = mode;
-  recBtn.textContent = '■ Dừng';
+  recBtn.textContent = '■ Stop';
   recBtn.classList.add('record-on');
   recBtn.setAttribute('aria-pressed', 'true');
-  recStatus.textContent = 'Đang ghi âm…';
+  recStatus.textContent = 'Recording…';
   return true;
 }
 
 async function stopRecording() {
   const result = await recorder.stop();
-  recBtn.textContent = '● Ghi âm';
+  recBtn.textContent = '● Record';
   recBtn.classList.remove('record-on');
   recBtn.setAttribute('aria-pressed', 'false');
-  if (!result?.blob.size) return (recStatus.textContent = 'Bản ghi trống.');
-  recStatus.textContent = 'Đang lưu bản ghi…';
+  if (!result?.blob.size) return (recStatus.textContent = 'The recording is empty.');
+  recStatus.textContent = 'Saving the recording…';
   try {
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
     const res = await fetch(`/api/speaking/items/${config.id}/recordings`, {
@@ -181,11 +181,11 @@ async function stopRecording() {
       body: result.blob,
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || `Lỗi ${res.status}`);
-    recStatus.textContent = 'Đã lưu. Đang mở lại danh sách bản ghi…';
+    if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+    recStatus.textContent = 'Saved. Reloading your recordings…';
     window.location.assign(`/speaking/items/${config.id}?mode=${config.mode}&saved=${data.id}#rec-${data.id}`);
   } catch (err) {
-    recStatus.textContent = `Chưa lưu được bản ghi: ${err.message}`;
+    recStatus.textContent = `The recording was not saved: ${err.message}`;
   }
 }
 

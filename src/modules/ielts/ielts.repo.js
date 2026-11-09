@@ -84,4 +84,10 @@ export const updateQuestion = (testId, id, q) =>
     [q.number, q.prompt, q.options ? JSON.stringify(q.options) : null, q.answer, q.accepted?.length ? JSON.stringify(q.accepted) : null,
       q.explanation ?? null, q.evidence ?? null, id, testId],
   );
+/** Cập nhật lời giải thích của đề mẫu theo số câu (giữ nguyên câu hỏi và các lượt làm). */
+export const updateSampleQuestionText = (testId, number, q) =>
+  run('UPDATE ielts_questions SET prompt = ?, explanation = ?, evidence = ? WHERE test_id = ? AND number = ?', [
+    q.prompt, q.explanation ?? null, q.evidence ?? null, testId, number,
+  ]);
+
 export const deleteQuestion = (testId, id) => run('DELETE FROM ielts_questions WHERE id = ? AND test_id = ?', [id, testId]);

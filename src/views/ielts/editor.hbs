@@ -1,27 +1,27 @@
-{{#> page-header title=test.title eyebrow="Soạn đề · IELTS Reading" subtitle="Thêm bài đọc, nhóm câu hỏi và câu hỏi. Mỗi câu có đáp án, giải thích và đoạn bằng chứng."}}
-  <a href="/ielts/tests/{{test.id}}/settings" class="btn-ghost">Thông tin đề</a>
-  <a href="/ielts/tests/{{test.id}}/review" class="btn-primary">Xem trước &amp; duyệt</a>
+{{#> page-header title=test.title eyebrow="Test editor · IELTS Reading" subtitle="Add passages, question groups and questions. Each question has an answer, an explanation and evidence from the passage."}}
+  <a href="/ielts/tests/{{test.id}}/settings" class="btn-ghost">Test details</a>
+  <a href="/ielts/tests/{{test.id}}/review" class="btn-primary">Preview &amp; publish</a>
 {{/page-header}}
 
 <div class="mb-6 flex flex-wrap items-center gap-2 text-sm">
-  {{#if test.isDraft}}<span class="badge-yellow">Bản nháp</span>{{else}}<span class="badge-green">Đã duyệt</span><span class="text-muted">Sửa đề không làm thay đổi kết quả các lần làm trước.</span>{{/if}}
+  {{#if test.isDraft}}<span class="badge-yellow">Draft</span>{{else}}<span class="badge-green">Published</span><span class="text-muted">Editing does not change the results of earlier attempts.</span>{{/if}}
   {{> origin-tag origin=test.origin}}
-  <span class="text-muted">· {{questions.length}} câu · {{test.time_limit_minutes}} phút</span>
+  <span class="text-muted">· {{questions.length}} questions · {{test.time_limit_minutes}} minutes</span>
 </div>
 
 {{#if problems.length}}
   <div class="alert-info mb-6">
-    <p class="font-medium">Cần xử lý trước khi duyệt:</p>
+    <p class="font-medium">Fix these before publishing:</p>
     <ul class="mt-1 list-disc pl-5">{{#each problems}}<li>{{this}}</li>{{/each}}</ul>
   </div>
 {{/if}}
 
 <section class="card card-body mb-8" aria-labelledby="src-title">
-  <h2 id="src-title" class="section-title">Tài liệu nguồn (PDF)</h2>
-  <p class="mt-1 text-sm text-muted">Gắn PDF gốc để đọc đối chiếu hoặc làm thủ công. Đề tương tác vẫn được lưu riêng. Trích xuất tự động từ PDF: giai đoạn sau.</p>
+  <h2 id="src-title" class="section-title">Source document (PDF)</h2>
+  <p class="mt-1 text-sm text-muted">Attach the original PDF to read alongside or work on paper. The interactive test is stored separately. Automatic extraction from PDFs comes in a later phase.</p>
   <div class="mt-3 flex flex-wrap items-center gap-3">
-    {{#if test.source_pdf_name}}<a href="/ielts/tests/{{test.id}}/source.pdf" target="_blank" rel="noopener" class="btn-secondary btn-sm">Mở PDF: {{test.source_pdf_original}}</a>{{/if}}
-    <label class="btn-secondary btn-sm cursor-pointer">{{#if test.source_pdf_name}}Thay PDF{{else}}Gắn PDF nguồn{{/if}}
+    {{#if test.source_pdf_name}}<a href="/ielts/tests/{{test.id}}/source.pdf" target="_blank" rel="noopener" class="btn-secondary btn-sm">Open PDF: {{test.source_pdf_original}}</a>{{/if}}
+    <label class="btn-secondary btn-sm cursor-pointer">{{#if test.source_pdf_name}}Replace PDF{{else}}Attach source PDF{{/if}}
       <input type="file" accept="application/pdf,.pdf" class="sr-only" data-upload-input data-upload-url="/api/ielts/tests/{{test.id}}/source">
     </label>
     <span class="text-sm text-muted" data-upload-status role="status" aria-live="polite"></span>
@@ -32,30 +32,30 @@
 {{#each passages}}
   <section class="mb-10" aria-labelledby="p-{{id}}">
     <div class="mb-3 flex flex-wrap items-center gap-2">
-      <h2 id="p-{{id}}" class="section-title flex-1">Bài đọc {{position}}: {{title}}</h2>
-      <a href="/ielts/tests/{{../test.id}}/passages/{{id}}/edit" class="btn-ghost btn-sm">Sửa bài đọc</a>
-      {{> form/delete-button action=(concat "/ielts/tests/" ../test.id "/passages/" id "/delete") confirm="Xoá bài đọc này? Nhóm câu hỏi gắn với nó sẽ thành chưa gán bài đọc."}}
+      <h2 id="p-{{id}}" class="section-title flex-1">Passage {{position}}: {{title}}</h2>
+      <a href="/ielts/tests/{{../test.id}}/passages/{{id}}/edit" class="btn-ghost btn-sm">Edit passage</a>
+      {{> form/delete-button action=(concat "/ielts/tests/" ../test.id "/passages/" id "/delete") confirm="Delete this passage? Its question groups will become unassigned."}}
     </div>
     <details class="card card-body mb-4">
-      <summary class="cursor-pointer text-sm font-medium">Xem bài đọc ({{paragraphs.length}} đoạn)</summary>
+      <summary class="cursor-pointer text-sm font-medium">Show the passage ({{paragraphs.length}} paragraphs)</summary>
       <div class="mt-3 space-y-3 font-serif text-sm leading-relaxed">{{#each paragraphs}}<p><span class="mr-2 font-sans text-xs font-bold text-brand-700">{{label}}</span>{{text}}</p>{{/each}}</div>
     </details>
     {{#each groups}}{{> ielts/editor-group group=this testId=../../test.id}}{{/each}}
-    <a href="/ielts/tests/{{../test.id}}/groups/new?passage={{id}}" class="btn-secondary btn-sm">+ Thêm nhóm câu hỏi cho bài đọc này</a>
+    <a href="/ielts/tests/{{../test.id}}/groups/new?passage={{id}}" class="btn-secondary btn-sm">+ Add a question group to this passage</a>
   </section>
 {{else}}
-  {{> empty-state title="Chưa có bài đọc" text="Bắt đầu bằng việc dán nội dung bài đọc. Mỗi đoạn cách nhau một dòng trống — hệ thống tự gán nhãn A, B, C…" actionHref=(concat "/ielts/tests/" test.id "/passages/new") actionLabel="+ Thêm bài đọc"}}
+  {{> empty-state title="No passages yet" text="Start by pasting a passage. Separate paragraphs with a blank line — they are labelled A, B, C… automatically." actionHref=(concat "/ielts/tests/" test.id "/passages/new") actionLabel="+ Add a passage"}}
 {{/each}}
 
 {{#if unassignedGroups.length}}
   <section class="mb-10">
-    <h2 class="section-title mb-3">Nhóm chưa gán bài đọc</h2>
+    <h2 class="section-title mb-3">Groups without a passage</h2>
     {{#each unassignedGroups}}{{> ielts/editor-group group=this testId=../test.id}}{{/each}}
   </section>
 {{/if}}
 
 <div class="flex flex-wrap gap-2 border-t border-line pt-6">
-  {{#if passages.length}}<a href="/ielts/tests/{{test.id}}/passages/new" class="btn-secondary">+ Thêm bài đọc</a>{{/if}}
+  {{#if passages.length}}<a href="/ielts/tests/{{test.id}}/passages/new" class="btn-secondary">+ Add a passage</a>{{/if}}
   <span class="flex-1"></span>
-  {{> form/delete-button action=(concat "/ielts/tests/" test.id "/delete") confirm="Xoá đề này cùng mọi lượt làm bài? Không thể hoàn tác." label="Xoá đề" buttonClass="btn-ghost text-red-700"}}
+  {{> form/delete-button action=(concat "/ielts/tests/" test.id "/delete") confirm="Delete this test and all its attempts? This cannot be undone." label="Delete test" buttonClass="btn-ghost text-red-700"}}
 </div>

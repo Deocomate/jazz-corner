@@ -47,7 +47,7 @@ test('bài mẫu: có từ, câu, đoạn kèm audio tổng hợp và mốc th�
   const passage = await get("SELECT id FROM speaking_items WHERE sample_key = 'passage-slow-reading'");
   const page = await agent.get(`/speaking/items/${passage.id}?mode=shadowing`);
   assert.equal(page.status, 200);
-  assert.match(page.text, /Nói bám theo/);
+  assert.match(page.text, /Shadow it/);
   assert.match(page.text, /&quot;segments&quot;:\[\{&quot;text&quot;:&quot;Slow reading/);
   const word = await get("SELECT id FROM speaking_items WHERE sample_key = 'word-phenomenon'");
   const pron = await agent.get(`/speaking/items/${word.id}`);
@@ -61,11 +61,11 @@ test('tự nhập câu -> mở chế độ Rhythm; lưu chỉnh trọng âm', as
   const item = await get('SELECT kind, source_type FROM speaking_items WHERE id = ?', [id]);
   assert.deepEqual([item.kind, item.source_type], ['sentence', 'manual']);
   const page = await agent.get(`/speaking/items/${id}`);
-  assert.match(page.text, /Gợi ý tự động/);
+  assert.match(page.text, /Automatic suggestion/);
   const token = await csrfToken(agent, '/speaking');
   const save = await agent.put(`/api/speaking/items/${id}/markup`).set('x-csrf-token', token).send({ stress: { 0: true } });
   assert.equal(save.status, 200);
-  assert.match((await agent.get(`/speaking/items/${id}`)).text, /Đã chỉnh bởi bạn/);
+  assert.match((await agent.get(`/speaking/items/${id}`)).text, /Edited by you/);
   const empty = await postForm(agent, '/speaking/items', { text: '' }, { from: '/speaking' });
   assert.equal(empty.status, 422);
 });
@@ -85,7 +85,7 @@ test('chuyển đoạn từ Books sang Speaking giữ bản gốc và liên kế
   );
   const id = Number(res.headers.location.match(/items\/(\d+)/)[1]);
   const page = await agent.get(`/speaking/items/${id}`);
-  assert.match(page.text, /Mở bản gốc: The Art of Slow Reading/);
+  assert.match(page.text, /Open the original: The Art of Slow Reading/);
   assert.match(page.text, /In an age that rewards speed/);
   const bad = await postForm(agent, '/speaking/items', { text: 'x', source_type: 'book', source_url: 'https://evil.example' }, { from: '/speaking/new' });
   assert.equal(bad.status, 422);
@@ -100,7 +100,7 @@ test('từ Notebook mở thẳng sang Speaking (không tạo trùng)', async () 
   assert.equal(a.headers.location, b.headers.location);
   const page = await agent.get(a.headers.location);
   assert.match(page.text, /ˈmɪtɪɡeɪt/);
-  assert.match(page.text, /Nguồn: Notebook/);
+  assert.match(page.text, /Source: Notebook/);
 });
 
 test('lưu bản ghi, nghe lại sau khi tải lại, ghi chú + cần ôn, chặn tệp sai', async () => {
@@ -120,10 +120,10 @@ test('lưu bản ghi, nghe lại sau khi tải lại, ghi chú + cần ôn, ch�
   assert.match(file.headers['content-type'], /audio\/webm/);
   const page = await agent.get(`/speaking/items/${item.id}?mode=shadowing`);
   assert.match(page.text, new RegExp(`rec-${up.body.id}`));
-  const note = await postForm(agent, `/speaking/recordings/${up.body.id}`, { note: 'ngắt giữa cụm', needs_review: 'on' }, { from: '/speaking' });
+  const note = await postForm(agent, `/speaking/recordings/${up.body.id}`, { note: 'paused mid-phrase', needs_review: 'on' }, { from: '/speaking' });
   assert.equal(note.status, 302);
   const row = await get('SELECT note, needs_review, target_text FROM speaking_recordings WHERE id = ?', [up.body.id]);
-  assert.deepEqual([row.note, row.needs_review, row.target_text], ['ngắt giữa cụm', 1, 'not the green one.']);
+  assert.deepEqual([row.note, row.needs_review, row.target_text], ['paused mid-phrase', 1, 'not the green one.']);
   const bad = await agent
     .post(`/api/speaking/items/${item.id}/recordings`)
     .set('x-csrf-token', token)

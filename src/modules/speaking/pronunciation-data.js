@@ -2,38 +2,38 @@
 // Chỉ hiển thị IPA cho từ có trong danh sách này — không đoán IPA cho từ khác.
 // stress: vị trí âm tiết mang trọng âm chính (bắt đầu từ 0).
 export const PRONUNCIATION = {
-  phenomenon: [{ pos: 'noun', uk: '/fəˈnɒmɪnən/', us: '/fəˈnɑːmənɑːn/', syllables: ['phe', 'nom', 'e', 'non'], stress: 1, note: 'Anh: /ɒ/ ngắn; Mỹ: /ɑː/ dài và âm cuối /ɑːn/.' }],
+  phenomenon: [{ pos: 'noun', uk: '/fəˈnɒmɪnən/', us: '/fəˈnɑːmənɑːn/', syllables: ['phe', 'nom', 'e', 'non'], stress: 1, note: 'British: short /ɒ/; American: long /ɑː/ and a final /ɑːn/.' }],
   record: [
-    { pos: 'noun', uk: '/ˈrekɔːd/', us: '/ˈrekərd/', syllables: ['rec', 'ord'], stress: 0, note: 'Danh từ: nhấn âm đầu — a REcord.' },
-    { pos: 'verb', uk: '/rɪˈkɔːd/', us: '/rɪˈkɔːrd/', syllables: ['re', 'cord'], stress: 1, note: 'Động từ: nhấn âm sau — to reCORD.' },
+    { pos: 'noun', uk: '/ˈrekɔːd/', us: '/ˈrekərd/', syllables: ['rec', 'ord'], stress: 0, note: 'Noun: stress on the first syllable — a REcord.' },
+    { pos: 'verb', uk: '/rɪˈkɔːd/', us: '/rɪˈkɔːrd/', syllables: ['re', 'cord'], stress: 1, note: 'Verb: stress on the second syllable — to reCORD.' },
   ],
   present: [
-    { pos: 'noun/adj', uk: '/ˈpreznt/', us: '/ˈpreznt/', syllables: ['pres', 'ent'], stress: 0, note: 'Danh/tính từ: PREsent.' },
-    { pos: 'verb', uk: '/prɪˈzent/', us: '/prɪˈzent/', syllables: ['pre', 'sent'], stress: 1, note: 'Động từ: preSENT.' },
+    { pos: 'noun/adj', uk: '/ˈpreznt/', us: '/ˈpreznt/', syllables: ['pres', 'ent'], stress: 0, note: 'Noun/adjective: PREsent.' },
+    { pos: 'verb', uk: '/prɪˈzent/', us: '/prɪˈzent/', syllables: ['pre', 'sent'], stress: 1, note: 'Verb: preSENT.' },
   ],
-  mitigate: [{ pos: 'verb', uk: '/ˈmɪtɪɡeɪt/', us: '/ˈmɪtɪɡeɪt/', syllables: ['mit', 'i', 'gate'], stress: 0, note: 'Mỹ thường đọc /t/ giữa thành âm vỗ nhẹ: /ˈmɪɾɪɡeɪt/.' }],
+  mitigate: [{ pos: 'verb', uk: '/ˈmɪtɪɡeɪt/', us: '/ˈmɪtɪɡeɪt/', syllables: ['mit', 'i', 'gate'], stress: 0, note: 'American English often flaps the middle /t/: /ˈmɪɾɪɡeɪt/.' }],
   ubiquitous: [{ pos: 'adjective', uk: '/juːˈbɪkwɪtəs/', us: '/juːˈbɪkwətəs/', syllables: ['u', 'biq', 'ui', 'tous'], stress: 1, note: '' }],
-  exacerbate: [{ pos: 'verb', uk: '/ɪɡˈzæsəbeɪt/', us: '/ɪɡˈzæsərbeɪt/', syllables: ['ex', 'ac', 'er', 'bate'], stress: 1, note: 'Mỹ phát âm /r/ trong âm tiết thứ ba.' }],
-  nuance: [{ pos: 'noun', uk: '/ˈnjuːɑːns/', us: '/ˈnuːɑːns/', syllables: ['nu', 'ance'], stress: 0, note: 'Anh có /j/ sau n (nyoo); Mỹ thường không.' }],
+  exacerbate: [{ pos: 'verb', uk: '/ɪɡˈzæsəbeɪt/', us: '/ɪɡˈzæsərbeɪt/', syllables: ['ex', 'ac', 'er', 'bate'], stress: 1, note: 'American English pronounces the /r/ in the third syllable.' }],
+  nuance: [{ pos: 'noun', uk: '/ˈnjuːɑːns/', us: '/ˈnuːɑːns/', syllables: ['nu', 'ance'], stress: 0, note: 'British English has /j/ after n (nyoo); American usually does not.' }],
   ambiguous: [{ pos: 'adjective', uk: '/æmˈbɪɡjuəs/', us: '/æmˈbɪɡjuəs/', syllables: ['am', 'big', 'u', 'ous'], stress: 1, note: '' }],
-  scrutiny: [{ pos: 'noun', uk: '/ˈskruːtəni/', us: '/ˈskruːtni/', syllables: ['scru', 'ti', 'ny'], stress: 0, note: 'Mỹ hay nuốt âm giữa: SCROOT-ny.' }],
+  scrutiny: [{ pos: 'noun', uk: '/ˈskruːtəni/', us: '/ˈskruːtni/', syllables: ['scru', 'ti', 'ny'], stress: 0, note: 'American English often drops the middle vowel: SCROOT-ny.' }],
   resilience: [{ pos: 'noun', uk: '/rɪˈzɪliəns/', us: '/rɪˈzɪliəns/', syllables: ['re', 'sil', 'i', 'ence'], stress: 1, note: '' }],
   inevitable: [{ pos: 'adjective', uk: '/ɪnˈevɪtəbl/', us: '/ɪnˈevɪtəbl/', syllables: ['in', 'ev', 'i', 'ta', 'ble'], stress: 1, note: '' }],
   hypothesis: [{ pos: 'noun', uk: '/haɪˈpɒθəsɪs/', us: '/haɪˈpɑːθəsɪs/', syllables: ['hy', 'poth', 'e', 'sis'], stress: 1, note: '' }],
-  ship: [{ pos: 'noun', uk: '/ʃɪp/', us: '/ʃɪp/', syllables: ['ship'], stress: 0, note: '/ɪ/ ngắn, lưỡi thả lỏng.' }],
-  sheep: [{ pos: 'noun', uk: '/ʃiːp/', us: '/ʃiːp/', syllables: ['sheep'], stress: 0, note: '/iː/ dài, môi căng sang hai bên.' }],
+  ship: [{ pos: 'noun', uk: '/ʃɪp/', us: '/ʃɪp/', syllables: ['ship'], stress: 0, note: 'Short, relaxed /ɪ/.' }],
+  sheep: [{ pos: 'noun', uk: '/ʃiːp/', us: '/ʃiːp/', syllables: ['sheep'], stress: 0, note: 'Long /iː/ with lips spread.' }],
 };
 
 /** Cặp tối thiểu: hai từ khác nhau đúng một âm. */
 export const MINIMAL_PAIRS = [
-  { a: 'ship', b: 'sheep', sound: '/ɪ/ – /iː/', tip: '/ɪ/ ngắn và thả lỏng; /iː/ dài, môi căng.' },
-  { a: 'full', b: 'fool', sound: '/ʊ/ – /uː/', tip: '/ʊ/ ngắn; /uː/ dài, môi tròn hơn.' },
-  { a: 'bad', b: 'bed', sound: '/æ/ – /e/', tip: '/æ/ mở miệng rộng hơn, hàm hạ thấp.' },
-  { a: 'cut', b: 'cart', sound: '/ʌ/ – /ɑː/', tip: '/ɑː/ dài và sâu hơn (giọng Anh).' },
-  { a: 'think', b: 'sink', sound: '/θ/ – /s/', tip: '/θ/: đặt đầu lưỡi giữa hai hàm răng.' },
-  { a: 'light', b: 'right', sound: '/l/ – /r/', tip: '/r/: lưỡi không chạm vòm miệng.' },
-  { a: 'very', b: 'berry', sound: '/v/ – /b/', tip: '/v/: răng trên chạm môi dưới.' },
-  { a: 'rice', b: 'rise', sound: '/s/ – /z/', tip: '/z/ có rung dây thanh; nguyên âm trước /z/ dài hơn.' },
+  { a: 'ship', b: 'sheep', sound: '/ɪ/ – /iː/', tip: '/ɪ/ is short and relaxed; /iː/ is long with spread lips.' },
+  { a: 'full', b: 'fool', sound: '/ʊ/ – /uː/', tip: '/ʊ/ is short; /uː/ is long with rounder lips.' },
+  { a: 'bad', b: 'bed', sound: '/æ/ – /e/', tip: '/æ/ opens the mouth wider, with the jaw lower.' },
+  { a: 'cut', b: 'cart', sound: '/ʌ/ – /ɑː/', tip: '/ɑː/ is longer and deeper (British accent).' },
+  { a: 'think', b: 'sink', sound: '/θ/ – /s/', tip: '/θ/: put the tip of your tongue between your teeth.' },
+  { a: 'light', b: 'right', sound: '/l/ – /r/', tip: '/r/: the tongue does not touch the roof of the mouth.' },
+  { a: 'very', b: 'berry', sound: '/v/ – /b/', tip: '/v/: top teeth touch the lower lip.' },
+  { a: 'rice', b: 'rise', sound: '/s/ – /z/', tip: '/z/ is voiced; the vowel before /z/ is longer.' },
 ];
 
 const NOUN_CUES = new Set(['a', 'an', 'the', 'this', 'that', 'my', 'your', 'his', 'her', 'our', 'their', 'its', 'new', 'world', 'criminal', 'track']);

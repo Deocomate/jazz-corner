@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { emptyToUndefined } from '#lib/validate.js';
 
 export const KIND_OPTIONS = [
-  { value: 'word', label: 'Từ / cụm từ' },
-  { value: 'sentence', label: 'Câu' },
-  { value: 'passage', label: 'Đoạn' },
+  { value: 'word', label: 'Word / phrase' },
+  { value: 'sentence', label: 'Sentence' },
+  { value: 'passage', label: 'Passage' },
 ];
 export const MODES = [
   { value: 'pronunciation', label: 'Pronunciation' },
@@ -15,7 +15,7 @@ export const MODES = [
 export const modesFor = (kind) => (kind === 'word' ? MODES.filter((m) => m.value === 'pronunciation' || m.value === 'read_aloud') : MODES.filter((m) => m.value !== 'pronunciation'));
 export const defaultMode = (kind) => (kind === 'word' ? 'pronunciation' : 'rhythm');
 
-export const SOURCE_LABELS = { sample: 'Bài mẫu', manual: 'Tự nhập', notebook: 'Notebook', book: 'Books', ielts: 'IELTS', ai: 'AI tạo' };
+export const SOURCE_LABELS = { sample: 'Sample', manual: 'Typed by me', notebook: 'Notebook', book: 'Books', ielts: 'IELTS', ai: 'AI-generated' };
 
 /** Đoán loại bài từ nội dung: ≤ 3 từ = từ/cụm; 1 câu = câu; còn lại = đoạn. */
 export function guessKind(text) {
@@ -29,13 +29,13 @@ export function guessKind(text) {
 const optionalText = (max) => z.preprocess(emptyToUndefined, z.string().trim().max(max).optional());
 
 export const itemSchema = z.object({
-  text: z.string({ error: 'Vui lòng nhập nội dung để luyện' }).trim().min(1, 'Vui lòng nhập nội dung để luyện').max(3000, 'Nội dung quá dài (tối đa 3000 ký tự) — hãy rút ngắn'),
+  text: z.string({ error: 'Please enter something to practise' }).trim().min(1, 'Please enter something to practise').max(3000, 'The text is too long (3,000 characters max) — please shorten it'),
   kind: z.preprocess(emptyToUndefined, z.enum(KIND_OPTIONS.map((k) => k.value)).optional()),
   title: optionalText(200),
   original_text: optionalText(5000),
   source_type: z.enum(['manual', 'notebook', 'book', 'ielts']).default('manual'),
   source_label: optionalText(300),
-  source_url: z.preprocess(emptyToUndefined, z.string().trim().max(1000).regex(/^\/[^/]/, 'Liên kết nguồn không hợp lệ').optional()),
+  source_url: z.preprocess(emptyToUndefined, z.string().trim().max(1000).regex(/^\/[^/]/, 'Invalid source link').optional()),
 });
 
 export const markupSchema = z.object({

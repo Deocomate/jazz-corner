@@ -26,7 +26,7 @@ router.post('/items/:id/recordings', rawUpload, async (req, res) => {
 
 router.put('/items/:id/markup', async (req, res) => {
   const result = await service.saveMarkup(req.params.id, req.body);
-  if (!result.ok) return res.status(422).json({ error: 'Dữ liệu chỉnh sửa không hợp lệ.' });
+  if (!result.ok) return res.status(422).json({ error: 'Invalid changes.' });
   res.json({ ok: true });
 });
 

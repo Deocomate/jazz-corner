@@ -1,104 +1,81 @@
-{{#> page-header title="Notebook" eyebrow="Sổ tay của tôi" subtitle="Ghi lại mọi điều bạn học được — từ mới, mẫu câu, ý hay trong sách, lỗi IELTS — theo từng ngày như một cuốn sổ tay."}}
-  <a href="/notebook/review" class="btn-primary">Ôn tập{{#if dueCount}} · {{dueCount}} mục đến hạn{{/if}}</a>
-{{/page-header}}
-
-{{!-- Ghi nhanh: trang hôm nay của cuốn sổ --}}
-<form method="post" action="/notebook/quick" class="nb-page mb-8" aria-labelledby="quick-title">
-  {{> form/csrf}}
-  <p id="quick-title" class="nb-date">Hôm nay bạn học được gì?</p>
-  <label for="quick-text" class="sr-only">Ghi chép</label>
-  <textarea id="quick-text" name="text" rows="3" required maxlength="5000" lang="en"
-    class="block w-full resize-y border-0 bg-transparent p-0 font-serif text-[17px] leading-8 text-ink placeholder:text-slate-400 focus:ring-0 focus:outline-none"
-    placeholder="Dòng đầu là tiêu đề. VD: “Much as I sympathise with…” — cách nhượng bộ trước khi phản biện"></textarea>
-  <div class="flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
-    <label class="nb-meta flex items-center gap-2">Loại
-      <select name="kind" class="rounded-md border border-line bg-white px-2 py-1 text-sm text-ink">
-        {{#each quickKinds}}<option value="{{value}}">{{label}}</option>{{/each}}
-      </select>
-    </label>
-    <label class="nb-meta flex min-w-40 flex-1 items-center gap-2">Nhãn
-      <input name="tags" list="nb-quick-tags" class="min-w-0 flex-1 rounded-md border border-line bg-white px-2 py-1 text-sm text-ink" placeholder="Academic Writing, Speaking…">
-    </label>
-    <datalist id="nb-quick-tags"><option value="Academic Writing"></option><option value="Speaking"></option><option value="Văn chương"></option>{{#each tagOptions}}<option value="{{value}}"></option>{{/each}}</datalist>
-    <label class="nb-meta flex items-center gap-2"><input type="checkbox" name="review" class="accent-brand-600"> Đưa vào hàng ôn</label>
-    <button type="submit" class="btn-primary btn-sm ml-auto">Ghi vào sổ</button>
+{{!-- The notebook: one page per day, turned like a real book. Behaviour: /js/notebook-pages.js --}}
+<div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="eyebrow mb-1">My notebook</p>
+    <h1 class="page-title">Notebook</h1>
   </div>
-  <p class="nb-meta">Từ vựng, mẫu câu, idiom luôn vào hàng ôn; “Ghi chép” chỉ vào khi bạn tích chọn. <a href="/notebook/new">Mở form đầy đủ</a></p>
-</form>
-
-<details class="card mb-8" {{#if hasFilters}}open{{/if}}>
-  <summary class="cursor-pointer px-5 py-3 text-sm font-medium">Tìm &amp; lọc trong sổ{{#if hasFilters}} · đang lọc{{/if}}</summary>
-  <form method="get" action="/notebook" class="grid gap-3 border-t border-line p-5 sm:grid-cols-2 lg:grid-cols-5" role="search">
-    <div class="field lg:col-span-2">
-      <label for="f-q" class="label">Tìm kiếm</label>
-      <input id="f-q" name="q" value="{{filters.q}}" class="input" placeholder="Từ, cụm, ghi chú, trích đoạn…">
-    </div>
-    <div class="field">
-      <label for="f-kind" class="label">Loại</label>
-      <select id="f-kind" name="kind" class="input" data-autosubmit>
-        <option value="">Tất cả</option>
-        {{#each kindOptions}}<option value="{{value}}" {{selected value ../filters.kind}}>{{label}}</option>{{/each}}
-      </select>
-    </div>
-    <div class="field">
-      <label for="f-source" class="label">Nguồn</label>
-      <select id="f-source" name="source" class="input" data-autosubmit>
-        <option value="">Tất cả</option>
-        {{#each sourceOptions}}<option value="{{value}}" {{selected value ../filters.source}}>{{label}}</option>{{/each}}
-      </select>
-    </div>
-    <div class="field">
-      <label for="f-tag" class="label">Nhãn</label>
-      <select id="f-tag" name="tag" class="input" data-autosubmit>
-        <option value="">Tất cả</option>
-        {{#each tagOptions}}<option value="{{value}}" {{selected value ../filters.tag}}>{{label}}</option>{{/each}}
-      </select>
-    </div>
-    <div class="flex items-center gap-2 sm:col-span-2 lg:col-span-5">
-      <button type="submit" class="btn-primary btn-sm">Lọc</button>
-      {{#if hasFilters}}<a href="/notebook" class="btn-ghost btn-sm">Xoá bộ lọc</a>{{/if}}
-      <span class="ml-auto text-xs text-muted">{{formatNumber total}} mục</span>
-    </div>
-  </form>
-</details>
-
-{{#if days.length}}
-  <div class="space-y-8">
-    {{#each days}}
-      <section class="nb-page" aria-label="Trang {{formatWeekday date}}">
-        <h2 class="nb-date">{{formatWeekday date}} <span class="font-sans text-xs font-normal text-muted">· {{items.length}} ghi chép</span></h2>
-        <ol>
-          {{#each items}}
-            <li id="item-{{id}}" class="nb-entry scroll-mt-24">
-              <span class="nb-dot {{kindInfo.dot}}" aria-hidden="true"></span>
-              <p class="nb-kind text-muted">{{kindInfo.label}}{{#each tagList}} · {{this}}{{/each}}</p>
-              <h3><a href="/notebook/{{id}}" class="hover:text-brand-700" lang="en">{{content}}</a></h3>
-              {{#if ielts}}
-                <p class="text-sm">Bạn chọn <strong>{{default ielts.myAnswer "(bỏ trống)"}}</strong> · đáp án <strong>{{ielts.correctAnswer}}</strong>{{#if note}} — <span class="text-muted">{{note}}</span>{{/if}}</p>
-              {{else}}
-                {{#if meaning}}<p class="text-[15px]">{{meaning}}</p>{{/if}}
-                {{#if note}}<p class="line-clamp-4 text-[15px] whitespace-pre-line">{{note}}</p>{{/if}}
-                {{#if example}}<p class="text-[15px]" lang="en">→ {{example}}</p>{{/if}}
-              {{/if}}
-              {{#if excerpt}}<p class="line-clamp-2 font-serif text-[15px] text-muted italic" lang="en">“{{excerpt}}”</p>{{/if}}
-              <p class="nb-meta">
-                {{#if source_url}}<a href="{{source_url}}">{{default source_label "Mở nguồn"}}</a>{{else}}{{default source_label "Tự ghi"}}{{/if}}
-                · {{#if due_date}}{{#if isDue}}<span class="font-semibold text-amber-800">đến hạn ôn</span>{{else}}ôn tiếp {{formatDay due_date}}{{/if}}{{else}}không ôn{{/if}}
-              </p>
-            </li>
-          {{/each}}
-        </ol>
-      </section>
-    {{/each}}
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button" class="btn-secondary" data-open-contents aria-haspopup="dialog">Contents</button>
+    <a href="/notebook/review" class="btn-primary">Review{{#if dueCount}} · {{dueCount}} due{{/if}}</a>
   </div>
-  {{> pagination pagination}}
-{{else}}
-  {{#if hasFilters}}
-    {{> empty-state title="Không có mục nào khớp bộ lọc" text="Thử từ khoá khác hoặc xoá bộ lọc." actionHref="/notebook" actionLabel="Xoá bộ lọc"}}
-  {{else}}
-    <div class="nb-page text-muted">
-      <p class="nb-date">Cuốn sổ còn trống</p>
-      <p>Viết điều đầu tiên bạn học hôm nay vào ô phía trên, hoặc bôi chọn một đoạn trong sách rồi chọn <strong>Lưu vào Notebook</strong>.</p>
+</div>
+
+<div class="nb-book mx-auto max-w-3xl" data-notebook data-prev="{{#if prev}}/notebook?page={{prev}}{{/if}}" data-next="{{#if next}}/notebook?page={{next}}{{/if}}">
+  <article class="nb-page nb-sheet" aria-labelledby="page-title">
+    <header class="flex items-baseline justify-between gap-3">
+      <h2 id="page-title" class="nb-date">{{formatWeekday page.date}}</h2>
+      <span class="nb-meta">{{#if page.isToday}}Today · {{/if}}{{items.length}} {{#if (eq items.length 1)}}entry{{else}}entries{{/if}}</span>
+    </header>
+
+    {{#if items.length}}
+      <ol>{{#each items}}{{> notebook/entry}}{{/each}}</ol>
+    {{else}}
+      <p class="text-muted">{{#if page.isToday}}Nothing written today yet.{{else}}This page is empty.{{/if}}</p>
+    {{/if}}
+
+    {{#if page.isToday}}
+      <form method="post" action="/notebook/quick" class="nb-entry pt-8" aria-labelledby="quick-title">
+        {{> form/csrf}}
+        <p id="quick-title" class="nb-kind text-brand-700">What did you learn today?</p>
+        <label for="quick-text" class="sr-only">New entry</label>
+        <textarea id="quick-text" name="text" rows="3" required maxlength="5000"
+          class="block w-full resize-y border-0 bg-transparent p-0 font-serif text-[17px] leading-8 text-ink placeholder:text-slate-400 focus:ring-0 focus:outline-none"
+          placeholder="The first line becomes the title. E.g. “Much as I sympathise with…” — a way to concede before disagreeing"></textarea>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <label class="nb-meta flex items-center gap-2">Type
+            <select name="kind" class="rounded-md border border-line bg-white px-2 py-1 text-sm text-ink">
+              {{#each quickKinds}}<option value="{{value}}">{{label}}</option>{{/each}}
+            </select>
+          </label>
+          <label class="nb-meta flex min-w-40 flex-1 items-center gap-2">Tags
+            <input name="tags" list="nb-quick-tags" class="min-w-0 flex-1 rounded-md border border-line bg-white px-2 py-1 text-sm text-ink" placeholder="Academic Writing, Speaking…">
+          </label>
+          <datalist id="nb-quick-tags"><option value="Academic Writing"></option><option value="Speaking"></option><option value="Literature"></option>{{#each tagOptions}}<option value="{{value}}"></option>{{/each}}</datalist>
+          <label class="nb-meta flex items-center gap-2"><input type="checkbox" name="review" class="accent-brand-600"> Add to review</label>
+          <button type="submit" class="btn-primary btn-sm ml-auto">Write it down</button>
+        </div>
+        <p class="nb-meta">Words, patterns and idioms always go into review; free notes only when you tick the box. <a href="/notebook/new">Full form</a></p>
+      </form>
+    {{else}}
+      <p class="nb-meta pt-8"><a href="/notebook">Go to today’s page to write →</a></p>
+    {{/if}}
+
+    <footer class="nb-meta pt-8 text-center">— {{page.number}} —</footer>
+  </article>
+
+  <nav class="mt-4 flex items-center justify-between gap-3" aria-label="Turn pages">
+    {{#if prev}}<a href="/notebook?page={{prev}}" class="btn-secondary" rel="prev">‹ Previous page</a>{{else}}<span class="btn-secondary pointer-events-none opacity-40" aria-hidden="true">‹ Previous page</span>{{/if}}
+    <span class="text-sm text-muted">Page {{page.number}} of {{lastPage}} <span class="hidden sm:inline">· use <span class="kbd">←</span> <span class="kbd">→</span></span></span>
+    {{#if next}}<a href="/notebook?page={{next}}" class="btn-secondary" rel="next">Next page ›</a>{{else}}<span class="btn-secondary pointer-events-none opacity-40" aria-hidden="true">Next page ›</span>{{/if}}
+  </nav>
+</div>
+
+<div class="mx-auto mt-8 max-w-3xl">{{> notebook/filters}}</div>
+
+<dialog class="modal" data-contents aria-labelledby="contents-title">
+  <div class="p-6">
+    <div class="mb-4 flex items-center justify-between">
+      <h2 id="contents-title" class="section-title">Contents</h2>
+      <button type="button" class="btn-ghost btn-sm" data-dialog-cancel aria-label="Close">✕</button>
     </div>
-  {{/if}}
-{{/if}}
+    <ol class="max-h-[60vh] divide-y divide-line overflow-y-auto">
+      {{#each pages}}
+        <li><a href="/notebook?page={{number}}" class="flex items-center gap-3 px-2 py-2.5 hover:bg-brand-50 {{#if (eq number ../page.number)}}font-semibold text-brand-700{{/if}}"{{#if (eq number ../page.number)}} aria-current="page"{{/if}}>
+          <span class="w-8 text-right text-xs text-muted">{{number}}</span>
+          <span class="flex-1">{{formatWeekday date}}{{#if isToday}} · Today{{/if}}</span>
+          <span class="text-xs text-muted">{{count}}</span>
+        </a></li>
+      {{/each}}
+    </ol>
+  </div>
+</dialog>

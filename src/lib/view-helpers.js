@@ -3,7 +3,7 @@ import { config } from '#config';
 
 const { locale, timezone } = config;
 const DAY = { day: '2-digit', month: '2-digit', year: 'numeric' };
-const WEEKDAY = { weekday: 'long', ...DAY };
+const WEEKDAY = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
 const dateTimeFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short', timeZone: timezone });
 // Thời điểm (datetime) hiển thị theo múi giờ app; ngày thuần "YYYY-MM-DD" giữ nguyên ngày (đọc như UTC).
 const dayFormatters = {

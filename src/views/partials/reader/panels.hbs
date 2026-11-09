@@ -1,39 +1,39 @@
-{{!-- Ngăn bên: mục lục, bookmark, highlight. Dùng <dialog> để có sẵn focus trap và phím Esc. --}}
+{{!-- Side panels: contents, bookmarks, highlights. <dialog> gives focus trapping and Esc for free. --}}
 <dialog class="side-panel" data-panel="toc" aria-labelledby="toc-title">
   <div class="flex items-center justify-between border-b border-line px-5 py-3">
-    <h2 id="toc-title" class="section-title">Mục lục</h2>
-    <button type="button" class="btn-ghost btn-sm" data-panel-close aria-label="Đóng">✕</button>
+    <h2 id="toc-title" class="section-title">Contents</h2>
+    <button type="button" class="btn-ghost btn-sm" data-panel-close aria-label="Close">✕</button>
   </div>
-  <nav class="overflow-y-auto p-3" aria-label="Mục lục sách">
+  <nav class="overflow-y-auto p-3" aria-label="Table of contents">
     <ol class="space-y-0.5" data-toc-list></ol>
-    <p class="px-2 py-6 text-sm text-muted" data-toc-empty hidden>Tệp này không có mục lục.</p>
+    <p class="px-2 py-6 text-sm text-muted" data-toc-empty hidden>This file has no table of contents.</p>
   </nav>
 </dialog>
 
 <dialog class="side-panel" data-panel="marks" aria-labelledby="marks-title">
   <div class="flex items-center justify-between border-b border-line px-5 py-3">
-    <h2 id="marks-title" class="section-title">Đánh dấu</h2>
-    <button type="button" class="btn-ghost btn-sm" data-panel-close aria-label="Đóng">✕</button>
+    <h2 id="marks-title" class="section-title">Marks</h2>
+    <button type="button" class="btn-ghost btn-sm" data-panel-close aria-label="Close">✕</button>
   </div>
   <div class="overflow-y-auto p-5">
-    <h3 class="eyebrow mb-2">Bookmark</h3>
+    <h3 class="eyebrow mb-2">Bookmarks</h3>
     <ul class="mb-6 space-y-1" data-bookmark-list></ul>
-    <h3 class="eyebrow mb-2">Highlight &amp; ghi chú</h3>
+    <h3 class="eyebrow mb-2">Highlights &amp; notes</h3>
     <ul class="space-y-3" data-highlight-list></ul>
   </div>
 </dialog>
 
 <dialog class="modal" data-note-dialog aria-labelledby="note-title">
   <form method="dialog" class="space-y-4 p-6" data-note-form>
-    <h2 id="note-title" class="section-title">Ghi chú cho đoạn đã chọn</h2>
+    <h2 id="note-title" class="section-title">Note on the selected text</h2>
     <blockquote class="max-h-32 overflow-y-auto rounded-lg bg-paper p-3 font-serif text-sm italic" data-note-quote></blockquote>
     <div class="field">
-      <label for="note-text" class="label">Ghi chú của bạn</label>
+      <label for="note-text" class="label">Your note</label>
       <textarea id="note-text" class="input" rows="4" data-note-text></textarea>
     </div>
     <div class="flex justify-end gap-2">
-      <button type="button" class="btn-ghost" data-dialog-cancel>Huỷ</button>
-      <button type="submit" class="btn-primary">Lưu ghi chú</button>
+      <button type="button" class="btn-ghost" data-dialog-cancel>Cancel</button>
+      <button type="submit" class="btn-primary">Save note</button>
     </div>
   </form>
 </dialog>

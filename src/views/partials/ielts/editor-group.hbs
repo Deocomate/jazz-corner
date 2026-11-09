@@ -1,11 +1,11 @@
-{{!-- Một nhóm câu hỏi trong màn hình soạn đề. Tham số: group, testId --}}
+{{!-- One question group in the test editor. Params: group, testId --}}
 <div id="group-{{group.id}}" class="card mb-4">
   <div class="flex flex-wrap items-center gap-2 border-b border-line px-5 py-3">
     <span class="badge-yellow">{{group.typeLabel}}</span>
-    {{#if group.word_limit}}<span class="chip">Tối đa {{group.word_limit}} từ</span>{{/if}}
+    {{#if group.word_limit}}<span class="chip">Max {{group.word_limit}} words</span>{{/if}}
     <span class="flex-1"></span>
-    <a href="/ielts/tests/{{testId}}/groups/{{group.id}}/edit" class="btn-ghost btn-sm">Sửa nhóm</a>
-    {{> form/delete-button action=(concat "/ielts/tests/" testId "/groups/" group.id "/delete") confirm="Xoá nhóm này cùng các câu hỏi bên trong?"}}
+    <a href="/ielts/tests/{{testId}}/groups/{{group.id}}/edit" class="btn-ghost btn-sm">Edit group</a>
+    {{> form/delete-button action=(concat "/ielts/tests/" testId "/groups/" group.id "/delete") confirm="Delete this group and its questions?"}}
   </div>
   <div class="card-body space-y-3">
     <p class="text-sm italic">{{group.instructions}}</p>
@@ -18,15 +18,15 @@
           <span class="w-8 shrink-0 font-semibold">{{number}}</span>
           <div class="min-w-0 flex-1 text-sm">
             <p>{{prompt}}</p>
-            <p class="mt-0.5 text-xs text-muted">Đáp án: <strong class="text-emerald-800">{{answer}}</strong>{{#if accepted.length}} · chấp nhận: {{#each accepted}}{{this}}{{#unless @last}} / {{/unless}}{{/each}}{{/if}}{{#unless explanation}} · <span class="text-amber-700">chưa có giải thích</span>{{/unless}}{{#unless evidence}} · <span class="text-amber-700">chưa có bằng chứng</span>{{/unless}}</p>
+            <p class="mt-0.5 text-xs text-muted">Answer: <strong class="text-emerald-800">{{answer}}</strong>{{#if accepted.length}} · also accepted: {{#each accepted}}{{this}}{{#unless @last}} / {{/unless}}{{/each}}{{/if}}{{#unless explanation}} · <span class="text-amber-700">no explanation yet</span>{{/unless}}{{#unless evidence}} · <span class="text-amber-700">no evidence yet</span>{{/unless}}</p>
           </div>
-          <a href="/ielts/tests/{{../testId}}/groups/{{../group.id}}/questions/{{id}}/edit" class="btn-ghost btn-sm">Sửa</a>
-          {{> form/delete-button action=(concat "/ielts/tests/" ../testId "/questions/" id "/delete") confirm="Xoá câu hỏi này?"}}
+          <a href="/ielts/tests/{{../testId}}/groups/{{../group.id}}/questions/{{id}}/edit" class="btn-ghost btn-sm">Edit</a>
+          {{> form/delete-button action=(concat "/ielts/tests/" ../testId "/questions/" id "/delete") confirm="Delete this question?"}}
         </li>
       {{else}}
-        <li class="py-2 text-sm text-muted">Chưa có câu hỏi.</li>
+        <li class="py-2 text-sm text-muted">No questions yet.</li>
       {{/each}}
     </ol>
-    <a href="/ielts/tests/{{testId}}/groups/{{group.id}}/questions/new" class="btn-secondary btn-sm">+ Thêm câu hỏi</a>
+    <a href="/ielts/tests/{{testId}}/groups/{{group.id}}/questions/new" class="btn-secondary btn-sm">+ Add a question</a>
   </div>
 </div>

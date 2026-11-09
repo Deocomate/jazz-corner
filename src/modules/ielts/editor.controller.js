@@ -21,14 +21,14 @@ export async function index(req, res) {
 
 // --- Đề ---
 const renderTestForm = (res, { test = null, values = {}, errors = {}, status = 200 }) =>
-  res.status(status).render('ielts/test-form', { title: test ? 'Sửa thông tin đề' : 'Tạo đề mới', test, values, errors });
+  res.status(status).render('ielts/test-form', { title: test ? 'Edit test details' : 'New test', test, values, errors });
 
 export const newTest = (req, res) => renderTestForm(res, { values: { time_limit_minutes: 60 } });
 
 export async function createTest(req, res) {
   const result = await service.createTest(req.body);
   if (!result.ok) return renderTestForm(res, { values: req.body, errors: result.errors, status: 422 });
-  req.flash('success', 'Đã tạo bản nháp. Thêm bài đọc và câu hỏi bên dưới.');
+  req.flash('success', 'Draft created. Add passages and questions below.');
   res.redirect(`/ielts/tests/${result.data.id}/edit`);
 }
 
@@ -41,57 +41,57 @@ export async function updateTest(req, res) {
   const test = await service.getTest(req.params.id);
   const result = await service.updateTest(test.id, req.body);
   if (!result.ok) return renderTestForm(res, { test, values: req.body, errors: result.errors, status: 422 });
-  req.flash('success', 'Đã lưu thông tin đề.');
+  req.flash('success', 'Test details saved.');
   res.redirect(`/ielts/tests/${test.id}/edit`);
 }
 
 export async function editor(req, res) {
   const structure = await service.getStructure(req.params.id);
-  res.render('ielts/editor', { title: `Soạn đề: ${structure.test.title}`, ...structure, problems: service.findProblems(structure), scripts: ['/js/upload.js'] });
+  res.render('ielts/editor', { title: `Edit: ${structure.test.title}`, ...structure, problems: service.findProblems(structure), scripts: ['/js/upload.js'] });
 }
 
 export async function review(req, res) {
   const structure = await service.getStructure(req.params.id);
-  res.render('ielts/review', { title: `Duyệt đề: ${structure.test.title}`, ...structure, problems: service.findProblems(structure), modes: MODES });
+  res.render('ielts/review', { title: `Review: ${structure.test.title}`, ...structure, problems: service.findProblems(structure), modes: MODES });
 }
 
 export async function publish(req, res) {
   const result = await service.publish(req.params.id);
-  if (result.ok) req.flash('success', 'Đã duyệt đề. Bạn có thể bắt đầu làm bài.');
+  if (result.ok) req.flash('success', 'Published. You can start the test now.');
   else req.flash('error', result.errors._form);
   res.redirect(`/ielts/tests/${req.params.id}/review`);
 }
 
 export async function unpublish(req, res) {
   await service.unpublish(req.params.id);
-  req.flash('success', 'Đã chuyển đề về bản nháp.');
+  req.flash('success', 'The test is a draft again.');
   res.redirect(`/ielts/tests/${req.params.id}/edit`);
 }
 
 export async function destroy(req, res) {
   await service.deleteTest(req.params.id);
-  req.flash('success', 'Đã xoá đề cùng các lượt làm bài.');
+  req.flash('success', 'The test and its attempts were deleted.');
   res.redirect('/ielts');
 }
 
 export async function sourcePdf(req, res) {
   const test = await service.getTest(req.params.id);
   const full = filePath('ielts', test.source_pdf_name);
-  if (!full) throw notFound('Đề này chưa gắn PDF nguồn.');
+  if (!full) throw notFound('This test has no source PDF.');
   res.type('application/pdf').sendFile(full);
 }
 
 // --- Nhập đề JSON ---
 export const importForm = (req, res) =>
-  res.render('ielts/import', { title: 'Nhập đề', values: { json: '' }, errors: {}, example: JSON.stringify(SAMPLE_TEST, null, 2).slice(0, 1800) });
+  res.render('ielts/import', { title: 'Import a test', values: { json: '' }, errors: {}, example: JSON.stringify(SAMPLE_TEST, null, 2).slice(0, 1800) });
 
 export async function importTest(req, res) {
   const parsed = parseImportJson(req.body.json);
   const result = parsed.ok ? await importTestData(parsed.data) : parsed;
   if (!result.ok) {
-    return res.status(422).render('ielts/import', { title: 'Nhập đề', values: req.body, errors: result.errors, example: '' });
+    return res.status(422).render('ielts/import', { title: 'Import a test', values: req.body, errors: result.errors, example: '' });
   }
-  req.flash('success', 'Đã nhập đề dưới dạng bản nháp. Hãy kiểm tra thứ tự câu, đáp án và giải thích trước khi duyệt.');
+  req.flash('success', 'Imported as a draft. Check the question order, answers and explanations before publishing.');
   res.redirect(`/ielts/tests/${result.data.id}/review`);
 }
 
@@ -99,7 +99,7 @@ export async function importTest(req, res) {
 async function renderPart(res, view, testId, data, status = 200) {
   const structure = await service.getStructure(testId);
   res.status(status).render(`ielts/${view}`, {
-    title: 'Soạn đề',
+    title: 'Test editor',
     test: structure.test,
     passages: structure.passages,
     typeOptions: QUESTION_TYPES,
@@ -117,7 +117,7 @@ export async function passageForm(req, res) {
 export async function savePassage(req, res) {
   const result = await service.savePassage(req.params.id, req.params.partId, req.body);
   if (!result.ok) return renderPart(res, 'passage-form', req.params.id, { passage: req.params.partId ? { id: req.params.partId } : null, values: req.body, errors: result.errors }, 422);
-  req.flash('success', 'Đã lưu bài đọc.');
+  req.flash('success', 'Passage saved.');
   res.redirect(`/ielts/tests/${req.params.id}/edit`);
 }
 
@@ -130,7 +130,7 @@ export async function groupForm(req, res) {
 export async function saveGroup(req, res) {
   const result = await service.saveGroup(req.params.id, req.params.partId, req.body);
   if (!result.ok) return renderPart(res, 'group-form', req.params.id, { group: req.params.partId ? { id: req.params.partId } : null, values: req.body, errors: result.errors }, 422);
-  req.flash('success', 'Đã lưu nhóm câu hỏi.');
+  req.flash('success', 'Question group saved.');
   res.redirect(`/ielts/tests/${req.params.id}/edit#group-${result.data.id}`);
 }
 
@@ -152,7 +152,7 @@ export async function saveQuestion(req, res) {
     const group = await service.getGroup(id, groupId);
     return renderPart(res, 'question-form', id, { group, question: partId ? { id: partId } : null, values: req.body, errors: result.errors }, 422);
   }
-  req.flash('success', 'Đã lưu câu hỏi.');
+  req.flash('success', 'Question saved.');
   res.redirect(req.body.next === 'add' ? `/ielts/tests/${id}/groups/${groupId}/questions/new` : `/ielts/tests/${id}/edit#group-${groupId}`);
 }
 
@@ -162,6 +162,6 @@ export async function deletePart(req, res) {
   else if (kind === 'groups') await service.deleteGroup(id, partId);
   else if (kind === 'questions') await service.deleteQuestion(id, partId);
   else throw notFound();
-  req.flash('success', 'Đã xoá.');
+  req.flash('success', 'Deleted.');
   res.redirect(`/ielts/tests/${id}/edit`);
 }

@@ -1,47 +1,47 @@
-{{#> page-header title="Kết quả" eyebrow=attempt.test_title subtitle=(concat "Reading · " attempt.modeLabel " · nộp lúc " (formatDate attempt.submitted_at))}}
+{{#> page-header title="Results" eyebrow=attempt.test_title subtitle=(concat "Reading · " attempt.modeLabel " · submitted " (formatDate attempt.submitted_at))}}
   <a href="/ielts" class="btn-ghost">← IELTS</a>
-  <a href="/ielts/tests/{{attempt.test_id}}/review" class="btn-secondary">Làm lại đề này</a>
+  <a href="/ielts/tests/{{attempt.test_id}}/review" class="btn-secondary">Take this test again</a>
 {{/page-header}}
 
 <section class="mb-8 grid gap-4 sm:grid-cols-3">
-  <div class="card card-body"><p class="text-sm text-muted">Số câu đúng</p><p class="mt-1 font-serif text-4xl font-semibold">{{attempt.score}}<span class="text-xl text-muted">/{{attempt.total}}</span></p></div>
-  <div class="card card-body"><p class="text-sm text-muted">Tỉ lệ đúng</p><p class="mt-1 font-serif text-4xl font-semibold">{{attempt.percent}}%</p></div>
+  <div class="card card-body"><p class="text-sm text-muted">Correct answers</p><p class="mt-1 font-serif text-4xl font-semibold">{{attempt.score}}<span class="text-xl text-muted">/{{attempt.total}}</span></p></div>
+  <div class="card card-body"><p class="text-sm text-muted">Accuracy</p><p class="mt-1 font-serif text-4xl font-semibold">{{attempt.percent}}%</p></div>
   <div class="card card-body">
-    <p class="text-sm text-muted">Band ước tính</p>
+    <p class="text-sm text-muted">Estimated band</p>
     {{#if attempt.band}}<p class="mt-1 font-serif text-4xl font-semibold">{{attempt.band}}</p>
-    {{else}}<p class="mt-2 text-sm text-muted">Chỉ quy đổi band khi đề đủ 40 câu như đề thật.</p>{{/if}}
+    {{else}}<p class="mt-2 text-sm text-muted">A band is only estimated for a full 40-question test.</p>{{/if}}
   </div>
 </section>
 
-<nav class="mb-6 flex flex-wrap gap-1" aria-label="Chuyển nhanh tới câu">
-  {{#each results}}<a href="#q-{{questionId}}" class="q-pill {{#if isCorrect}}is-correct{{else}}is-wrong{{/if}}" aria-label="Câu {{number}} {{#if isCorrect}}đúng{{else}}sai{{/if}}">{{number}}</a>{{/each}}
+<nav class="mb-6 flex flex-wrap gap-1" aria-label="Jump to a question">
+  {{#each results}}<a href="#q-{{questionId}}" class="q-pill {{#if isCorrect}}is-correct{{else}}is-wrong{{/if}}" aria-label="Question {{number}} {{#if isCorrect}}correct{{else}}wrong{{/if}}">{{number}}</a>{{/each}}
 </nav>
 
 <div class="grid gap-8 lg:grid-cols-5">
-  <section class="space-y-4 lg:col-span-3" aria-label="Chi tiết từng câu">
+  <section class="space-y-4 lg:col-span-3" aria-label="Question by question">
     {{#each results}}
       <article id="q-{{questionId}}" class="card card-body scroll-mt-24 {{#unless isCorrect}}border-red-200{{/unless}}">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="font-semibold">Câu {{number}}</span>
+          <span class="font-semibold">Question {{number}}</span>
           <span class="chip">{{typeLabel}}</span>
-          {{#if isCorrect}}<span class="badge-green">Đúng</span>{{else}}<span class="badge-red">Sai{{#if note}} · {{note}}{{/if}}</span>{{/if}}
+          {{#if isCorrect}}<span class="badge-green">Correct</span>{{else}}<span class="badge-red">Wrong{{#if note}} · {{note}}{{/if}}</span>{{/if}}
         </div>
         <p class="mt-2" lang="en">{{prompt}}</p>
         <dl class="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-          <div><dt class="text-muted">Câu trả lời của tôi</dt><dd class="font-medium {{#unless isCorrect}}text-red-700{{/unless}}">{{default myDisplay "(bỏ trống)"}}</dd></div>
-          <div><dt class="text-muted">Đáp án chuẩn</dt><dd class="font-medium text-emerald-800">{{correctDisplay}}</dd></div>
+          <div><dt class="text-muted">My answer</dt><dd class="font-medium {{#unless isCorrect}}text-red-700{{/unless}}">{{default myDisplay "(blank)"}}</dd></div>
+          <div><dt class="text-muted">Correct answer</dt><dd class="font-medium text-emerald-800">{{correctDisplay}}</dd></div>
         </dl>
-        {{#if evidence}}<div class="mt-3"><p class="eyebrow mb-1">Bằng chứng trong bài đọc</p><p class="rounded-lg bg-paper p-3 font-serif italic" lang="en">“{{evidence}}”</p></div>{{/if}}
-        {{#if explanation}}<div class="mt-3"><p class="eyebrow mb-1">Câu hỏi diễn đạt lại bài đọc thế nào</p><p class="text-sm">{{explanation}}</p></div>{{/if}}
+        {{#if evidence}}<div class="mt-3"><p class="eyebrow mb-1">Evidence in the passage</p><p class="rounded-lg bg-paper p-3 font-serif italic" lang="en">“{{evidence}}”</p></div>{{/if}}
+        {{#if explanation}}<div class="mt-3"><p class="eyebrow mb-1">How the question paraphrases the passage</p><p class="text-sm">{{explanation}}</p></div>{{/if}}
         {{#unless isCorrect}}
           {{#if saved}}
-            <p class="mt-4 text-sm font-medium text-emerald-800">✓ Đã lưu vào Notebook · <a href="/notebook?kind=ielts_mistake">Xem lỗi IELTS</a></p>
+            <p class="mt-4 text-sm font-medium text-emerald-800">✓ Saved to Notebook · <a href="/notebook?kind=ielts_mistake">See IELTS mistakes</a></p>
           {{else}}
             <form method="post" action="/ielts/attempts/{{../attempt.id}}/mistakes/{{questionId}}" class="mt-4 space-y-2 border-t border-line pt-4">
               {{> form/csrf}}
-              <label for="reason-{{questionId}}" class="label">Vì sao sai? (không bắt buộc)</label>
-              <input id="reason-{{questionId}}" name="reason" class="input" placeholder="VD: đọc nhầm phạm vi nhận định / bỏ qua cách đề paraphrase">
-              <button type="submit" class="btn-secondary btn-sm">Lưu câu sai vào Notebook</button>
+              <label for="reason-{{questionId}}" class="label">Why did you get it wrong? (optional)</label>
+              <input id="reason-{{questionId}}" name="reason" class="input" placeholder="E.g. misread the scope of the statement / missed the paraphrase">
+              <button type="submit" class="btn-secondary btn-sm">Save this mistake to Notebook</button>
             </form>
           {{/if}}
         {{/unless}}
@@ -49,16 +49,16 @@
     {{/each}}
   </section>
 
-  <aside class="lg:col-span-2" aria-label="Bài đọc">
+  <aside class="lg:col-span-2" aria-label="Passage">
     <div class="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto" data-review-passage>
-      <p class="mb-2 text-xs text-muted">Bôi chọn câu trong bài đọc để Luyện nói hoặc lưu vào Notebook.</p>
+      <p class="mb-2 text-xs text-muted">Select a sentence in the passage to practise speaking or save it to your Notebook.</p>
       {{#each passages}}<div class="card card-body mb-4">{{> ielts/passage passage=this}}</div>{{/each}}
     </div>
   </aside>
 </div>
 
-<div class="selection-bar" data-selection-bar role="toolbar" aria-label="Thao tác với đoạn đã chọn" hidden data-review data-config="{{json config}}">
-  <button type="button" data-sel-action="speak">Luyện nói</button>
-  <button type="button" data-sel-action="notebook">Lưu vào Notebook</button>
+<div class="selection-bar" data-selection-bar role="toolbar" aria-label="Actions for the selected text" hidden data-review data-config="{{json config}}">
+  <button type="button" data-sel-action="speak">Practise speaking</button>
+  <button type="button" data-sel-action="notebook">Save to Notebook</button>
 </div>
 {{> notebook/save-dialog}}

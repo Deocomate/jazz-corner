@@ -27,7 +27,7 @@ export async function listTests() {
 
 export async function getTest(id) {
   const test = await repo.findTest(id);
-  if (!test) throw notFound('Không tìm thấy đề.');
+  if (!test) throw notFound('Test not found.');
   return { ...test, isDraft: test.status === 'draft' };
 }
 
@@ -56,24 +56,24 @@ export async function getStructure(id) {
 /** Kiểm tra đề trước khi duyệt. Trả về danh sách vấn đề (rỗng = sẵn sàng). */
 export function findProblems(structure) {
   const problems = [];
-  if (!structure.passages.length) problems.push('Chưa có bài đọc nào.');
-  if (!structure.questions.length) problems.push('Chưa có câu hỏi nào.');
-  for (const g of structure.groups) if (!g.questions.length) problems.push(`Nhóm "${g.typeLabel}" chưa có câu hỏi.`);
+  if (!structure.passages.length) problems.push('There are no passages yet.');
+  if (!structure.questions.length) problems.push('There are no questions yet.');
+  for (const g of structure.groups) if (!g.questions.length) problems.push(`The "${g.typeLabel}" group has no questions.`);
   const seen = new Set();
   for (const q of structure.questions) {
-    if (seen.has(q.number)) problems.push(`Số câu ${q.number} bị trùng.`);
+    if (seen.has(q.number)) problems.push(`Question number ${q.number} is used twice.`);
     seen.add(q.number);
     const keys = (q.group.type === 'mcq' ? q.options : q.group.options).map((o) => normalizeAnswer(o.key));
     if ((q.group.type === 'mcq' || q.group.type === 'headings') && !keys.includes(normalizeAnswer(q.answer))) {
-      problems.push(`Câu ${q.number}: đáp án "${q.answer}" không nằm trong danh sách lựa chọn.`);
+      problems.push(`Question ${q.number}: the answer "${q.answer}" is not one of the options.`);
     }
-    if (q.group.type === 'mcq' && q.options.length < 2) problems.push(`Câu ${q.number}: cần ít nhất 2 lựa chọn.`);
+    if (q.group.type === 'mcq' && q.options.length < 2) problems.push(`Question ${q.number}: needs at least 2 options.`);
     if (q.group.type === 'completion' && q.group.word_limit && countWords(q.answer) > q.group.word_limit) {
-      problems.push(`Câu ${q.number}: đáp án dài hơn giới hạn ${q.group.word_limit} từ.`);
+      problems.push(`Question ${q.number}: the answer is longer than the ${q.group.word_limit}-word limit.`);
     }
   }
   const ordered = structure.questions.map((q) => q.number);
-  if (ordered.length && ordered.some((n, i) => n !== ordered[0] + i)) problems.push('Số thứ tự câu hỏi bị nhảy cóc — kiểm tra lại thứ tự.');
+  if (ordered.length && ordered.some((n, i) => n !== ordered[0] + i)) problems.push('Question numbers skip — check the order.');
   return problems;
 }
 
@@ -94,7 +94,7 @@ export async function updateTest(id, input) {
 
 export async function publish(id) {
   const problems = findProblems(await getStructure(id));
-  if (problems.length) return { ok: false, errors: { _form: `Chưa duyệt được: ${problems.join(' ')}` } };
+  if (problems.length) return { ok: false, errors: { _form: `Cannot publish yet: ${problems.join(' ')}` } };
   await repo.setStatus(id, 'published');
   return { ok: true, data: { id } };
 }
@@ -113,7 +113,7 @@ export async function deleteTest(id) {
 export async function attachSourcePdf(id, buffer, originalName) {
   const test = await getTest(id);
   if (!buffer?.length || buffer.subarray(0, 5).toString('latin1') !== '%PDF-') {
-    return { ok: false, errors: { _form: 'Tài liệu nguồn phải là tệp PDF.' } };
+    return { ok: false, errors: { _form: 'The source document must be a PDF file.' } };
   }
   const stored = await saveFile('ielts', buffer, 'pdf');
   await repo.setSourcePdf(id, stored, originalName || 'source.pdf');
@@ -153,7 +153,7 @@ export async function saveGroup(testId, groupId, input) {
   const result = validate(groupSchema, input);
   if (!result.ok) return result;
   const d = result.data;
-  if (d.passage_id && !(await repo.findPassage(testId, d.passage_id))) return { ok: false, errors: { passage_id: 'Bài đọc không hợp lệ' } };
+  if (d.passage_id && !(await repo.findPassage(testId, d.passage_id))) return { ok: false, errors: { passage_id: 'Invalid passage' } };
   const data = { ...d, options: d.type === 'headings' ? parseOptionLines(d.options_text) : null, word_limit: d.type === 'completion' ? d.word_limit : null };
   if (groupId) {
     await getGroup(testId, groupId);
@@ -181,17 +181,17 @@ export async function saveQuestion(testId, groupId, questionId, input) {
   let answer = d.answer;
   if (group.type === 'mcq') {
     options = parseOptionLines(d.options_text, { upper: true });
-    if (options.length < 2 || options.some((o) => !o.key)) errors.options_text = 'Nhập ít nhất 2 lựa chọn, mỗi dòng dạng "A. ..."';
+    if (options.length < 2 || options.some((o) => !o.key)) errors.options_text = 'Enter at least 2 options, one per line like "A. ..."';
     answer = answer.toUpperCase();
-    if (!errors.options_text && !options.some((o) => o.key === answer)) errors.answer = 'Đáp án phải là một ký hiệu lựa chọn (VD: B)';
+    if (!errors.options_text && !options.some((o) => o.key === answer)) errors.answer = 'The answer must be one of the option letters (e.g. B)';
   } else if (group.type === 'tfng') {
     answer = answer.toUpperCase();
-    if (!['TRUE', 'FALSE', 'NOT GIVEN'].includes(answer)) errors.answer = 'Đáp án phải là TRUE, FALSE hoặc NOT GIVEN';
+    if (!['TRUE', 'FALSE', 'NOT GIVEN'].includes(answer)) errors.answer = 'The answer must be TRUE, FALSE or NOT GIVEN';
   } else if (group.type === 'headings') {
     answer = answer.toLowerCase();
-    if (!group.options.some((o) => o.key === answer)) errors.answer = `Đáp án phải là một ký hiệu tiêu đề của nhóm (${group.options.map((o) => o.key).join(', ')})`;
+    if (!group.options.some((o) => o.key === answer)) errors.answer = `The answer must be one of the group’s heading labels (${group.options.map((o) => o.key).join(', ')})`;
   } else if (group.word_limit && countWords(answer) > group.word_limit) {
-    errors.answer = `Đáp án dài hơn giới hạn ${group.word_limit} từ của nhóm`;
+    errors.answer = `The answer is longer than the group’s ${group.word_limit}-word limit`;
   }
   if (Object.keys(errors).length) return { ok: false, errors };
   const accepted = group.type === 'completion' ? String(d.accepted_text || '').split(/\r?\n/).map((s) => s.trim()).filter(Boolean) : [];

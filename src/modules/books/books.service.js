@@ -17,7 +17,7 @@ const imageExt = (buf) => {
   return null;
 };
 const titleFromFileName = (name) =>
-  path.parse(name || 'Sách không tên').name.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim() || 'Sách không tên';
+  path.parse(name || 'Untitled book').name.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim() || 'Untitled book';
 
 const parseJson = (s) => {
   try {
@@ -33,7 +33,7 @@ const epubCache = new Map();
 async function loadEpub(book) {
   if (epubCache.has(book.stored_name)) return epubCache.get(book.stored_name);
   const buffer = await readFile('books', book.stored_name);
-  if (!buffer) throw notFound('Không tìm thấy tệp sách trên máy. Hãy xoá và tải lại sách.');
+  if (!buffer) throw notFound('The book file is missing on this computer. Delete the book and upload it again.');
   const parsed = { buffer, ...parseEpub(buffer) };
   epubCache.set(book.stored_name, parsed);
   if (epubCache.size > 3) epubCache.delete(epubCache.keys().next().value);
@@ -45,13 +45,13 @@ export const lastOpenedBook = async () => decorate(await repo.findLastOpened());
 
 export async function getBook(id) {
   const book = await repo.findBook(id);
-  if (!book) throw notFound('Không tìm thấy sách.');
+  if (!book) throw notFound('Book not found.');
   return decorate(book);
 }
 
 /** Tải sách lên. Trả { ok, data: book } hoặc { ok: false, errors: { _form } } với lý do dễ hiểu. */
 export async function uploadBook(buffer, originalName, { origin = 'mine', title = null } = {}) {
-  if (!buffer?.length) return { ok: false, errors: { _form: 'Tệp trống. Hãy chọn lại tệp PDF hoặc EPUB.' } };
+  if (!buffer?.length) return { ok: false, errors: { _form: 'The file is empty. Please choose a PDF or EPUB file again.' } };
   const fallbackTitle = title || titleFromFileName(originalName);
 
   if (isPdf(buffer)) {
@@ -67,7 +67,7 @@ export async function uploadBook(buffer, originalName, { origin = 'mine', title 
     try {
       epub = parseEpub(buffer);
     } catch (err) {
-      if (err instanceof ZipError) return { ok: false, errors: { _form: `Không đọc được EPUB: ${err.message}` } };
+      if (err instanceof ZipError) return { ok: false, errors: { _form: `Could not read the EPUB: ${err.message}` } };
       throw err;
     }
     const storedName = await saveFile('books', buffer, 'epub');
@@ -86,7 +86,7 @@ export async function uploadBook(buffer, originalName, { origin = 'mine', title 
 
   return {
     ok: false,
-    errors: { _form: 'Định dạng chưa hỗ trợ. Bản đầu chỉ đọc được PDF và EPUB — hãy đổi sang một trong hai định dạng này.' },
+    errors: { _form: 'Unsupported format. Version 1 reads PDF and EPUB only — please convert the file to one of these.' },
   };
 }
 
@@ -103,7 +103,7 @@ export async function epubResource(id, filePath) {
   if (book.format !== 'epub' || typeof filePath !== 'string') throw notFound();
   const epub = await loadEpub(book);
   const data = extractEntry(epub.buffer, epub.entries, filePath);
-  if (!data) throw notFound('Không tìm thấy nội dung này trong EPUB.');
+  if (!data) throw notFound('This content was not found in the EPUB.');
   return { data, mime: mimeFor(filePath) };
 }
 
@@ -120,7 +120,7 @@ export const markOpened = (id) => repo.touchOpened(id);
 export async function setCover(id, buffer) {
   const book = await getBook(id);
   const ext = buffer?.length && imageExt(buffer);
-  if (!ext) return { ok: false, errors: { _form: 'Ảnh bìa phải là JPG, PNG hoặc WEBP.' } };
+  if (!ext) return { ok: false, errors: { _form: 'The cover must be a JPG, PNG or WEBP image.' } };
   const coverName = await saveFile('covers', buffer, ext);
   await repo.setCover(id, coverName);
   if (book.cover_name) await removeFile('covers', book.cover_name);
@@ -166,7 +166,7 @@ export async function updateHighlightNote(id, highlightId, input) {
   const result = validate(highlightNoteSchema, input);
   if (!result.ok) return result;
   const { changes } = await repo.updateHighlightNote(id, highlightId, result.data.note ?? null);
-  if (!changes) throw notFound('Không tìm thấy highlight.');
+  if (!changes) throw notFound('Highlight not found.');
   return { ok: true, data: null };
 }
 

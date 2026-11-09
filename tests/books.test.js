@@ -23,7 +23,7 @@ const api = async (method, url, body) => {
 test('thư viện trống hiện hướng dẫn tải sách', async () => {
   const res = await agent.get('/books');
   assert.equal(res.status, 200);
-  assert.match(res.text, /Chưa có sách nào/);
+  assert.match(res.text, /No books yet/);
 });
 
 test('tải PDF lên, mở trình đọc, lưu và khôi phục vị trí', async () => {
@@ -64,10 +64,10 @@ test('tải EPUB lên: đọc tên sách, mục lục và nội dung chương', 
 test('tệp sai định dạng hoặc EPUB hỏng báo lỗi rõ ràng', async () => {
   const txt = await upload(Buffer.from('hello world'), 'notes.txt');
   assert.equal(txt.status, 422);
-  assert.match(txt.body.error, /PDF và EPUB/);
+  assert.match(txt.body.error, /PDF and EPUB/);
   const broken = await upload(Buffer.from('PK\u0003\u0004 not really a zip'), 'broken.epub');
   assert.equal(broken.status, 422);
-  assert.match(broken.body.error, /Không đọc được EPUB/);
+  assert.match(broken.body.error, /Could not read the EPUB/);
 });
 
 test('bookmark và highlight kèm ghi chú', async () => {

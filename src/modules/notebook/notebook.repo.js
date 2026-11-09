@@ -42,6 +42,13 @@ export async function countItems(filters) {
   return (await get(`SELECT COUNT(*) AS n FROM notebook_items ${whereSql}`, args)).n;
 }
 
+/** Thời điểm ghi của mọi mục (để chia trang sổ theo ngày). */
+export const listCreatedAt = () => all('SELECT created_at FROM notebook_items ORDER BY created_at');
+
+/** Các mục ghi trong khoảng [start, end) — cũ trước, mới sau như một trang nhật ký. */
+export const listBetween = (start, end) =>
+  all(`SELECT ${COLUMNS} FROM notebook_items WHERE created_at >= ? AND created_at < ? ORDER BY created_at, id`, [start, end]);
+
 export const findItem = (id) => get(`SELECT ${COLUMNS} FROM notebook_items WHERE id = ?`, [id]);
 export const findByDedupeKey = (key) => get(`SELECT ${COLUMNS} FROM notebook_items WHERE dedupe_key = ?`, [key]);
 export const allTags = () => all("SELECT tags FROM notebook_items WHERE tags IS NOT NULL AND tags <> ''");

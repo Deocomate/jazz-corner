@@ -1,16 +1,16 @@
 <section class="card card-body space-y-5" aria-labelledby="sh-title">
   <div class="flex flex-wrap items-center gap-2">
     <h2 id="sh-title" class="section-title flex-1 text-base">Shadowing</h2>
-    <label class="inline-flex items-center gap-2 text-sm text-muted"><input type="checkbox" checked data-transcript-toggle class="accent-brand-600"> Hiện transcript</label>
+    <label class="inline-flex items-center gap-2 text-sm text-muted"><input type="checkbox" checked data-transcript-toggle class="accent-brand-600"> Show transcript</label>
   </div>
   <ol class="grid gap-3 sm:grid-cols-3">
-    <li class="rounded-xl border border-line p-4"><p class="eyebrow">Bước 1</p><p class="mt-1 text-sm">Nghe mẫu một lượt.</p><button type="button" class="btn-secondary btn-sm mt-3" data-step="1">▶ Nghe toàn bộ</button></li>
-    <li class="rounded-xl border border-line p-4"><p class="eyebrow">Bước 2</p><p class="mt-1 text-sm">Nghe từng cụm, dừng để nhắc lại.</p><button type="button" class="btn-secondary btn-sm mt-3" data-step="2">▶ Từng cụm</button></li>
-    <li class="rounded-xl border border-line p-4"><p class="eyebrow">Bước 3</p><p class="mt-1 text-sm">Nói bám theo audio — tự động ghi âm.</p><button type="button" class="btn-primary btn-sm mt-3" data-step="3">● Nói bám theo</button></li>
+    <li class="rounded-xl border border-line p-4"><p class="eyebrow">Step 1</p><p class="mt-1 text-sm">Listen to the model once.</p><button type="button" class="btn-secondary btn-sm mt-3" data-step="1">▶ Listen to all</button></li>
+    <li class="rounded-xl border border-line p-4"><p class="eyebrow">Step 2</p><p class="mt-1 text-sm">Listen phrase by phrase and repeat in the pauses.</p><button type="button" class="btn-secondary btn-sm mt-3" data-step="2">▶ Phrase by phrase</button></li>
+    <li class="rounded-xl border border-line p-4"><p class="eyebrow">Step 3</p><p class="mt-1 text-sm">Speak along with the audio — recorded automatically.</p><button type="button" class="btn-primary btn-sm mt-3" data-step="3">● Shadow it</button></li>
   </ol>
   <p class="text-sm font-medium text-brand-700" data-shadow-status role="status" aria-live="polite"></p>
-  <div class="space-y-1 font-serif text-xl leading-relaxed" lang="en" data-transcript>
+  <div class="space-y-1 font-serif text-xl leading-relaxed" data-transcript>
     {{#each phrases}}<span class="phrase" data-seg-index="{{@index}}">{{text}}</span> {{/each}}
   </div>
-  <p class="text-xs text-muted">{{#if item.segments}}Câu đang phát được tô sáng theo mốc thời gian của audio mẫu.{{else}}Không có audio có mốc thời gian: hệ thống phát từng cụm bằng giọng trình duyệt và tô sáng cụm đang đọc.{{/if}}</p>
+  <p class="text-xs text-muted">{{#if item.segments}}The phrase being played is highlighted using the model audio’s timestamps.{{else}}No timed audio: each phrase is read by your browser’s voice and highlighted as it plays.{{/if}}</p>
 </section>

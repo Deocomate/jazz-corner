@@ -4,47 +4,67 @@
   <div class="card-body sm:p-8">
     <div class="flex flex-wrap items-center gap-2">
       <p id="wotd-title" class="eyebrow">Word of the Day</p>
-      <span class="chip">{{wotd.pos}}</span>
-      <span class="tag-sample">Bộ từ chọn lọc</span>
-    </div>
-    <p class="mt-3 font-serif text-4xl font-semibold tracking-tight text-brand-700 sm:text-5xl" lang="en">{{wotd.word}}</p>
-    <p class="mt-3 text-lg" lang="en">{{wotd.meaning}}</p>
-    <p class="mt-1 text-sm text-muted">Nghĩa tiếng Việt: {{wotd.vi}}</p>
-    <dl class="mt-5 grid gap-4 sm:grid-cols-2">
-      <div><dt class="eyebrow mb-1">Sắc thái</dt><dd class="text-sm" lang="en">{{wotd.nuance}}</dd></div>
-      <div><dt class="eyebrow mb-1">Collocations</dt><dd class="flex flex-wrap gap-1.5" lang="en">{{#each wotd.collocations}}<span class="chip">{{this}}</span>{{/each}}</dd></div>
-    </dl>
-    <blockquote class="mt-5 border-l-2 border-brand-200 pl-4 font-serif text-lg italic" lang="en">{{wotd.example}}</blockquote>
-    <div class="mt-6 flex flex-wrap items-center gap-2">
-      {{#if wotd.saved}}
-        <span class="btn-secondary pointer-events-none" aria-live="polite">✓ Đã lưu</span>
-        <a href="/notebook/{{wotd.saved.id}}" class="btn-ghost">Mở trong Notebook</a>
-        <form method="post" action="/speaking/from-notebook/{{wotd.saved.id}}">{{> form/csrf}}<button type="submit" class="btn-ghost">Luyện nói</button></form>
+      {{#if wotd.pos}}<span class="chip">{{wotd.pos}}</span>{{/if}}
+      {{#if wotd.fromSources}}
+        <span class="tag-mine">From your {{#if (eq wotd.source.type "book")}}reading{{else}}IELTS tests{{/if}}</span>
       {{else}}
-        <form method="post" action="/today/word/save">{{> form/csrf}}<button type="submit" class="btn-primary">Lưu vào Notebook</button></form>
-        <form method="post" action="/speaking/items">{{> form/csrf}}<input type="hidden" name="text" value="{{wotd.word}}"><input type="hidden" name="title" value="Word of the Day: {{wotd.word}}"><button type="submit" class="btn-ghost">Luyện nói</button></form>
+        <span class="tag-sample">Curated list</span>
       {{/if}}
     </div>
+    <p class="mt-3 font-serif text-4xl font-semibold tracking-tight text-brand-700 sm:text-5xl">{{wotd.word}}</p>
+    {{#if wotd.hasDefinition}}
+      <p class="mt-3 text-lg">{{wotd.meaning}}</p>
+    {{else}}
+      <p class="mt-3 text-sm text-muted">This word is not in the built-in dictionary yet. Work out the meaning from the sentence, check it, then save it with your own definition.
+        <a href="https://dictionary.cambridge.org/dictionary/english/{{wotd.word}}" target="_blank" rel="noopener noreferrer">Look it up in the Cambridge Dictionary ↗</a></p>
+    {{/if}}
+
+    {{#if wotd.sentence}}
+      <figure class="mt-5">
+        <blockquote class="border-l-2 border-brand-200 pl-4 font-serif text-lg italic">“{{wotd.sentence}}”</blockquote>
+        <figcaption class="mt-1 pl-4 text-sm text-muted">{{wotd.source.label}} · <a href="{{wotd.source.url}}">Open the passage</a></figcaption>
+      </figure>
+    {{/if}}
+
+    {{#if wotd.hasDefinition}}
+      <dl class="mt-5 grid gap-4 sm:grid-cols-2">
+        <div><dt class="eyebrow mb-1">Nuance</dt><dd class="text-sm">{{wotd.nuance}}</dd></div>
+        <div><dt class="eyebrow mb-1">Collocations</dt><dd class="flex flex-wrap gap-1.5">{{#each wotd.collocations}}<span class="chip">{{this}}</span>{{/each}}</dd></div>
+      </dl>
+      {{#unless wotd.sentence}}<blockquote class="mt-5 border-l-2 border-brand-200 pl-4 font-serif text-lg italic">{{wotd.example}}</blockquote>{{/unless}}
+    {{/if}}
+
+    <div class="mt-6 flex flex-wrap items-center gap-2">
+      {{#if wotd.saved}}
+        <span class="btn-secondary pointer-events-none">✓ Saved</span>
+        <a href="/notebook/{{wotd.saved.id}}" class="btn-ghost">Open in Notebook</a>
+        <form method="post" action="/speaking/from-notebook/{{wotd.saved.id}}">{{> form/csrf}}<button type="submit" class="btn-ghost">Practise speaking</button></form>
+      {{else}}
+        <form method="post" action="/today/word/save">{{> form/csrf}}<button type="submit" class="btn-primary">Save to Notebook</button></form>
+        <form method="post" action="/speaking/items">{{> form/csrf}}<input type="hidden" name="text" value="{{wotd.word}}"><input type="hidden" name="title" value="Word of the Day: {{wotd.word}}"><button type="submit" class="btn-ghost">Practise speaking</button></form>
+      {{/if}}
+    </div>
+    {{#unless wotd.fromSources}}<p class="mt-4 text-xs text-muted">Upload a book or publish an IELTS test and tomorrow’s word will come from your own material.</p>{{/unless}}
   </div>
 </section>
 
 <div class="grid gap-6 md:grid-cols-2">
   <section class="card card-body flex flex-col" aria-labelledby="read-title">
-    <h2 id="read-title" class="eyebrow mb-4">Đọc tiếp</h2>
+    <h2 id="read-title" class="eyebrow mb-4">Continue reading</h2>
     {{#if book}}
       <div class="flex flex-1 gap-4">
         {{#if book.cover_name}}<img src="/books/{{book.id}}/cover" alt="" class="h-32 w-22 shrink-0 rounded-lg border border-line object-cover">
-        {{else}}<div class="flex h-32 w-22 shrink-0 items-end rounded-lg bg-gradient-to-b from-brand-50 to-white p-2 font-serif text-xs font-semibold text-brand-700">{{book.format}}</div>{{/if}}
+        {{else}}<div class="flex h-32 w-22 shrink-0 items-end rounded-lg bg-gradient-to-b from-brand-50 to-white p-2 font-serif text-xs font-semibold text-brand-700 uppercase">{{book.format}}</div>{{/if}}
         <div class="min-w-0 flex-1">
           <p class="font-serif text-xl leading-snug font-semibold">{{book.title}}</p>
           {{#if book.location_label}}<p class="mt-1 text-sm text-muted">{{book.location_label}}</p>{{/if}}
           <div class="mt-3 flex items-center gap-2"><div class="progress"><span style="width: {{book.percent}}%"></span></div><span class="text-xs text-muted">{{book.percent}}%</span></div>
         </div>
       </div>
-      <a href="/books/{{book.id}}" class="btn-primary mt-5 self-start">Đọc tiếp</a>
+      <a href="/books/{{book.id}}" class="btn-primary mt-5 self-start">Continue reading</a>
     {{else}}
-      <p class="flex-1 text-sm text-muted">Bạn chưa mở cuốn sách nào. Tải một tệp PDF hoặc EPUB lên để bắt đầu.</p>
-      <a href="/books" class="btn-secondary mt-5 self-start">Đến Books để tải sách lên</a>
+      <p class="flex-1 text-sm text-muted">You have not opened a book yet. Upload a PDF or EPUB to start.</p>
+      <a href="/books" class="btn-secondary mt-5 self-start">Go to Books to upload</a>
     {{/if}}
   </section>
 
@@ -52,27 +72,27 @@
     <h2 id="ielts-title" class="eyebrow mb-4">IELTS</h2>
     {{#if open}}
       <p class="font-serif text-xl leading-snug font-semibold">{{open.test_title}}</p>
-      <p class="mt-1 text-sm text-muted">Reading · {{open.modeLabel}} · đã trả lời {{open.answeredCount}}/{{open.total}} câu</p>
+      <p class="mt-1 text-sm text-muted">Reading · {{open.modeLabel}} · {{open.answeredCount}}/{{open.total}} answered</p>
       <div class="mt-auto flex flex-wrap items-center gap-2 pt-5">
-        <a href="/ielts/attempts/{{open.id}}" class="btn-primary">Tiếp tục làm bài</a>
-        {{#if mistake}}<a href="/notebook?kind=ielts_mistake" class="btn-ghost">Xem lại lỗi</a>{{/if}}
+        <a href="/ielts/attempts/{{open.id}}" class="btn-primary">Continue the test</a>
+        {{#if mistake}}<a href="/notebook?kind=ielts_mistake" class="btn-ghost">Review mistakes</a>{{/if}}
       </div>
     {{else if mistake}}
-      <p class="text-sm text-muted">Lỗi gần đây · {{mistake.ielts.typeLabel}}</p>
-      <p class="mt-1 font-serif text-lg leading-snug" lang="en">{{mistake.ielts.prompt}}</p>
-      <p class="mt-1 text-sm">Bạn chọn <strong>{{default mistake.ielts.myAnswer "(bỏ trống)"}}</strong> · đáp án <strong>{{mistake.ielts.correctAnswer}}</strong></p>
-      {{#if mistake.note}}<p class="mt-1 text-sm text-muted">Lý do: {{mistake.note}}</p>{{/if}}
+      <p class="text-sm text-muted">Recent mistake · {{mistake.ielts.typeLabel}}</p>
+      <p class="mt-1 font-serif text-lg leading-snug">{{mistake.ielts.prompt}}</p>
+      <p class="mt-1 text-sm">You chose <strong>{{default mistake.ielts.myAnswer "(blank)"}}</strong> · answer <strong>{{mistake.ielts.correctAnswer}}</strong></p>
+      {{#if mistake.note}}<p class="mt-1 text-sm text-muted">Reason: {{mistake.note}}</p>{{/if}}
       <div class="mt-auto flex flex-wrap gap-2 pt-5">
-        <a href="{{mistake.source_url}}" class="btn-primary">Xem lại lỗi</a>
-        <a href="/ielts" class="btn-ghost">Kho đề</a>
+        <a href="{{mistake.source_url}}" class="btn-primary">Review mistakes</a>
+        <a href="/ielts" class="btn-ghost">Test bank</a>
       </div>
     {{else}}
-      <p class="flex-1 text-sm text-muted">Chưa có bài đang làm hay lỗi nào. Chọn một đề Reading để luyện.</p>
-      <a href="/ielts" class="btn-secondary mt-5 self-start">Đến kho đề</a>
+      <p class="flex-1 text-sm text-muted">No test in progress and no mistakes yet. Pick a Reading test to practise.</p>
+      <a href="/ielts" class="btn-secondary mt-5 self-start">Go to the test bank</a>
     {{/if}}
   </section>
 </div>
 
 {{#if dueCount}}
-  <p class="mt-6 text-sm"><a href="/notebook/review" class="font-medium">Có {{dueCount}} mục Notebook đến hạn ôn hôm nay →</a></p>
+  <p class="mt-6 text-sm"><a href="/notebook/review" class="font-medium">{{dueCount}} notebook {{#if (eq dueCount 1)}}entry is{{else}}entries are{{/if}} due for review today →</a></p>
 {{/if}}

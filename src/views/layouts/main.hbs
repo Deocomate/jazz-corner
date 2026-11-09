@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,7 @@
   {{#each scripts}}<script src="{{this}}" type="module"></script>{{/each}}
 </head>
 <body class="flex min-h-screen flex-col bg-paper font-sans text-ink antialiased{{#if fullBleed}} reader-body{{/if}}">
-  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow">Bỏ qua đến nội dung</a>
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow">Skip to content</a>
   {{> nav}}
 
   {{#if fullBleed}}

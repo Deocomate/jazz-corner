@@ -1,7 +1,7 @@
 // Nghiệp vụ Notebook: thêm/sửa/xoá mục, lưu lỗi IELTS, hàng ôn theo ngày.
 import { notFound } from '#lib/errors.js';
 import { validate } from '#lib/validate.js';
-import { todayISO, addDays } from '#lib/dates.js';
+import { todayISO, addDays, localDateOf, utcRangeOfLocalDate } from '#lib/dates.js';
 import * as repo from './notebook.repo.js';
 import { itemSchema, sourceSchema, reviewSchema, quickSchema, KIND_OPTIONS } from './notebook.schema.js';
 
@@ -38,9 +38,29 @@ export async function listItems(filters, page) {
   return { items: items.map(decorate), total };
 }
 
+/**
+ * Các trang của cuốn sổ: mỗi ngày có ghi chép là một trang, đánh số từ 1 (ngày đầu tiên).
+ * Trang hôm nay luôn có ở cuối để viết tiếp, kể cả khi còn trống.
+ */
+export async function notebookPages() {
+  const counts = new Map();
+  for (const { created_at: at } of await repo.listCreatedAt()) {
+    const d = localDateOf(at);
+    counts.set(d, (counts.get(d) || 0) + 1);
+  }
+  const today = todayISO();
+  if (!counts.has(today)) counts.set(today, 0);
+  return [...counts.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, count], i) => ({ number: i + 1, date, count, isToday: date === today }));
+}
+
+export async function itemsOnDate(date) {
+  const [start, end] = utcRangeOfLocalDate(date);
+  return (await repo.listBetween(start, end)).map(decorate);
+}
+
 export async function getItem(id) {
   const item = await repo.findItem(id);
-  if (!item) throw notFound('Không tìm thấy mục trong Notebook.');
+  if (!item) throw notFound('Notebook entry not found.');
   return decorate(item);
 }
 
@@ -69,7 +89,7 @@ export async function createMistake({ attemptId, testTitle, result, reason }) {
     excerpt: result.evidence || null,
     tags: 'IELTS Reading',
     source_type: 'ielts',
-    source_label: `${testTitle} · Câu ${result.number}`,
+    source_label: `${testTitle} · Question ${result.number}`,
     source_url: `/ielts/attempts/${attemptId}/result#q-${result.questionId}`,
     ielts: {
       testTitle,

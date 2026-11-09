@@ -41,7 +41,7 @@ window.api = async (url, { method = 'GET', body } = {}) => {
     body: body ? JSON.stringify(body) : undefined,
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || `Lỗi ${response.status}`);
+  if (!response.ok) throw new Error(data.error || `Error ${response.status}`);
   return data;
 };
 
@@ -59,8 +59,8 @@ window.uploadFile = async (url, file, name = 'file') => {
     body: file,
   });
   const data = await response.json().catch(() => ({}));
-  if (response.status === 413) throw new Error('Tệp quá lớn. Hãy chọn tệp nhỏ hơn.');
-  if (!response.ok) throw new Error(data.error || `Lỗi ${response.status}`);
+  if (response.status === 413) throw new Error('The file is too large. Please choose a smaller file.');
+  if (!response.ok) throw new Error(data.error || `Error ${response.status}`);
   return data;
 };
 

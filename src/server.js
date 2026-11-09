@@ -14,13 +14,13 @@ async function main() {
 
   if (usingEphemeralDb()) {
     console.warn(
-      '[cảnh báo] Đang dùng file SQLite trên host free: dữ liệu sẽ MẤT khi server ngủ/khởi động lại. ' +
-        'Đặt DATABASE_URL + DATABASE_AUTH_TOKEN (Turso) để lưu bền.',
+      '[warning] Using a SQLite file on a free host: data will be LOST when the server sleeps or restarts. ' +
+        'Set DATABASE_URL + DATABASE_AUTH_TOKEN (Turso) for durable storage.',
     );
   }
 
   const server = createApp().listen(config.port, () => {
-    console.info(`[server] ${config.appName} chạy tại http://localhost:${config.port} (${config.env})`);
+    console.info(`[server] ${config.appName} running at http://localhost:${config.port} (${config.env})`);
   });
 
   const shutdown = () => server.close(() => process.exit(0));
@@ -29,6 +29,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error('[server] không khởi động được:', err);
+  console.error('[server] failed to start:', err);
   process.exit(1);
 });

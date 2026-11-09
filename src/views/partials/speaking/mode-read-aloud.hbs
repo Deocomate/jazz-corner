@@ -1,17 +1,17 @@
 <section class="card card-body space-y-4" aria-labelledby="ra-title">
   <h2 id="ra-title" class="section-title text-base">Read Aloud</h2>
-  <p class="text-sm text-muted">{{#if (gt sentences.length 1)}}Tập riêng từng câu (nghe → chọn "Tập câu này" → ghi âm), rồi đọc liền cả đoạn: giữ nhịp qua nhiều câu, ngắt theo ý và đổi giọng theo nội dung.{{else}}Nghe mẫu, ghi âm, nghe lại và thử lại.{{/if}}</p>
-  <ol class="space-y-2" lang="en">
+  <p class="text-sm text-muted">{{#if (gt sentences.length 1)}}Practise each sentence on its own (listen → “Practise this sentence” → record), then read the whole passage: keep the rhythm across sentences, pause by meaning and vary your voice with the content.{{else}}Listen, record yourself, play it back and try again.{{/if}}</p>
+  <ol class="space-y-2">
     {{#each sentences}}
       <li class="sentence flex flex-wrap items-start gap-2 rounded-xl border border-line p-3" data-sentence="{{@index}}">
         <span class="mt-0.5 w-6 shrink-0 text-sm font-semibold text-muted">{{add @index 1}}</span>
         <p class="min-w-0 flex-1 font-serif text-lg leading-relaxed">{{this}}</p>
-        <div class="flex gap-1" lang="vi">
-          <button type="button" class="btn-ghost btn-sm" data-play-sentence="{{@index}}">▶ Nghe</button>
-          <button type="button" class="btn-ghost btn-sm" data-target-sentence="{{@index}}">Tập câu này</button>
+        <div class="flex gap-1">
+          <button type="button" class="btn-ghost btn-sm" data-play-sentence="{{@index}}">▶ Listen</button>
+          <button type="button" class="btn-ghost btn-sm" data-target-sentence="{{@index}}">Practise this sentence</button>
         </div>
       </li>
     {{/each}}
   </ol>
-  {{#if (gt sentences.length 1)}}<button type="button" class="btn-secondary btn-sm" data-target-all>Đọc liền cả đoạn</button>{{/if}}
+  {{#if (gt sentences.length 1)}}<button type="button" class="btn-secondary btn-sm" data-target-all>Read the whole passage</button>{{/if}}
 </section>

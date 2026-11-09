@@ -1,0 +1,35 @@
+{{!-- Search & filter across every page of the notebook. --}}
+<details class="card" {{#if hasFilters}}open{{/if}}>
+  <summary class="cursor-pointer px-5 py-3 text-sm font-medium">Search &amp; filter{{#if hasFilters}} · filtering{{/if}}</summary>
+  <form method="get" action="/notebook" class="grid gap-3 border-t border-line p-5 sm:grid-cols-2 lg:grid-cols-5" role="search">
+    <div class="field lg:col-span-2">
+      <label for="f-q" class="label">Search</label>
+      <input id="f-q" name="q" value="{{filters.q}}" class="input" placeholder="Words, phrases, notes, excerpts…">
+    </div>
+    <div class="field">
+      <label for="f-kind" class="label">Type</label>
+      <select id="f-kind" name="kind" class="input" data-autosubmit>
+        <option value="">All</option>
+        {{#each kindOptions}}<option value="{{value}}" {{selected value ../filters.kind}}>{{label}}</option>{{/each}}
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-source" class="label">Source</label>
+      <select id="f-source" name="source" class="input" data-autosubmit>
+        <option value="">All</option>
+        {{#each sourceOptions}}<option value="{{value}}" {{selected value ../filters.source}}>{{label}}</option>{{/each}}
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-tag" class="label">Tag</label>
+      <select id="f-tag" name="tag" class="input" data-autosubmit>
+        <option value="">All</option>
+        {{#each tagOptions}}<option value="{{value}}" {{selected value ../filters.tag}}>{{label}}</option>{{/each}}
+      </select>
+    </div>
+    <div class="flex items-center gap-2 sm:col-span-2 lg:col-span-5">
+      <button type="submit" class="btn-primary btn-sm">Search</button>
+      {{#if hasFilters}}<a href="/notebook" class="btn-ghost btn-sm">Back to the notebook</a>{{/if}}
+    </div>
+  </form>
+</details>

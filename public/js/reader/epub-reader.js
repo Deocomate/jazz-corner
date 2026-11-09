@@ -73,7 +73,7 @@ setupReader((ctx) => {
   async function loadChapter() {
     const path = spine[chapter];
     const res = await fetch(resourceUrl(path));
-    if (!res.ok) throw new Error(`không tải được chương ${chapter + 1}`);
+    if (!res.ok) throw new Error(`chapter ${chapter + 1} could not be loaded`);
     const raw = await res.text();
     let parsed = new DOMParser().parseFromString(raw, 'application/xhtml+xml');
     if (parsed.querySelector('parsererror')) parsed = new DOMParser().parseFromString(raw, 'text/html');
@@ -155,7 +155,7 @@ setupReader((ctx) => {
     location: () => ({ chapter, scroll: Math.round(scrollRatio * 1000) / 1000 }),
     label: () => {
       const toc = currentTocLabel();
-      return `${toc ? toc : `Phần ${chapter + 1}`} · ${chapter + 1}/${spine.length}`;
+      return `${toc ? toc : `Part ${chapter + 1}`} · ${chapter + 1}/${spine.length}`;
     },
     progress: () => (spine.length ? (chapter + scrollRatio) / spine.length : 0),
     sameUnit: (a, b) => Boolean(a && b && a.chapter === b.chapter),

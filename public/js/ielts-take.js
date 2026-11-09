@@ -36,13 +36,13 @@ function refreshPills() {
 let saveTimer = null;
 let expired = false;
 async function save() {
-  saveStatus.textContent = 'Đang lưu…';
+  saveStatus.textContent = 'Saving…';
   try {
     await window.api(`/api/ielts/attempts/${config.id}`, { method: 'PUT', body: collect() });
-    saveStatus.textContent = `Đã lưu ${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`;
+    saveStatus.textContent = `Saved at ${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
   } catch (err) {
-    saveStatus.textContent = 'Chưa lưu được';
-    if (/hết giờ|đã nộp/i.test(err.message)) submitNow();
+    saveStatus.textContent = 'Not saved';
+    if (/time is up|already been submitted/i.test(err.message)) submitNow();
   }
 }
 function scheduleSave() {
@@ -56,7 +56,7 @@ root.addEventListener('input', (e) => {
   if (limit) {
     const words = (e.target.value.trim().match(/\S+/g) || []).length;
     const hint = e.target.parentElement.querySelector('[data-word-count]');
-    hint.textContent = `${words}/${limit} từ${words > limit ? ' — vượt giới hạn, câu sẽ bị tính sai' : ''}`;
+    hint.textContent = `${words}/${limit} words${words > limit ? ' — over the limit, this answer will be marked wrong' : ''}`;
     hint.classList.toggle('text-red-700', words > limit);
   }
 });
@@ -81,7 +81,7 @@ document.querySelector('[data-open-submit]').addEventListener('click', () => {
   const missing = refreshPills();
   const flagged = collect().flags.length;
   dialog.querySelector('[data-unanswered-text]').textContent =
-    `${missing ? `Còn ${missing} câu chưa trả lời.` : 'Bạn đã trả lời tất cả các câu.'}${flagged ? ` ${flagged} câu đang được đánh dấu xem lại.` : ''}`;
+    `${missing ? `${missing} question${missing > 1 ? 's are' : ' is'} still unanswered.` : 'You have answered every question.'}${flagged ? ` ${flagged} flagged for review.` : ''}`;
   dialog.showModal();
 });
 form.addEventListener('submit', () => {
@@ -101,7 +101,7 @@ if (config.deadline && timer) {
     timer.classList.toggle('text-red-700', left < 5 * 60000);
     if (left <= 0) {
       clearInterval(handle);
-      timer.textContent = 'Hết giờ';
+      timer.textContent = 'Time is up';
       submitNow();
     }
   };
@@ -120,7 +120,7 @@ root.addEventListener('click', async (e) => {
     box.className = `mt-2 rounded-lg p-3 text-sm ${r.isCorrect ? 'bg-emerald-50 text-emerald-900' : 'bg-red-50 text-red-900'}`;
     box.replaceChildren();
     const line = (text, cls = '') => Object.assign(document.createElement('p'), { textContent: text, className: cls });
-    box.append(line(`${r.isCorrect ? '✓ Đúng' : `✗ Chưa đúng${r.note ? ` (${r.note})` : ''}`} — đáp án: ${r.correct}`, 'font-medium'));
+    box.append(line(`${r.isCorrect ? '✓ Correct' : `✗ Not quite${r.note ? ` (${r.note})` : ''}`} — answer: ${r.correct}`, 'font-medium'));
     if (r.evidence) box.append(line(`“${r.evidence}”`, 'mt-1 font-serif italic'));
     if (r.explanation) box.append(line(r.explanation, 'mt-1'));
     box.hidden = false;

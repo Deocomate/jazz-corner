@@ -2,16 +2,16 @@
 
 export function micErrorMessage(err) {
   if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
-    return 'Trình duyệt này không hỗ trợ ghi âm. Hãy dùng Chrome, Edge hoặc Firefox bản mới (truy cập qua http://localhost).';
+    return 'This browser cannot record audio. Use a recent Chrome, Edge or Firefox (opened at http://localhost).';
   }
   if (err?.name === 'NotAllowedError' || err?.name === 'SecurityError') {
-    return 'Trình duyệt đang chặn micro. Bấm biểu tượng ổ khoá/micro ở thanh địa chỉ → cho phép Micro → tải lại trang. Trên Windows, kiểm tra thêm Settings › Privacy › Microphone. Bạn vẫn nghe mẫu được bình thường.';
+    return 'The browser is blocking the microphone. Click the lock/microphone icon in the address bar → allow Microphone → reload the page. On Windows, also check Settings › Privacy › Microphone. You can still listen to the model audio.';
   }
   if (err?.name === 'NotFoundError' || err?.name === 'OverconstrainedError') {
-    return 'Không tìm thấy micro. Hãy cắm tai nghe/micro rồi thử lại. Bạn vẫn nghe mẫu được bình thường.';
+    return 'No microphone found. Plug in a headset or microphone and try again. You can still listen to the model audio.';
   }
-  if (err?.name === 'NotReadableError') return 'Micro đang được ứng dụng khác dùng. Đóng ứng dụng đó rồi thử lại.';
-  return `Không bật được micro: ${err?.message || err}`;
+  if (err?.name === 'NotReadableError') return 'Another app is using the microphone. Close it and try again.';
+  return `Could not start the microphone: ${err?.message || err}`;
 }
 
 const MIME_CHOICES = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'];

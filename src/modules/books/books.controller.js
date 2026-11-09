@@ -39,7 +39,7 @@ export async function reader(req, res) {
 export async function file(req, res) {
   const book = await service.getBook(req.params.id);
   const full = filePath('books', book.stored_name);
-  if (!full) throw notFound('Không tìm thấy tệp sách trên máy.');
+  if (!full) throw notFound('The book file is missing on this computer.');
   res.type(book.format === 'pdf' ? 'application/pdf' : 'application/epub+zip').sendFile(full);
 }
 
@@ -60,6 +60,6 @@ export async function epubResource(req, res) {
 
 export async function destroy(req, res) {
   await service.deleteBook(req.params.id);
-  req.flash('success', 'Đã xoá sách khỏi thư viện.');
+  req.flash('success', 'The book was removed from your library.');
   res.redirect('/books');
 }

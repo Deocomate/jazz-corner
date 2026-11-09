@@ -41,7 +41,7 @@ export async function listItems() {
 
 export async function getItem(id) {
   const item = await repo.findItem(id);
-  if (!item) throw notFound('Không tìm thấy bài luyện.');
+  if (!item) throw notFound('Exercise not found.');
   return decorate(item);
 }
 
@@ -128,8 +128,8 @@ export async function saveRecording(itemId, buffer, { mime, mode, durationMs, ta
   await getItem(itemId);
   const baseMime = String(mime || '').split(';')[0].trim().toLowerCase();
   const ext = AUDIO_TYPES[baseMime];
-  if (!buffer?.length || !ext) return { ok: false, errors: { _form: 'Bản ghi trống hoặc định dạng âm thanh không được hỗ trợ.' } };
-  if (!RECORDING_MODES.includes(mode)) return { ok: false, errors: { _form: 'Chế độ luyện không hợp lệ.' } };
+  if (!buffer?.length || !ext) return { ok: false, errors: { _form: 'The recording is empty or its audio format is not supported.' } };
+  if (!RECORDING_MODES.includes(mode)) return { ok: false, errors: { _form: 'Invalid practice mode.' } };
   const storedName = await saveFile('recordings', buffer, ext);
   const id = await repo.createRecording({
     item_id: itemId, mode, stored_name: storedName, mime: baseMime, size_bytes: buffer.length,
@@ -142,7 +142,7 @@ export async function saveRecording(itemId, buffer, { mime, mode, durationMs, ta
 
 export async function getRecording(id) {
   const r = await repo.findRecording(id);
-  if (!r) throw notFound('Không tìm thấy bản ghi.');
+  if (!r) throw notFound('Recording not found.');
   return r;
 }
 
@@ -179,11 +179,14 @@ export async function ensureSampleItems() {
     const audio = sampleAudio[s.key];
     const data = {
       kind: s.kind, title: s.title, text: s.text, notes: s.notes, origin: 'sample', sample_key: s.key, source_type: 'sample',
-      source_label: 'Bài mẫu', audio_url: audio ? `/samples/${s.key}.wav` : null, audio_kind: audio ? 'synthetic' : null,
+      source_label: 'Sample', audio_url: audio ? `/samples/${s.key}.wav` : null, audio_kind: audio ? 'synthetic' : null,
       audio_voice: audio ? SAMPLE_VOICE : null, segments: audio?.segments ?? null,
     };
     const existing = await repo.findBySampleKey(s.key);
     if (!existing) await repo.createItem(data);
-    else if (audio && !existing.audio_url) await repo.updateSampleAudio(existing.id, data);
+    else {
+      if (audio && !existing.audio_url) await repo.updateSampleAudio(existing.id, data);
+      await repo.refreshSampleText(existing.id, data);
+    }
   }
 }

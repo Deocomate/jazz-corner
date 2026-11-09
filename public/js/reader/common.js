@@ -94,9 +94,9 @@ export async function setupReader(createAdapter) {
   function renderMarks() {
     const bl = $('[data-bookmark-list]');
     bl.replaceChildren();
-    if (!marks.bookmarks.length) bl.append(li('<p class="text-sm text-muted">Chưa có bookmark.</p>'));
+    if (!marks.bookmarks.length) bl.append(li('<p class="text-sm text-muted">No bookmarks yet.</p>'));
     for (const b of marks.bookmarks) {
-      const item = li(`<div class="flex items-center gap-2"><button type="button" class="flex-1 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-brand-50">${esc(b.label)}</button><button type="button" class="btn-ghost btn-sm" aria-label="Xoá bookmark">✕</button></div>`);
+      const item = li(`<div class="flex items-center gap-2"><button type="button" class="flex-1 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-brand-50">${esc(b.label)}</button><button type="button" class="btn-ghost btn-sm" aria-label="Delete bookmark">✕</button></div>`);
       const [go, del] = item.querySelectorAll('button');
       go.addEventListener('click', () => goTo(b.location));
       del.addEventListener('click', async () => {
@@ -107,9 +107,9 @@ export async function setupReader(createAdapter) {
     }
     const hl = $('[data-highlight-list]');
     hl.replaceChildren();
-    if (!marks.highlights.length) hl.append(li('<p class="text-sm text-muted">Bôi chọn một đoạn rồi chọn Highlight hoặc Ghi chú.</p>'));
+    if (!marks.highlights.length) hl.append(li('<p class="text-sm text-muted">Select some text, then choose Highlight or Note.</p>'));
     for (const h of marks.highlights) {
-      const item = li(`<div class="rounded-xl border border-line p-3"><button type="button" class="w-full text-left"><span class="block font-serif text-sm italic">“${esc(h.text.slice(0, 220))}${h.text.length > 220 ? '…' : ''}”</span>${h.note ? `<span class="mt-1 block text-sm">✎ ${esc(h.note)}</span>` : ''}<span class="mt-1 block text-xs text-muted">${esc(h.location_label || '')}</span></button><div class="mt-2 flex gap-1"><button type="button" class="btn-ghost btn-sm" data-act="note">Ghi chú</button><button type="button" class="btn-ghost btn-sm text-red-700" data-act="del">Xoá</button></div></div>`);
+      const item = li(`<div class="rounded-xl border border-line p-3"><button type="button" class="w-full text-left"><span class="block font-serif text-sm italic">“${esc(h.text.slice(0, 220))}${h.text.length > 220 ? '…' : ''}”</span>${h.note ? `<span class="mt-1 block text-sm">✎ ${esc(h.note)}</span>` : ''}<span class="mt-1 block text-xs text-muted">${esc(h.location_label || '')}</span></button><div class="mt-2 flex gap-1"><button type="button" class="btn-ghost btn-sm" data-act="note">Note</button><button type="button" class="btn-ghost btn-sm text-red-700" data-act="del">Delete</button></div></div>`);
       item.querySelector('button').addEventListener('click', () => goTo(h.location, h.text));
       item.querySelector('[data-act="note"]').addEventListener('click', () => editNote(h));
       item.querySelector('[data-act="del"]').addEventListener('click', async () => {
@@ -192,7 +192,7 @@ export async function setupReader(createAdapter) {
       if (action === 'notebook') {
         const short = text.split(' ').length <= 8;
         const item = await openNotebookDialog({ content: short ? text : '', excerpt: text, kind: short ? 'word' : 'pattern', source });
-        if (item) ctx.showNotice('Đã lưu vào Notebook và thêm vào hàng ôn hôm nay.');
+        if (item) ctx.showNotice('Saved to today’s page in your Notebook.');
         return;
       }
       if (action === 'speak') sendToSpeaking({ text, sourceType: 'book', sourceLabel: source.label, sourceUrl: source.url });
@@ -220,12 +220,12 @@ export async function setupReader(createAdapter) {
   async function addBookmark() {
     await window.api(`/api/books/${config.id}/bookmarks`, { method: 'POST', body: { location: adapter.location(), label: adapter.label() } });
     await loadMarks();
-    ctx.showNotice(`Đã thêm bookmark: ${adapter.label()}`);
+    ctx.showNotice(`Bookmark added: ${adapter.label()}`);
   }
   function setTheme(theme) {
     root.dataset.theme = theme;
     const btn = $('[data-theme-toggle]', root);
-    btn.textContent = theme === 'dark' ? 'Sáng' : 'Tối';
+    btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
     btn.setAttribute('aria-pressed', String(theme === 'dark'));
     try {
       localStorage.setItem('readerTheme', theme);
@@ -249,7 +249,7 @@ export async function setupReader(createAdapter) {
     if (!config.hasCover && adapter.makeCover) uploadCover(adapter.makeCover);
   } catch (err) {
     ui.loading.hidden = true;
-    ui.error.textContent = `Không mở được sách: ${err.message || err}. Tệp có thể bị hỏng — hãy xoá và tải lại, hoặc đổi sang tệp khác.`;
+    ui.error.textContent = `Could not open the book: ${err.message || err}. The file may be damaged — delete it and upload it again, or try a different file.`;
     ui.error.hidden = false;
   }
 

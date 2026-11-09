@@ -19,7 +19,7 @@ export function csrf(req, res, next) {
 
   const sent = req.body?._csrf ?? req.get('x-csrf-token');
   if (!sameToken(sent, req.session.csrf)) {
-    return next(new AppError(403, 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang và thử lại.'));
+    return next(new AppError(403, 'Your session has expired. Please reload the page and try again.'));
   }
   next();
 }

@@ -17,7 +17,7 @@ test('chấm Completion: chuẩn hoá hoa/thường, khoảng trắng, biến th
   assert.equal(gradeAnswer(q, group, 'heat-island').isCorrect, true);
   const over = gradeAnswer(q, group, 'heat island effect');
   assert.equal(over.isCorrect, false);
-  assert.match(over.note, /giới hạn/);
+  assert.match(over.note, /word limit/);
   assert.equal(gradeAnswer({ answer: 'NOT GIVEN' }, { type: 'tfng' }, 'not given').isCorrect, true);
 });
 
@@ -26,7 +26,7 @@ test('đề mẫu được tạo một lần, đã duyệt và có trong kho đ�
   assert.equal((await get("SELECT COUNT(*) AS n FROM ielts_tests WHERE sample_key IS NOT NULL")).n, 1);
   const res = await agent.get('/ielts');
   assert.match(res.text, /The Return of the Urban Forest/);
-  assert.match(res.text, /Dữ liệu mẫu/);
+  assert.match(res.text, /Sample data/);
 });
 
 test('soạn đề: tạo nháp, thêm bài đọc, nhóm, câu hỏi; không duyệt được khi thiếu; duyệt rồi làm', async () => {
@@ -46,7 +46,7 @@ test('soạn đề: tạo nháp, thêm bài đọc, nhóm, câu hỏi; không du
 
   const bad = await postForm(agent, `/ielts/tests/${id}/groups/${group.id}/questions`, { number: '1', prompt: 'Bees are', options_text: 'A. pests\nB. pollinators', answer: 'D' }, { from: `/ielts/tests/${id}/groups/${group.id}/questions/new` });
   assert.equal(bad.status, 422);
-  assert.match(bad.text, /ký hiệu lựa chọn/);
+  assert.match(bad.text, /option letters/);
 
   const ok = await postForm(agent, `/ielts/tests/${id}/groups/${group.id}/questions`, { number: '1', prompt: 'Bees are', options_text: 'A. pests\nB. pollinators', answer: 'b', evidence: 'Bees are important pollinators.' }, { from: `/ielts/tests/${id}/groups/${group.id}/questions/new` });
   assert.equal(ok.status, 302);
@@ -96,15 +96,15 @@ test('Làm đề: tự lưu, tải lại giữ câu trả lời và hạn nộp,
 test('lưu câu sai vào Notebook kèm lý do và mở lại đúng câu', async () => {
   const attempt = await get("SELECT id FROM ielts_attempts WHERE status = 'submitted' ORDER BY id DESC LIMIT 1");
   const q13 = await get('SELECT id FROM ielts_questions WHERE test_id = ? AND number = 13', [sample.id]);
-  const res = await postForm(agent, `/ielts/attempts/${attempt.id}/mistakes/${q13.id}`, { reason: 'bỏ qua cách paraphrase' }, { from: '/ielts' });
+  const res = await postForm(agent, `/ielts/attempts/${attempt.id}/mistakes/${q13.id}`, { reason: 'missed the paraphrase' }, { from: '/ielts' });
   assert.equal(res.status, 302);
-  await postForm(agent, `/ielts/attempts/${attempt.id}/mistakes/${q13.id}`, { reason: 'lần 2' }, { from: '/ielts' });
+  await postForm(agent, `/ielts/attempts/${attempt.id}/mistakes/${q13.id}`, { reason: 'second time' }, { from: '/ielts' });
   const items = await get("SELECT COUNT(*) AS n, MAX(source_url) AS url, MAX(note) AS note FROM notebook_items WHERE kind = 'ielts_mistake'");
   assert.equal(items.n, 1);
-  assert.equal(items.note, 'bỏ qua cách paraphrase');
+  assert.equal(items.note, 'missed the paraphrase');
   assert.equal(items.url, `/ielts/attempts/${attempt.id}/result#q-${q13.id}`);
   const result = await agent.get(`/ielts/attempts/${attempt.id}/result`);
-  assert.match(result.text, /Đã lưu vào Notebook/);
+  assert.match(result.text, /Saved to Notebook/);
 });
 
 test('hết giờ: mở lại sẽ tự nộp với câu trả lời đã lưu', async () => {
@@ -131,7 +131,7 @@ test('chế độ Luyện cho kiểm tra từng câu kèm giải thích', async 
 test('nhập đề JSON lỗi báo rõ, hợp lệ thì thành bản nháp', async () => {
   const bad = await postForm(agent, '/ielts/tests/import', { json: '{oops' }, { from: '/ielts/tests/import' });
   assert.equal(bad.status, 422);
-  assert.match(bad.text, /JSON không hợp lệ/);
+  assert.match(bad.text, /Invalid JSON/);
   const json = JSON.stringify({ title: 'Imported', passages: [{ title: 'P', body: 'Some passage text that is long enough.' }], groups: [{ passage: 1, type: 'tfng', instructions: 'TFNG', questions: [{ number: 1, prompt: 'S', answer: 'TRUE' }] }] });
   const ok = await postForm(agent, '/ielts/tests/import', { json }, { from: '/ielts/tests/import' });
   assert.equal(ok.status, 302);

@@ -1,19 +1,19 @@
-{{#> page-header title="IELTS" eyebrow="Academic · mục tiêu band 8.0–9.0" subtitle="Kho đề tương tác, tách riêng khỏi tài liệu PDF gốc. Bản đầu hỗ trợ Reading; các kỹ năng khác đang ở giai đoạn sau."}}
-  <a href="/ielts/tests/import" class="btn-secondary">Nhập đề (JSON)</a>
-  <a href="/ielts/tests/new" class="btn-primary">+ Soạn đề mới</a>
+{{#> page-header title="IELTS" eyebrow="Academic · target band 8.0–9.0" subtitle="An interactive test bank, kept separate from your source PDFs. Version 1 covers Reading; the other skills come in later phases."}}
+  <a href="/ielts/tests/import" class="btn-secondary">Import a test (JSON)</a>
+  <a href="/ielts/tests/new" class="btn-primary">+ New test</a>
 {{/page-header}}
 
 {{#if open.length}}
   <section class="mb-10" aria-labelledby="open-title">
-    <h2 id="open-title" class="section-title mb-3">Bài đang làm dở</h2>
+    <h2 id="open-title" class="section-title mb-3">In progress</h2>
     <ul class="grid gap-3 md:grid-cols-2">
       {{#each open}}
         <li class="card card-body flex items-center gap-4">
           <div class="min-w-0 flex-1">
             <p class="truncate font-semibold">{{test_title}}</p>
-            <p class="text-sm text-muted">Reading · {{modeLabel}} · đã trả lời {{answeredCount}} câu</p>
+            <p class="text-sm text-muted">Reading · {{modeLabel}} · {{answeredCount}} answered</p>
           </div>
-          <a href="/ielts/attempts/{{id}}" class="btn-primary btn-sm">Tiếp tục làm bài</a>
+          <a href="/ielts/attempts/{{id}}" class="btn-primary btn-sm">Continue the test</a>
         </li>
       {{/each}}
     </ul>
@@ -22,8 +22,8 @@
 
 <section class="mb-10" aria-labelledby="bank-title">
   <div class="mb-3 flex items-baseline justify-between">
-    <h2 id="bank-title" class="section-title">Kho đề Reading</h2>
-    <span class="text-xs text-muted">Chọn Luyện (có giải thích ngay) hoặc Làm đề (hẹn giờ)</span>
+    <h2 id="bank-title" class="section-title">Reading test bank</h2>
+    <span class="text-xs text-muted">Practice (instant explanations) or Exam (timed)</span>
   </div>
   {{#if published.length}}
     <ul class="grid gap-4 md:grid-cols-2">
@@ -32,11 +32,11 @@
           <div class="flex flex-wrap items-center gap-1.5">
             <span class="badge-yellow">Reading</span>
             {{> origin-tag origin=origin}}
-            {{#if source_pdf_name}}<span class="chip">Có PDF nguồn</span>{{/if}}
+            {{#if source_pdf_name}}<span class="chip">Source PDF attached</span>{{/if}}
           </div>
           <h3 class="font-serif text-lg leading-snug font-semibold">{{title}}</h3>
           {{#if description}}<p class="text-sm text-muted">{{description}}</p>{{/if}}
-          <p class="text-xs text-muted">{{question_count}} câu · {{time_limit_minutes}} phút</p>
+          <p class="text-xs text-muted">{{question_count}} questions · {{time_limit_minutes}} minutes</p>
           <div class="mt-auto flex flex-wrap gap-2">
             {{#each ../modes}}
               <form method="post" action="/ielts/tests/{{../id}}/start">
@@ -45,29 +45,29 @@
                 <button type="submit" class="{{#if (eq value 'exam')}}btn-primary{{else}}btn-secondary{{/if}} btn-sm" title="{{hint}}">{{label}}</button>
               </form>
             {{/each}}
-            <a href="/ielts/tests/{{id}}/review" class="btn-ghost btn-sm">Xem / sửa</a>
+            <a href="/ielts/tests/{{id}}/review" class="btn-ghost btn-sm">View / edit</a>
           </div>
         </li>
       {{/each}}
     </ul>
   {{else}}
-    {{> empty-state title="Chưa có đề đã duyệt" text="Soạn hoặc nhập một đề, rồi duyệt để bắt đầu làm."}}
+    {{> empty-state title="No published tests yet" text="Write or import a test, then publish it to start practising."}}
   {{/if}}
 </section>
 
 {{#if drafts.length}}
   <section class="mb-10" aria-labelledby="draft-title">
-    <h2 id="draft-title" class="section-title mb-3">Bản nháp chờ duyệt</h2>
+    <h2 id="draft-title" class="section-title mb-3">Drafts awaiting review</h2>
     <div class="table-wrap">
       <table class="table">
-        <thead><tr><th>Đề</th><th>Câu</th><th>Nguồn</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
+        <thead><tr><th>Test</th><th>Questions</th><th>Origin</th><th><span class="sr-only">Actions</span></th></tr></thead>
         <tbody>
           {{#each drafts}}
             <tr>
               <td class="font-medium">{{title}}</td>
               <td>{{question_count}}</td>
               <td>{{> origin-tag origin=origin}}</td>
-              <td class="text-right"><a href="/ielts/tests/{{id}}/edit" class="btn-secondary btn-sm">Soạn tiếp</a> <a href="/ielts/tests/{{id}}/review" class="btn-ghost btn-sm">Duyệt</a></td>
+              <td class="text-right"><a href="/ielts/tests/{{id}}/edit" class="btn-secondary btn-sm">Keep editing</a> <a href="/ielts/tests/{{id}}/review" class="btn-ghost btn-sm">Review</a></td>
             </tr>
           {{/each}}
         </tbody>
@@ -78,13 +78,13 @@
 
 {{#if recent.length}}
   <section class="mb-10" aria-labelledby="recent-title">
-    <h2 id="recent-title" class="section-title mb-3">Kết quả gần đây</h2>
+    <h2 id="recent-title" class="section-title mb-3">Recent results</h2>
     <ul class="divide-y divide-line rounded-2xl border border-line bg-white">
       {{#each recent}}
         <li class="flex flex-wrap items-center gap-3 px-5 py-3">
           <span class="min-w-0 flex-1 truncate">{{test_title}} <span class="text-xs text-muted">· {{modeLabel}} · {{formatDate submitted_at}}</span></span>
           <strong>{{score}}/{{total}}</strong>
-          <a href="/ielts/attempts/{{id}}/result" class="btn-ghost btn-sm">Xem lại</a>
+          <a href="/ielts/attempts/{{id}}/result" class="btn-ghost btn-sm">Review</a>
         </li>
       {{/each}}
     </ul>
@@ -92,11 +92,11 @@
 {{/if}}
 
 <section aria-labelledby="later-title">
-  <h2 id="later-title" class="section-title mb-3">Các kỹ năng khác</h2>
+  <h2 id="later-title" class="section-title mb-3">Other skills</h2>
   <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    <li class="card card-body"><p class="font-semibold">Listening</p><p class="mt-1 text-sm text-muted">Audio, câu hỏi theo phần, transcript có mốc thời gian.</p><span class="tag-later mt-3">Giai đoạn sau</span></li>
-    <li class="card card-body"><p class="font-semibold">Writing</p><p class="mt-1 text-sm text-muted">Task 1 &amp; 2, đếm từ, hẹn giờ, phản hồi theo tiêu chí.</p><span class="tag-later mt-3">Giai đoạn sau</span></li>
-    <li class="card card-body"><p class="font-semibold">Speaking (Part 1–3)</p><p class="mt-1 text-sm text-muted">Ghi âm, transcript, mô phỏng phỏng vấn.</p><span class="tag-later mt-3">Giai đoạn sau</span></li>
-    <li class="card card-body"><p class="font-semibold">Thi thử tổng hợp</p><p class="mt-1 text-sm text-muted">Khi đủ bốn kỹ năng.</p><span class="tag-later mt-3">Giai đoạn sau</span></li>
+    <li class="card card-body"><p class="font-semibold">Listening</p><p class="mt-1 text-sm text-muted">Audio, questions by section, transcripts with timestamps.</p><span class="tag-later mt-3">Later phase</span></li>
+    <li class="card card-body"><p class="font-semibold">Writing</p><p class="mt-1 text-sm text-muted">Task 1 &amp; 2, word count, timer, criteria-based feedback.</p><span class="tag-later mt-3">Later phase</span></li>
+    <li class="card card-body"><p class="font-semibold">Speaking (Parts 1–3)</p><p class="mt-1 text-sm text-muted">Recording, transcripts, interview simulation.</p><span class="tag-later mt-3">Later phase</span></li>
+    <li class="card card-body"><p class="font-semibold">Full mock test</p><p class="mt-1 text-sm text-muted">Once all four skills are in.</p><span class="tag-later mt-3">Later phase</span></li>
   </ul>
 </section>

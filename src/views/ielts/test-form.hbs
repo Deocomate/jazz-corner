@@ -1,10 +1,10 @@
-{{#> page-header title=title eyebrow="IELTS Reading" subtitle="Đề mới luôn là bản nháp. Sau khi thêm bài đọc và câu hỏi, bạn duyệt đề rồi mới làm bài."}}
-  <a href="{{#if test}}/ielts/tests/{{test.id}}/edit{{else}}/ielts{{/if}}" class="btn-ghost">Huỷ</a>
+{{#> page-header title=title eyebrow="IELTS Reading" subtitle="A new test is always a draft. Add passages and questions, then publish it before taking it."}}
+  <a href="{{#if test}}/ielts/tests/{{test.id}}/edit{{else}}/ielts{{/if}}" class="btn-ghost">Cancel</a>
 {{/page-header}}
 <form method="post" action="{{#if test}}/ielts/tests/{{test.id}}/settings{{else}}/ielts/tests{{/if}}" class="card card-body max-w-2xl space-y-5">
   {{> form/csrf}}
-  {{> form/field name="title" label="Tên đề" value=values.title error=errors.title required=true placeholder="VD: Cambridge 18 Test 1 — Reading (tự nhập)"}}
-  {{> form/textarea name="description" label="Mô tả / ghi chú nguồn" value=values.description error=errors.description rows=2}}
-  {{> form/field name="time_limit_minutes" type="number" label="Thời gian (phút) cho chế độ Làm đề" value=values.time_limit_minutes error=errors.time_limit_minutes required=true hint="IELTS Reading thật: 60 phút cho 3 bài đọc."}}
-  <div class="flex justify-end"><button type="submit" class="btn-primary">{{#if test}}Lưu{{else}}Tạo bản nháp{{/if}}</button></div>
+  {{> form/field name="title" label="Test title" value=values.title error=errors.title required=true placeholder="E.g. Cambridge 18 Test 1 — Reading (typed in by me)"}}
+  {{> form/textarea name="description" label="Description / source notes" value=values.description error=errors.description rows=2}}
+  {{> form/field name="time_limit_minutes" type="number" label="Time limit for Exam mode (minutes)" value=values.time_limit_minutes error=errors.time_limit_minutes required=true hint="The real IELTS Reading test: 60 minutes for 3 passages."}}
+  <div class="flex justify-end"><button type="submit" class="btn-primary">{{#if test}}Save{{else}}Create draft{{/if}}</button></div>
 </form>

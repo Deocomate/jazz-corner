@@ -1,43 +1,43 @@
-<p class="mb-4"><a href="/notebook" class="text-sm text-muted hover:text-ink">← Notebook</a></p>
-<article class="nb-page max-w-3xl space-y-4">
+<p class="mb-4 flex flex-wrap gap-4 text-sm">
+  <a href="/notebook" class="text-muted hover:text-ink">← Notebook</a>
+  {{#if page}}<a href="/notebook?page={{page.number}}#item-{{item.id}}" class="text-muted hover:text-ink">Open page {{page.number}}</a>{{/if}}
+</p>
+<article class="nb-page max-w-3xl">
   <div class="flex flex-wrap items-center gap-1.5">
     <span class="{{item.kindInfo.badge}}">{{item.kindInfo.label}}</span>
     {{> origin-tag origin=item.origin}}
     {{#each item.tagList}}<span class="chip">{{this}}</span>{{/each}}
   </div>
-  <h1 class="font-serif text-3xl leading-tight font-semibold">{{item.content}}</h1>
+  <h1 class="font-serif text-3xl leading-[64px] font-semibold">{{item.content}}</h1>
 
   {{#if item.ielts}}
-    <dl class="grid gap-3 rounded-xl bg-paper p-4 text-sm sm:grid-cols-2">
-      <div><dt class="eyebrow">Đề</dt><dd>{{item.ielts.testTitle}} · Câu {{item.ielts.questionNumber}} ({{item.ielts.typeLabel}})</dd></div>
-      <div><dt class="eyebrow">Câu trả lời của tôi → Đáp án</dt><dd><span class="text-red-700">{{default item.ielts.myAnswer "(bỏ trống)"}}</span> → <strong class="text-emerald-800">{{item.ielts.correctAnswer}}</strong></dd></div>
-      {{#if item.ielts.evidence}}<div class="sm:col-span-2"><dt class="eyebrow">Bằng chứng trong bài đọc</dt><dd class="font-serif italic">“{{item.ielts.evidence}}”</dd></div>{{/if}}
-      {{#if item.ielts.explanation}}<div class="sm:col-span-2"><dt class="eyebrow">Giải thích</dt><dd>{{item.ielts.explanation}}</dd></div>{{/if}}
+    <dl class="grid gap-x-6 sm:grid-cols-2">
+      <div><dt class="eyebrow">Test</dt><dd>{{item.ielts.testTitle}} · Question {{item.ielts.questionNumber}} ({{item.ielts.typeLabel}})</dd></div>
+      <div><dt class="eyebrow">My answer → Correct answer</dt><dd><span class="text-red-700">{{default item.ielts.myAnswer "(blank)"}}</span> → <strong class="text-emerald-800">{{item.ielts.correctAnswer}}</strong></dd></div>
+      {{#if item.ielts.evidence}}<div class="sm:col-span-2"><dt class="eyebrow">Evidence in the passage</dt><dd class="font-serif italic">“{{item.ielts.evidence}}”</dd></div>{{/if}}
+      {{#if item.ielts.explanation}}<div class="sm:col-span-2"><dt class="eyebrow">Explanation</dt><dd>{{item.ielts.explanation}}</dd></div>{{/if}}
     </dl>
   {{/if}}
 
-  <dl class="space-y-4">
-    {{#if item.meaning}}<div><dt class="eyebrow mb-1">Nghĩa / tác dụng</dt><dd>{{item.meaning}}</dd></div>{{/if}}
-    {{#if item.excerpt}}{{#unless item.ielts}}<div><dt class="eyebrow mb-1">Trích đoạn gốc</dt><dd class="font-serif text-lg italic" lang="en">“{{item.excerpt}}”</dd></div>{{/unless}}{{/if}}
-    {{#if item.example}}<div><dt class="eyebrow mb-1">Ví dụ của tôi</dt><dd lang="en">{{item.example}}</dd></div>{{/if}}
-    {{#if item.note}}<div><dt class="eyebrow mb-1">{{#if item.ielts}}Lý do sai{{else if (eq item.kind "note")}}Nội dung{{else}}Ghi chú{{/if}}</dt><dd class="whitespace-pre-line">{{item.note}}</dd></div>{{/if}}
+  <dl>
+    {{#if item.meaning}}<div><dt class="eyebrow">Meaning / function</dt><dd>{{item.meaning}}</dd></div>{{/if}}
+    {{#if item.excerpt}}{{#unless item.ielts}}<div><dt class="eyebrow">Original sentence</dt><dd class="font-serif text-lg italic">“{{item.excerpt}}”</dd></div>{{/unless}}{{/if}}
+    {{#if item.example}}<div><dt class="eyebrow">My example</dt><dd>{{item.example}}</dd></div>{{/if}}
+    {{#if item.note}}<div><dt class="eyebrow">{{#if item.ielts}}Why I got it wrong{{else if (eq item.kind "note")}}Note{{else}}Notes{{/if}}</dt><dd class="whitespace-pre-line">{{item.note}}</dd></div>{{/if}}
   </dl>
 
-  <p class="text-sm text-muted">
-    {{#if item.source_label}}Nguồn: {{item.source_label}}{{else}}Nguồn: tự thêm{{/if}}
-    · Ghi ngày {{formatDay item.created_at}} · {{#if item.due_date}}Ôn tiếp: {{formatDay item.due_date}}{{else}}Không nằm trong hàng ôn{{/if}} · Đã ôn {{item.review_count}} lần
+  <p class="nb-meta">
+    Source: {{default item.source_label "written by me"}}
+    · Written {{formatDay item.created_at}} · {{#if item.due_date}}Next review {{formatDay item.due_date}}{{else}}Not in review{{/if}} · Reviewed {{item.review_count}}×
   </p>
 
-  <div class="flex flex-wrap gap-2 border-t border-line pt-4">
-    {{#if item.source_url}}<a href="{{item.source_url}}" class="btn-secondary btn-sm">{{#if item.ielts}}Mở lại đúng câu{{else}}Mở đoạn nguồn{{/if}}</a>{{/if}}
+  <div class="flex flex-wrap gap-2 pt-2">
+    {{#if item.source_url}}<a href="{{item.source_url}}" class="btn-secondary btn-sm">{{#if item.ielts}}Open the question{{else}}Open the source{{/if}}</a>{{/if}}
     {{#unless item.ielts}}
-      <form method="post" action="/speaking/from-notebook/{{item.id}}">
-        {{> form/csrf}}
-        <button type="submit" class="btn-secondary btn-sm">Luyện nói</button>
-      </form>
+      <form method="post" action="/speaking/from-notebook/{{item.id}}">{{> form/csrf}}<button type="submit" class="btn-secondary btn-sm">Practise speaking</button></form>
     {{/unless}}
-    <form method="post" action="/notebook/{{item.id}}/queue">{{> form/csrf}}<input type="hidden" name="on" value="{{#if item.due_date}}0{{else}}1{{/if}}"><button type="submit" class="btn-secondary btn-sm">{{#if item.due_date}}Bỏ khỏi hàng ôn{{else}}Đưa vào hàng ôn{{/if}}</button></form>
-    <a href="/notebook/{{item.id}}/edit" class="btn-secondary btn-sm">Sửa</a>
-    {{> form/delete-button action=(concat "/notebook/" item.id "/delete") confirm="Xoá mục này khỏi Notebook?"}}
+    <form method="post" action="/notebook/{{item.id}}/queue">{{> form/csrf}}<input type="hidden" name="on" value="{{#if item.due_date}}0{{else}}1{{/if}}"><button type="submit" class="btn-secondary btn-sm">{{#if item.due_date}}Remove from review{{else}}Add to review{{/if}}</button></form>
+    <a href="/notebook/{{item.id}}/edit" class="btn-secondary btn-sm">Edit</a>
+    {{> form/delete-button action=(concat "/notebook/" item.id "/delete") confirm="Delete this entry from your notebook?" label="Delete"}}
   </div>
 </article>

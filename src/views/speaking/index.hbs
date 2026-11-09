@@ -1,79 +1,79 @@
-{{#> page-header title="Speaking" eyebrow="Luyện nói mỗi ngày" subtitle="Luyện phát âm, trọng âm, nhịp điệu, ngữ điệu, đọc to và shadowing — với một từ, một câu hay cả đoạn."}}
+{{#> page-header title="Speaking" eyebrow="Daily speaking practice" subtitle="Practise pronunciation, word stress, rhythm, intonation, reading aloud and shadowing — with a single word, a sentence or a whole passage."}}
   <a href="/speaking/minimal-pairs" class="btn-secondary">Minimal pairs</a>
 {{/page-header}}
 
 <div class="grid gap-6 lg:grid-cols-2">
   <section class="card card-body" aria-labelledby="quick-title">
-    <h2 id="quick-title" class="section-title">Tự nhập để luyện ngay</h2>
-    <p class="mt-1 text-sm text-muted">Gõ hoặc dán một từ, câu hay đoạn tiếng Anh. Hệ thống tự nhận loại bài; audio mẫu dùng giọng đọc của trình duyệt.</p>
+    <h2 id="quick-title" class="section-title">Type something to practise</h2>
+    <p class="mt-1 text-sm text-muted">Type or paste a word, sentence or passage. The practice type is detected automatically; model audio uses your browser’s voice.</p>
     <form method="post" action="/speaking/items" class="mt-4 space-y-3">
       {{> form/csrf}}
-      <label for="quick-text" class="sr-only">Nội dung luyện</label>
-      <textarea id="quick-text" name="text" rows="3" class="input" lang="en" required placeholder="VD: record · I wanted the blue one. · một đoạn văn…"></textarea>
+      <label for="quick-text" class="sr-only">Text to practise</label>
+      <textarea id="quick-text" name="text" rows="3" class="input" required placeholder="E.g. record · I wanted the blue one. · a whole paragraph…"></textarea>
       <div class="flex flex-wrap items-center gap-2">
-        <label for="quick-kind" class="text-sm text-muted">Loại</label>
+        <label for="quick-kind" class="text-sm text-muted">Type</label>
         <select id="quick-kind" name="kind" class="input w-auto">
-          <option value="">Tự nhận</option>
+          <option value="">Detect</option>
           {{#each kindOptions}}<option value="{{value}}">{{label}}</option>{{/each}}
         </select>
-        <button type="submit" class="btn-primary ml-auto">Bắt đầu luyện</button>
+        <button type="submit" class="btn-primary ml-auto">Start practising</button>
       </div>
     </form>
   </section>
 
   <section class="card card-body" aria-labelledby="nb-title">
-    <h2 id="nb-title" class="section-title">Từ Notebook</h2>
+    <h2 id="nb-title" class="section-title">From your Notebook</h2>
     <form method="get" action="/speaking" class="mt-3 flex gap-2" role="search">
-      <label for="nb-q" class="sr-only">Tìm trong Notebook</label>
-      <input id="nb-q" name="q" value="{{q}}" class="input" placeholder="Tìm từ, cụm, mẫu câu đã lưu…">
-      <button type="submit" class="btn-secondary">Tìm</button>
+      <label for="nb-q" class="sr-only">Search your Notebook</label>
+      <input id="nb-q" name="q" value="{{q}}" class="input" placeholder="Search saved words, phrases, patterns…">
+      <button type="submit" class="btn-secondary">Search</button>
     </form>
     {{#if notebookItems.length}}
       <ul class="mt-3 max-h-72 divide-y divide-line overflow-y-auto">
         {{#each notebookItems}}
           <li class="flex items-center gap-3 py-2">
-            <div class="min-w-0 flex-1"><p class="truncate font-medium" lang="en">{{content}}</p><p class="truncate text-xs text-muted">{{kindInfo.label}}{{#if source_label}} · {{source_label}}{{/if}}</p></div>
-            <form method="post" action="/speaking/from-notebook/{{id}}">{{> form/csrf}}<button type="submit" class="btn-ghost btn-sm">Luyện</button></form>
+            <div class="min-w-0 flex-1"><p class="truncate font-medium">{{content}}</p><p class="truncate text-xs text-muted">{{kindInfo.label}}{{#if source_label}} · {{source_label}}{{/if}}</p></div>
+            <form method="post" action="/speaking/from-notebook/{{id}}">{{> form/csrf}}<button type="submit" class="btn-ghost btn-sm">Practise</button></form>
           </li>
         {{/each}}
       </ul>
     {{else}}
-      <p class="mt-3 text-sm text-muted">{{#if q}}Không tìm thấy mục nào.{{else}}Notebook chưa có mục nào. Lưu từ trong sách hoặc Word of the Day để luyện ở đây.{{/if}}</p>
+      <p class="mt-3 text-sm text-muted">{{#if q}}Nothing found.{{else}}Your Notebook is empty. Save words from your books or the Word of the Day to practise them here.{{/if}}</p>
     {{/if}}
   </section>
 </div>
 
 <section class="mt-10" aria-labelledby="sample-title">
-  <h2 id="sample-title" class="section-title mb-3">Bài mẫu</h2>
+  <h2 id="sample-title" class="section-title mb-3">Sample exercises</h2>
   <ul class="grid gap-4 md:grid-cols-3">
     {{#each samples}}
       <li class="card card-body flex flex-col gap-2">
-        <div class="flex flex-wrap gap-1.5">{{> origin-tag origin=origin}}{{#if audio_url}}<span class="chip">Có audio mẫu (tổng hợp)</span>{{/if}}</div>
+        <div class="flex flex-wrap gap-1.5">{{> origin-tag origin=origin}}{{#if audio_url}}<span class="chip">Model audio (synthetic)</span>{{/if}}</div>
         <a href="/speaking/items/{{id}}" class="font-serif text-lg font-semibold hover:text-brand-700">{{title}}</a>
-        <p class="line-clamp-2 text-sm text-muted" lang="en">{{text}}</p>
+        <p class="line-clamp-2 text-sm text-muted">{{text}}</p>
       </li>
     {{/each}}
   </ul>
 </section>
 
 <section class="mt-10" aria-labelledby="mine-title">
-  <h2 id="mine-title" class="section-title mb-3">Bài luyện của tôi</h2>
+  <h2 id="mine-title" class="section-title mb-3">My exercises</h2>
   {{#if mine.length}}
     <ul class="divide-y divide-line rounded-2xl border border-line bg-white">
       {{#each mine}}
         <li class="flex flex-wrap items-center gap-3 px-5 py-3">
           <span class="chip">{{sourceLabel}}</span>
-          <a href="/speaking/items/{{id}}" class="min-w-0 flex-1 truncate font-medium hover:text-brand-700" lang="en">{{default title text}}</a>
-          <span class="text-xs text-muted">{{#if last_practiced_at}}luyện {{formatDate last_practiced_at}}{{else}}chưa ghi âm{{/if}}</span>
+          <a href="/speaking/items/{{id}}" class="min-w-0 flex-1 truncate font-medium hover:text-brand-700">{{default title text}}</a>
+          <span class="text-xs text-muted">{{#if last_practiced_at}}practised {{formatDate last_practiced_at}}{{else}}not recorded yet{{/if}}</span>
         </li>
       {{/each}}
     </ul>
   {{else}}
-    <p class="text-sm text-muted">Chưa có. Bôi chọn một đoạn trong Books hoặc bài đọc IELTS rồi bấm <strong>Luyện nói</strong>, hoặc tự nhập ở trên.</p>
+    <p class="text-sm text-muted">None yet. Select a passage in Books or an IELTS reading and choose <strong>Practise speaking</strong>, or type your own text above.</p>
   {{/if}}
 </section>
 
 <section class="mt-10 card card-body" aria-labelledby="ai-title">
-  <div class="flex flex-wrap items-center gap-2"><h2 id="ai-title" class="section-title">Tạo bài bằng AI</h2><span class="tag-later">Giai đoạn sau</span></div>
-  <p class="mt-1 text-sm text-muted">Tạo câu/đoạn theo chủ đề, độ dài và mục tiêu (nối âm, ngắt cụm…), có thể đưa từ Notebook vào; xem và sửa trước khi luyện, gắn nhãn "AI tạo". Cần cấu hình AI — chưa có trong bản đầu.</p>
+  <div class="flex flex-wrap items-center gap-2"><h2 id="ai-title" class="section-title">Generate with AI</h2><span class="tag-later">Later phase</span></div>
+  <p class="mt-1 text-sm text-muted">Generate sentences or passages by topic, length and goal (linking, thought groups…), optionally using words from your Notebook; review and edit before practising, labelled “AI-generated”. Needs an AI provider — not part of version 1.</p>
 </section>

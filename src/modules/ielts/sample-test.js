@@ -4,7 +4,7 @@ export const SAMPLE_TEST_KEY = 'reading-practice-urban-forest';
 
 export const SAMPLE_TEST = {
   title: 'Practice Reading 1: The Return of the Urban Forest',
-  description: 'Đề luyện tập tự soạn (dữ liệu mẫu) — 1 bài đọc, 14 câu, đủ 4 dạng: TFNG, Multiple Choice, Matching Headings, Completion.',
+  description: 'A practice test written for this app (sample data) — 1 passage, 14 questions covering TFNG, Multiple Choice, Matching Headings and Completion.',
   time_limit_minutes: 20,
   passages: [
     {
@@ -29,22 +29,22 @@ Despite the evidence, planting trees in cities is far from straightforward. Youn
         {
           number: 1, prompt: 'In the twentieth century, city planners generally considered trees to be essential infrastructure.', answer: 'FALSE',
           evidence: 'For much of the twentieth century, trees were treated as little more than decoration in city planning.',
-          explanation: 'Bài đọc nói cây chỉ được xem là "decoration"; "essential infrastructure" là quan điểm của ngày nay → mâu thuẫn = FALSE.',
+          explanation: 'The passage says trees were seen as mere "decoration"; "essential infrastructure" is today’s view, so the statement contradicts the passage = FALSE.',
         },
         {
           number: 2, prompt: 'Streets with continuous tree cover can be several degrees cooler in summer.', answer: 'TRUE',
           evidence: 'streets with continuous tree cover were, on average, up to four degrees cooler in summer',
-          explanation: '"several degrees" diễn đạt lại "up to four degrees" → TRUE.',
+          explanation: '"several degrees" paraphrases "up to four degrees" → TRUE.',
         },
         {
           number: 3, prompt: 'Most European cities have now banned the removal of mature trees.', answer: 'NOT GIVEN',
           evidence: '',
-          explanation: 'Bài không nhắc tới lệnh cấm chặt cây. Cẩn thận: có thông tin về châu Âu nhưng không có ý này → NOT GIVEN.',
+          explanation: 'The passage never mentions a ban on removing trees. Careful: it does talk about European cities, but not this idea → NOT GIVEN.',
         },
         {
           number: 4, prompt: 'Researchers agree that trees are the direct cause of better health in green neighbourhoods.', answer: 'FALSE',
           evidence: 'Critics caution, though, that such correlations do not prove causation',
-          explanation: 'Bài nói tương quan không chứng minh nhân quả và có người phản biện → "agree… direct cause" mâu thuẫn = FALSE.',
+          explanation: 'The passage says correlation does not prove causation and critics disagree, so "agree… direct cause" contradicts it = FALSE.',
         },
       ],
     },
@@ -62,7 +62,7 @@ Despite the evidence, planting trees in cities is far from straightforward. Youn
             { key: 'D', text: 'fewer paved surfaces.' },
           ],
           evidence: 'Shade reduces the demand for air conditioning, which in turn lowers energy consumption.',
-          explanation: '"reduced energy use" = "lowers energy consumption". B là bẫy: ban đêm nóng là do mặt đường nhả nhiệt, không phải do bóng cây.',
+          explanation: '"reduced energy use" = "lowers energy consumption". B is a trap: warm nights come from paved surfaces releasing heat, not from shade.',
         },
         {
           number: 6, prompt: 'What did engineers in a Scandinavian city conclude?', answer: 'B',
@@ -73,7 +73,7 @@ Despite the evidence, planting trees in cities is far from straightforward. Youn
             { key: 'D', text: 'Storms are becoming more frequent.' },
           ],
           evidence: 'expanding tree cover would be considerably cheaper than enlarging the underground pipe network',
-          explanation: '"cost less than bigger pipes" là cách diễn đạt lại "considerably cheaper than enlarging the underground pipe network".',
+          explanation: '"cost less than bigger pipes" paraphrases "considerably cheaper than enlarging the underground pipe network".',
         },
         {
           number: 7, prompt: 'Why do many newly planted city trees die?', answer: 'D',
@@ -101,10 +101,10 @@ Despite the evidence, planting trees in cities is far from straightforward. Youn
         { key: 'vi', text: 'The rising cost of air conditioning' },
       ],
       questions: [
-        { number: 8, prompt: 'Paragraph B', answer: 'ii', evidence: 'The most obvious benefit is temperature control.', explanation: 'Cả đoạn nói về hiệu ứng đảo nhiệt và làm mát. vi chỉ là chi tiết nhỏ.' },
-        { number: 9, prompt: 'Paragraph C', answer: 'v', evidence: 'Trees also manage water.', explanation: 'Đoạn nói cây giúp hấp thụ nước mưa, giảm tải cho hệ thống thoát nước khi có bão.' },
+        { number: 8, prompt: 'Paragraph B', answer: 'ii', evidence: 'The most obvious benefit is temperature control.', explanation: 'The whole paragraph is about the heat island effect and cooling. Heading vi is only a minor detail.' },
+        { number: 9, prompt: 'Paragraph C', answer: 'v', evidence: 'Trees also manage water.', explanation: 'The paragraph explains how trees absorb rainwater and take pressure off drains during storms.' },
         { number: 10, prompt: 'Paragraph D', answer: 'i', evidence: 'The social effects are harder to quantify but no less significant.', explanation: '"difficult to measure" = "harder to quantify".' },
-        { number: 11, prompt: 'Paragraph E', answer: 'iv', evidence: 'the success of an urban forest depends less on the number of trees planted than on the long-term commitment to caring for them', explanation: 'Ý chính: trồng thôi chưa đủ, cần chăm sóc lâu dài.' },
+        { number: 11, prompt: 'Paragraph E', answer: 'iv', evidence: 'the success of an urban forest depends less on the number of trees planted than on the long-term commitment to caring for them', explanation: 'Main idea: planting is not enough — long-term care is what matters.' },
       ],
     },
     {
@@ -113,9 +113,9 @@ Despite the evidence, planting trees in cities is far from straightforward. Youn
       word_limit: 2,
       instructions: 'Complete the sentences below. Choose NO MORE THAN TWO WORDS from the passage for each answer.',
       questions: [
-        { number: 12, prompt: 'Paved surfaces contribute to a phenomenon known as the urban ________.', answer: 'heat island', accepted: ['heat-island'], evidence: 'producing what scientists call the urban heat island effect', explanation: 'Cụm danh từ cố định. Viết "heat island effect" (3 từ) sẽ bị tính sai vì vượt giới hạn 2 từ; biến thể có gạch nối "heat-island" được người soạn khai báo là hợp lệ.' },
+        { number: 12, prompt: 'Paved surfaces contribute to a phenomenon known as the urban ________.', answer: 'heat island', accepted: ['heat-island'], evidence: 'producing what scientists call the urban heat island effect', explanation: 'A fixed noun phrase. Writing "heat island effect" (3 words) is marked wrong because it exceeds the 2-word limit; the hyphenated variant "heat-island" is declared as accepted by the test author.' },
         { number: 13, prompt: 'During storms, ________ are often unable to cope with the volume of water.', answer: 'drainage systems', evidence: 'drainage systems, which are frequently overwhelmed during storms', explanation: '"unable to cope" = "overwhelmed".' },
-        { number: 14, prompt: 'Young trees require regular ________ for their first three years.', answer: 'watering', evidence: 'Young trees need regular watering for their first three years', explanation: 'Danh động từ "watering" sau tính từ "regular".' },
+        { number: 14, prompt: 'Young trees require regular ________ for their first three years.', answer: 'watering', evidence: 'Young trees need regular watering for their first three years', explanation: 'The gerund "watering" follows the adjective "regular".' },
       ],
     },
   ],

@@ -1,17 +1,18 @@
-// Trang Notebook: danh sách + lọc, thêm/sửa/xoá, chi tiết, ôn tập.
+// Notebook như một cuốn sổ: mỗi ngày một trang (lật trang, mục lục), tìm kiếm, thêm/sửa/xoá, ôn tập.
 import { buildPagination, parsePage } from '#lib/pagination.js';
 import { localDateOf } from '#lib/dates.js';
 import { KIND_OPTIONS, LANGUAGE_KINDS, SOURCE_OPTIONS, SUGGESTED_TAGS } from './notebook.schema.js';
 import * as service from './notebook.service.js';
 
-const FILTER_KINDS = [{ value: 'language', label: 'Tất cả trừ lỗi IELTS' }, ...KIND_OPTIONS];
+const FILTER_KINDS = [{ value: 'language', label: 'Everything except IELTS mistakes' }, ...KIND_OPTIONS];
 
-/** Gom mục theo ngày ghi (giờ Việt Nam) để hiển thị như từng trang sổ tay. */
-function groupByDay(items) {
+/** Gom kết quả tìm kiếm theo ngày để biết mỗi mục nằm ở trang nào. */
+function groupByDay(items, pages) {
+  const pageOf = new Map(pages.map((p) => [p.date, p.number]));
   const days = [];
   for (const item of items) {
     const date = localDateOf(item.created_at);
-    if (days.at(-1)?.date !== date) days.push({ date, items: [] });
+    if (days.at(-1)?.date !== date) days.push({ date, page: pageOf.get(date), items: [] });
     days.at(-1).items.push(item);
   }
   return days;
@@ -19,7 +20,7 @@ function groupByDay(items) {
 
 const renderForm = (res, { item = null, values = {}, errors = {}, status = 200 }) =>
   res.status(status).render('notebook/form', {
-    title: item ? 'Sửa mục Notebook' : 'Thêm mục Notebook',
+    title: item ? 'Edit note' : 'New note',
     item,
     values,
     errors,
@@ -28,31 +29,50 @@ const renderForm = (res, { item = null, values = {}, errors = {}, status = 200 }
   });
 
 export async function index(req, res) {
-  const page = parsePage(req.query, 24);
   const filters = {
     q: String(req.query.q || '').trim().slice(0, 100),
     kind: String(req.query.kind || ''),
     source: String(req.query.source || ''),
     tag: String(req.query.tag || ''),
   };
-  const [{ items, total }, dueCount, tags] = await Promise.all([
-    service.listItems(filters, page),
-    service.countDue(),
-    service.listTags(),
-  ]);
-  res.render('notebook/index', {
+  const hasFilters = Object.values(filters).some(Boolean);
+  const [pages, dueCount, tags] = await Promise.all([service.notebookPages(), service.countDue(), service.listTags()]);
+  const common = {
     title: 'Notebook',
-    items,
-    days: groupByDay(items),
-    quickKinds: LANGUAGE_KINDS,
-    total,
+    pages,
     dueCount,
     filters,
-    hasFilters: Object.values(filters).some(Boolean),
+    hasFilters,
     kindOptions: FILTER_KINDS,
     sourceOptions: SOURCE_OPTIONS,
     tagOptions: tags.map((t) => ({ value: t, label: t })),
-    pagination: buildPagination({ ...page, total, query: filters }),
+    quickKinds: LANGUAGE_KINDS,
+  };
+
+  // Tìm kiếm / lọc: danh sách kết quả trên mọi trang.
+  if (hasFilters) {
+    const paging = parsePage(req.query, 30);
+    const { items, total } = await service.listItems(filters, paging);
+    return res.render('notebook/search', {
+      ...common,
+      total,
+      days: groupByDay(items, pages),
+      pagination: buildPagination({ ...paging, total, query: filters }),
+    });
+  }
+
+  // Đọc sổ: một trang = một ngày. Mặc định mở trang mới nhất (hôm nay).
+  const requested = Number.parseInt(req.query.page, 10);
+  const number = Number.isInteger(requested) ? Math.min(Math.max(1, requested), pages.length) : pages.length;
+  const page = pages[number - 1];
+  res.render('notebook/index', {
+    ...common,
+    page,
+    items: await service.itemsOnDate(page.date),
+    prev: number > 1 ? number - 1 : null,
+    next: number < pages.length ? number + 1 : null,
+    lastPage: pages.length,
+    scripts: ['/js/notebook-pages.js'],
   });
 }
 
@@ -62,14 +82,14 @@ export async function quickCapture(req, res) {
     req.flash('error', Object.values(result.errors)[0]);
     return res.redirect('/notebook');
   }
-  req.flash('success', result.data.due_date ? 'Đã ghi vào sổ và thêm vào hàng ôn.' : 'Đã ghi vào sổ.');
+  req.flash('success', result.data.due_date ? 'Written in your notebook and added to today’s review.' : 'Written in your notebook.');
   res.redirect(`/notebook#item-${result.data.id}`);
 }
 
 export async function toggleQueue(req, res) {
   const on = req.body.on === '1';
   await service.setInQueue(req.params.id, on);
-  req.flash('success', on ? 'Đã đưa vào hàng ôn từ hôm nay.' : 'Đã bỏ khỏi hàng ôn.');
+  req.flash('success', on ? 'Added to your review queue from today.' : 'Removed from your review queue.');
   res.redirect(`/notebook/${req.params.id}`);
 }
 
@@ -80,13 +100,15 @@ export function newForm(req, res) {
 export async function create(req, res) {
   const result = await service.createItem({ ...req.body, source_type: 'manual' });
   if (!result.ok) return renderForm(res, { values: req.body, errors: result.errors, status: 422 });
-  req.flash('success', result.data.due_date ? 'Đã ghi vào sổ. Mục này có trong hàng ôn hôm nay.' : 'Đã ghi vào sổ.');
+  req.flash('success', result.data.due_date ? 'Saved. It is in today’s review queue.' : 'Saved to your notebook.');
   res.redirect(`/notebook/${result.data.id}`);
 }
 
 export async function show(req, res) {
   const item = await service.getItem(req.params.id);
-  res.render('notebook/show', { title: item.content, item });
+  const pages = await service.notebookPages();
+  const page = pages.find((p) => p.date === localDateOf(item.created_at));
+  res.render('notebook/show', { title: item.content, item, page });
 }
 
 export async function editForm(req, res) {
@@ -98,25 +120,26 @@ export async function update(req, res) {
   const item = await service.getItem(req.params.id);
   const result = await service.updateItem(item.id, req.body);
   if (!result.ok) return renderForm(res, { item, values: { ...req.body, kind: item.kind }, errors: result.errors, status: 422 });
-  req.flash('success', 'Đã lưu thay đổi.');
+  req.flash('success', 'Changes saved.');
   res.redirect(`/notebook/${item.id}`);
 }
 
 export async function destroy(req, res) {
   await service.deleteItem(req.params.id);
-  req.flash('success', 'Đã xoá mục khỏi Notebook.');
+  req.flash('success', 'Deleted from your notebook.');
   res.redirect('/notebook');
 }
 
 export async function reviewPage(req, res) {
   const [queue, dueCount] = await Promise.all([service.dueItems(1), service.countDue()]);
-  res.render('notebook/review', { title: 'Ôn tập', item: queue[0] || null, dueCount });
+  res.render('notebook/review', { title: 'Review', item: queue[0] || null, dueCount });
 }
 
 export async function review(req, res) {
   const result = await service.review(req.params.id, req.body);
   if (result.ok) {
-    req.flash('success', result.data.intervalDays ? `Đã nhớ — gặp lại sau ${result.data.intervalDays} ngày.` : 'Sẽ ôn lại vào ngày mai.');
+    const days = result.data.intervalDays;
+    req.flash('success', days ? `Remembered — see it again in ${days} day${days > 1 ? 's' : ''}.` : 'You will review it again tomorrow.');
   }
   res.redirect('/notebook/review');
 }

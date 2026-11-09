@@ -25,9 +25,9 @@ function say(word) {
   tts.speak(u);
 }
 function describe() {
-  if (!tts) return (status.textContent = 'Trình duyệt không hỗ trợ giọng đọc tổng hợp — bài nghe không dùng được trên thiết bị này.');
+  if (!tts) return (status.textContent = 'This browser has no speech synthesis, so the listening quiz cannot run on this device.');
   const v = voice();
-  status.textContent = v ? `Audio: giọng tổng hợp của trình duyệt — ${v.name} (${v.lang}). Không phải người đọc.` : 'Đang tải giọng đọc… (nếu không thấy, thiết bị chưa có giọng tiếng Anh).';
+  status.textContent = v ? `Audio: your browser’s synthetic voice — ${v.name} (${v.lang}). Not a human speaker.` : 'Loading voices… (if none appear, this device has no English voice).';
 }
 function nextPair() {
   current = pairs[Math.floor(Math.random() * pairs.length)];
@@ -50,7 +50,7 @@ function choose(word) {
   total += 1;
   const ok = word === answer;
   if (ok) score += 1;
-  feedback.textContent = ok ? `✓ Đúng: “${answer}” ${current.sound}.` : `✗ Đó là “${answer}”. Mẹo: ${current.tip}`;
+  feedback.textContent = ok ? `✓ Correct: “${answer}” ${current.sound}.` : `✗ It was “${answer}”. Tip: ${current.tip}`;
   feedback.className = `mt-3 text-sm ${ok ? 'text-emerald-800' : 'text-red-800'}`;
   scoreEl.textContent = `${score}/${total}`;
   answer = null;

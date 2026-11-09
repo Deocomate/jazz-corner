@@ -3,16 +3,16 @@
   {{#each pronunciation}}
     <div data-pron-word>
       {{#if (gt entries.length 1)}}
-        <p class="mb-2 text-sm">Từ <strong lang="en">{{word}}</strong> có nhiều cách đọc theo từ loại.{{#if fromContext}} Gợi ý theo câu gốc: cách {{add suggested 1}}.{{else}} Chọn cách đọc bạn cần:{{/if}}</p>
+        <p class="mb-2 text-sm"><strong>{{word}}</strong> is pronounced differently depending on its part of speech.{{#if fromContext}} Suggested from the original sentence: option {{add suggested 1}}.{{else}} Choose the one you need:{{/if}}</p>
       {{/if}}
       <div class="grid gap-3 {{#if (gt entries.length 1)}}sm:grid-cols-2{{/if}}">
         {{#each entries}}
           <div class="rounded-xl border p-4 {{#if (eq @index ../suggested)}}border-brand-500 bg-brand-50/40{{else}}border-line{{/if}}">
-            <p class="text-xs font-semibold tracking-wide text-muted uppercase">{{pos}}{{#if (and (gt ../entries.length 1) (eq @index ../suggested) ../fromContext)}} · gợi ý theo câu gốc{{/if}}</p>
-            <p class="mt-2 font-serif text-3xl" lang="en">{{#each syllables}}<span class="{{#if (eq @index ../stress)}}font-bold text-brand-700 underline decoration-2 underline-offset-4{{else}}text-ink{{/if}}">{{this}}</span>{{#unless @last}}<span class="text-muted">·</span>{{/unless}}{{/each}}</p>
+            <p class="text-xs font-semibold tracking-wide text-muted uppercase">{{pos}}{{#if (and (gt ../entries.length 1) (eq @index ../suggested) ../fromContext)}} · suggested by the sentence{{/if}}</p>
+            <p class="mt-2 font-serif text-3xl">{{#each syllables}}<span class="{{#if (eq @index ../stress)}}font-bold text-brand-700 underline decoration-2 underline-offset-4{{else}}text-ink{{/if}}">{{this}}</span>{{#unless @last}}<span class="text-muted">·</span>{{/unless}}{{/each}}</p>
             <dl class="mt-3 grid grid-cols-2 gap-2 text-sm">
-              <div><dt class="text-muted">Anh (UK)</dt><dd class="font-mono">{{uk}}</dd></div>
-              <div><dt class="text-muted">Mỹ (US)</dt><dd class="font-mono">{{us}}</dd></div>
+              <div><dt class="text-muted">British</dt><dd class="font-mono">{{uk}}</dd></div>
+              <div><dt class="text-muted">American</dt><dd class="font-mono">{{us}}</dd></div>
             </dl>
             {{#if note}}<p class="mt-2 text-sm text-muted">{{note}}</p>{{/if}}
           </div>
@@ -21,8 +21,8 @@
     </div>
   {{/each}}
   {{#if missingPronunciation}}
-    <div class="alert-info">Chưa có dữ liệu IPA đáng tin cậy cho nội dung này, nên hệ thống không hiển thị IPA/trọng âm để tránh sai. Bạn vẫn nghe mẫu, ghi âm và tự ghi chú cách đọc (VD: trọng âm, âm khó) ở ô Ghi chú.</div>
+    <div class="alert-info">There is no reliable IPA data for this text yet, so no IPA or stress marks are shown to avoid mistakes. You can still listen, record yourself and write your own notes (stress, tricky sounds) in My notes.</div>
   {{/if}}
-  <p class="text-sm">Cách luyện: nghe mẫu → bấm <strong>Ghi âm</strong> và đọc → nghe lại, chuyển nhanh giữa <em>Mẫu</em> và <em>Của tôi</em> trong danh sách bản ghi.</p>
-  <p class="text-sm"><a href="/speaking/minimal-pairs">Luyện phân biệt âm với minimal pairs →</a></p>
+  <p class="text-sm">How to practise: listen → press <strong>Record</strong> and say it → play it back, switching between <em>Model</em> and your recording in the list below.</p>
+  <p class="text-sm"><a href="/speaking/minimal-pairs">Train your ear with minimal pairs →</a></p>
 </section>

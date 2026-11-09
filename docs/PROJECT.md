@@ -15,7 +15,7 @@
 ## Tính năng
 <!-- Cập nhật trạng thái: [x] xong · [ ] dự kiến -->
 - [x] Khung ứng dụng, điều hướng 6 mục (desktop: thanh trên; mobile: thanh tab dưới), trang /status
-- [x] Today: Word of the Day lấy từ sách đang đọc (quanh vị trí đọc) và bài đọc IELTS đã duyệt, kèm câu gốc + link mở đúng đoạn; từ có trong từ điển dự án (~45 mục) có nghĩa/sắc thái/collocations, từ khác có link Merriam-Webster (từ điển ngoài người dùng chọn 2026-11-09, thay Cambridge); bộ từ chọn lọc chỉ là dự phòng; lưu theo ngày (bảng daily_words)
+- [x] Today: Word of the Day lấy từ sách đang đọc (quanh vị trí đọc) và bài đọc IELTS đã duyệt, kèm câu gốc + link mở đúng đoạn; từ có trong từ điển dự án (~45 mục) có nghĩa/sắc thái/collocations, mọi từ còn có nghĩa Merriam-Webster hiện ngay trên trang (từ loại, phiên âm, nghĩa, ví dụ; cần MW_API_KEY), lưu vào Notebook kèm nghĩa; bộ từ chọn lọc chỉ là dự phòng; lưu theo ngày (bảng daily_words)
 - [x] Books: tải PDF/EPUB (báo lỗi rõ), thư viện có bìa + tiến độ, trình đọc: mục lục, bookmark, highlight, ghi chú, sáng/tối, cỡ chữ EPUB, zoom PDF, tự lưu vị trí, báo trang PDF thiếu lớp văn bản
 - [x] Bôi chọn trong sách → Highlight / Ghi chú / Lưu vào Notebook / Luyện nói (giữ trích đoạn, tên sách, vị trí; mở lại đúng chỗ và tô sáng)
 - [x] Notebook như một cuốn sổ thật: mỗi ngày một trang có số trang, lật trang trước/sau (nút + phím ←/→), mục lục, ô ghi nhanh trên trang hôm nay, loại Ghi chép (Note) tự do; tìm kiếm cho danh sách kết quả kèm "Go to page"
@@ -39,7 +39,7 @@
 | ielts_tests / ielts_passages / ielts_groups / ielts_questions | đề tương tác (tách khỏi PDF nguồn; có cột audio/transcript/hình để dành cho Listening) |
 | ielts_attempts | lượt làm bài: câu trả lời, đánh dấu, hạn nộp, ảnh chụp kết quả lúc nộp |
 | speaking_items | bài luyện nói, nguồn, audio mẫu + mốc thời gian, chỉnh trọng âm |
-| daily_words | Word of the Day đã chọn cho từng ngày (ổn định khi tải lại) |
+| daily_words | Word of the Day đã chọn cho từng ngày (ổn định khi tải lại); data_json chứa cả kết quả tra Merriam-Webster (key `mw`) |
 | speaking_recordings | bản ghi âm (tệp ở data/uploads/recordings), ghi chú, cần ôn |
 
 ## Quyết định quan trọng
@@ -49,10 +49,12 @@
 - Audio mẫu: giọng tổng hợp Windows (Zira, en-US) có mốc thời gian theo từ → luôn ghi rõ "audio tổng hợp, không phải người đọc". Giọng Anh/nội dung tự nhập: Web Speech API của trình duyệt.
 - Kết quả IELTS lưu ảnh chụp lúc nộp để sửa đề sau không đổi kết quả cũ.
 - Word of the Day: quét tối đa 3 sách mở gần nhất (vài trang/chương từ vị trí đang đọc) + bài đọc của tối đa 6 đề đã duyệt, chỉ một lần mỗi ngày; ưu tiên từ có trong từ điển dự án, sau đó là từ dài ≥ 9 chữ viết thường không nằm trong danh sách từ phổ biến; không lặp từ trong 30 ngày.
+- Từ điển ngoài: Merriam-Webster (người dùng chọn 2026-11-09, thay Cambridge). Dùng API chính thức Collegiate (dictionaryapi.com, khoá miễn phí trong `.env` → `MW_API_KEY`), không cào trang web. Tra một lần mỗi ngày, lưu trong daily_words; lỗi mạng/chưa có khoá thì không lưu để lần sau thử lại.
 - `numericId` nhận tên tham số (đối số thứ 5 của Express) — bản gốc template luôn ghi đè `req.params.id`.
 
 ## Nhật ký thay đổi
 <!-- Mới nhất ở trên. Mỗi dòng: ngày — thay đổi — ai yêu cầu (nếu biết) -->
+- 2026-11-09 — Word of the Day hiện nghĩa Merriam-Webster ngay trên trang (thay link Cambridge) — người dùng yêu cầu.
 - 2026-11-09 — Giao diện chuyển hoàn toàn sang tiếng Anh; Notebook có trang đánh số + lật trang + mục lục; Word of the Day lấy từ sách và đề (pdf.js chạy cả phía server) — người dùng yêu cầu.
 - 2026-11-09 — Notebook thành sổ tay theo ngày + ghi nhanh + loại Ghi chép (migration 005 dựng lại bảng để thêm loại) — người dùng yêu cầu.
 - 2026-11-09 — Bản đầu: Today, Books, Notebook, IELTS Reading, Speaking, Progress, dữ liệu mẫu, 38 test.

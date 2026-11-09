@@ -37,12 +37,16 @@ export async function practice(req, res) {
   const modeLabels = { pronunciation: 'Pronunciation', rhythm: 'Rhythm', read_aloud: 'Read Aloud', shadowing: 'Shadowing', minimal_pairs: 'Minimal pairs' };
   const recordings = (await service.listRecordings(item.id)).map((r) => ({ ...r, modeLabel: modeLabels[r.mode] }));
   const data = service.practiceData(item);
+  const humanAudio = await service.humanAudio(item);
+  const recordingModes = [...new Set(recordings.slice(1).map((r) => r.mode))].map((value) => ({ value, label: modeLabels[value] || value }));
   res.render('speaking/practice', {
     title: item.title || item.text.slice(0, 60),
     item,
     mode,
     recordings,
+    recordingModes: recordingModes.length > 1 ? recordingModes : [],
     ...data,
+    humanAudio,
     config: {
       id: item.id,
       kind: item.kind,
@@ -50,6 +54,7 @@ export async function practice(req, res) {
       text: item.text,
       audioUrl: item.audio_url,
       audioVoice: item.audio_voice,
+      humanAudio: humanAudio[0]?.url || null,
       segments: item.segments || null,
       phrases: data.phrases.map((p) => p.text),
       sentences: data.sentences,

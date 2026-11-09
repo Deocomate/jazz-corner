@@ -10,19 +10,11 @@ let answer = null;
 let score = 0;
 let total = 0;
 
-function voice() {
-  const voices = tts?.getVoices() || [];
-  return voices.find((v) => v.lang === 'en-US') || voices.find((v) => v.lang?.startsWith('en'));
-}
+const voice = () => window.voices.pick('en-US');
 function say(word) {
   if (!tts) return;
   tts.cancel();
-  const u = new SpeechSynthesisUtterance(word);
-  const v = voice();
-  if (v) u.voice = v;
-  u.lang = v?.lang || 'en-US';
-  u.rate = 0.85;
-  tts.speak(u);
+  tts.speak(window.voices.utterance(word, { rate: 0.85 }));
 }
 function describe() {
   if (!tts) return (status.textContent = 'This browser has no speech synthesis, so the listening quiz cannot run on this device.');
@@ -66,6 +58,6 @@ document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-say]');
   if (el) say(el.dataset.say);
 });
-tts?.addEventListener?.('voiceschanged', describe);
+window.voices.onChange(describe);
 describe();
 nextPair();

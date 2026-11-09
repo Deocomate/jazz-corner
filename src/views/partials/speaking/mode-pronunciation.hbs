@@ -1,5 +1,16 @@
 <section class="card card-body space-y-5" aria-labelledby="pron-title">
   <h2 id="pron-title" class="section-title text-base">Pronunciation</h2>
+  {{#if humanAudio.length}}
+    <div class="rounded-xl border border-line bg-paper p-4">
+      <p class="text-sm font-semibold">Real speaker <span class="chip ml-1">Human recording</span></p>
+      <p class="mt-1 text-xs text-muted">American English, from Merriam-Webster. “Listen” also plays this when the accent is American.</p>
+      <div class="mt-3 flex flex-wrap gap-2">
+        {{#each humanAudio}}
+          <button type="button" class="btn-secondary btn-sm" data-pronounce="{{../item.text}}" data-audio="{{url}}">🔊 {{#if pos}}{{pos}}{{else}}Listen{{/if}}{{#if pronunciation}} <span class="font-normal tracking-normal whitespace-nowrap normal-case text-muted">&#92;{{pronunciation}}&#92;</span>{{/if}}</button>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
   {{#each pronunciation}}
     <div data-pron-word>
       {{#if (gt entries.length 1)}}
@@ -23,6 +34,6 @@
   {{#if missingPronunciation}}
     <div class="alert-info">There is no reliable IPA data for this text yet, so no IPA or stress marks are shown to avoid mistakes. You can still listen, record yourself and write your own notes (stress, tricky sounds) in My notes.</div>
   {{/if}}
-  <p class="text-sm">How to practise: listen → press <strong>Record</strong> and say it → play it back, switching between <em>Model</em> and your recording in the list below.</p>
+  <p class="text-sm">How to practise: <strong>Listen</strong> → <strong>Record</strong> and say it → <strong>Compare</strong> to hear the model and your take back to back.</p>
   <p class="text-sm"><a href="/speaking/minimal-pairs">Train your ear with minimal pairs →</a></p>
 </section>

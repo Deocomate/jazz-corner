@@ -6,7 +6,7 @@ import { createServer } from 'node:http';
 const SAMPLE = [
   {
     meta: { id: 'mitigate', stems: ['mitigate', 'mitigated', 'mitigates', 'mitigating'] },
-    hwi: { hw: 'mit*i*gate', prs: [{ mw: 'ˈmi-tə-ˌgāt' }] },
+    hwi: { hw: 'mit*i*gate', prs: [{ mw: 'ˈmi-tə-ˌgāt', sound: { audio: 'mitiga01' } }] },
     fl: 'verb',
     def: [{ sseq: [[['sense', { dt: [['text', '{bc}to make less severe'], ['vis', [{ t: 'trees {it}mitigate{/it} the heat' }]]] }]]] }],
     shortdef: ['to cause to become less harsh or hostile', 'to make less severe or painful'],
@@ -27,7 +27,7 @@ process.env.MW_API_URL = `http://127.0.0.1:${fake.address().port}/json`;
 after(() => fake.close());
 
 const { setup, postForm } = await import('./helpers.js');
-const { parseEntries, cleanMarkup } = await import('../src/modules/today/merriam-webster.js');
+const { parseEntries, cleanMarkup, audioUrl } = await import('../src/modules/today/merriam-webster.js');
 const { get, run } = await import('../src/db/client.js');
 const { todayISO } = await import('../src/lib/dates.js');
 const { agent } = await setup();
@@ -40,6 +40,11 @@ test('parser keeps matching entries, cleans MW markup and pulls examples', () =>
   assert.equal(parsed.entries[0].headword, 'mit·i·gate');
   assert.equal(parsed.entries[0].pronunciation, 'ˈmi-tə-ˌgāt');
   assert.deepEqual(parsed.entries[0].examples, ['trees mitigate the heat']);
+  assert.equal(parsed.entries[0].audio, 'https://media.merriam-webster.com/audio/prons/en/us/mp3/m/mitiga01.mp3');
+  assert.equal(audioUrl('bixdeep01'), 'https://media.merriam-webster.com/audio/prons/en/us/mp3/bix/bixdeep01.mp3');
+  assert.equal(audioUrl('ggtwo001'), 'https://media.merriam-webster.com/audio/prons/en/us/mp3/gg/ggtwo001.mp3');
+  assert.equal(audioUrl('3d000001'), 'https://media.merriam-webster.com/audio/prons/en/us/mp3/number/3d000001.mp3');
+  assert.equal(audioUrl('../evil'), null);
   assert.equal(parseEntries(['suggestion'], 'xyz'), null, 'suggestion list = not found');
 });
 
@@ -72,4 +77,18 @@ test('a word Merriam-Webster does not have shows a clear message and a link', as
   const page = await agent.get('/');
   assert.match(page.text, /Merriam-Webster has no entry/);
   assert.match(page.text, /merriam-webster\.com\/dictionary\/zzqx/);
+});
+
+test('Speaking: bài luyện từ có nút nghe giọng người thật MW; dạng biến đổi thì không gắn nhầm file', async () => {
+  const make = async (text) => {
+    const res = await postForm(agent, '/speaking/items', { text, kind: 'word' }, { from: '/speaking' });
+    return Number(res.headers.location.match(/items\/(\d+)/)[1]);
+  };
+  const page = await agent.get(`/speaking/items/${await make('mitigate')}`);
+  assert.match(page.text, /Human recording/);
+  assert.match(page.text, /mitiga01\.mp3/);
+  assert.match(page.text, /&quot;humanAudio&quot;:&quot;https:\/\/media\.merriam-webster\.com/);
+  const other = await agent.get(`/speaking/items/${await make('mitigated')}`);
+  assert.doesNotMatch(other.text, /Human recording/);
+  assert.match(other.text, /&quot;humanAudio&quot;:null/);
 });

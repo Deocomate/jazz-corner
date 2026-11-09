@@ -15,6 +15,7 @@ import ieltsRoutes from './ielts/ielts.routes.js';
 import ieltsApi from './ielts/ielts.api.js';
 import speakingRoutes from './speaking/speaking.routes.js';
 import speakingApi from './speaking/speaking.api.js';
+import dictionaryApi from './today/dictionary.api.js';
 // [vibe:module-imports]
 
 export const modules = [
@@ -27,6 +28,7 @@ export const modules = [
   { path: '/api/ielts', router: ieltsApi },
   { path: '/speaking', router: speakingRoutes },
   { path: '/api/speaking', router: speakingApi },
+  { path: '/api/dictionary', router: dictionaryApi },
   // [vibe:module-mounts]
 ];
 

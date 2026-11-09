@@ -12,5 +12,4 @@
   <div class="space-y-1 font-serif text-xl leading-relaxed" data-transcript>
     {{#each phrases}}<span class="phrase" data-seg-index="{{@index}}">{{text}}</span> {{/each}}
   </div>
-  <p class="text-xs text-muted">{{#if item.segments}}The phrase being played is highlighted using the model audio’s timestamps.{{else}}No timed audio: each phrase is read by your browser’s voice and highlighted as it plays.{{/if}}</p>
 </section>

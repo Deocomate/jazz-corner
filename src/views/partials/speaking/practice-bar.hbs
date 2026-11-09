@@ -1,0 +1,42 @@
+{{!-- Thanh luyện: Nghe · Thu · So sánh · Cài đặt. Điện thoại/tablet: dính đáy màn hình (trên thanh tab);
+     máy tính (lg): thẻ dính ở cột phải. Hành vi: /js/speaking.js --}}
+<section class="practice-bar" aria-label="Practice controls" data-practice-bar>
+  <p class="truncate text-xs text-muted"><span data-rec-state>Practising:</span> <span class="font-serif text-sm text-ink" data-target-label>{{#if (eq item.kind "word")}}{{item.text}}{{else}}the whole text{{/if}}</span></p>
+  <div class="mt-2 grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1fr)_auto] items-stretch gap-2">
+    <button type="button" class="btn-secondary pb-btn" data-play-all aria-pressed="false"><span aria-hidden="true" data-play-icon>▶</span> <span data-play-label>Listen</span></button>
+    <button type="button" class="btn-primary pb-btn" data-record aria-pressed="false"><span data-rec-label>● Record</span> <span class="font-mono text-xs opacity-80" data-rec-timer hidden>00:00</span></button>
+    <button type="button" class="btn-secondary pb-btn" data-compare title="Play the model, then your latest take"><span aria-hidden="true" class="max-[400px]:hidden">⇄</span> Compare</button>
+    <details class="pb-settings" data-settings>
+      <summary class="btn-ghost pb-btn list-none px-3" aria-label="Audio settings" title="Audio settings">⚙</summary>
+      <div class="pb-panel space-y-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="w-14 text-sm text-muted" for="accent">Accent</label>
+          <select id="accent" class="input min-w-0 flex-1" data-accent>
+            <option value="us">American (en-US)</option>
+            <option value="uk">British (en-GB)</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-3" data-voice-row hidden>
+          <label class="w-14 text-sm text-muted" for="voice">Voice</label>
+          <select id="voice" class="input min-w-0 flex-1" data-voice></select>
+        </div>
+        <p class="text-xs text-muted" data-voice-hint hidden>★ = natural (neural) voice. Your choice is remembered for each accent.</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="w-14 text-sm text-muted" for="rate">Speed</label>
+          <select id="rate" class="input w-auto" data-rate>
+            <option value="0.6">0.6×</option>
+            <option value="0.75">0.75×</option>
+            <option value="0.9">0.9×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.15">1.15×</option>
+          </select>
+          <label class="ml-auto inline-flex items-center gap-2 text-sm text-muted"><input type="checkbox" data-loop class="accent-brand-600"> Loop</label>
+        </div>
+        <p class="text-xs text-muted" data-audio-status role="status" aria-live="polite">Checking available voices…</p>
+        <p class="hidden text-xs text-muted lg:block">Shortcuts: <span class="kbd">Space</span> listen · <span class="kbd">R</span> record · <span class="kbd">C</span> compare</p>
+      </div>
+    </details>
+  </div>
+  <p class="mt-1 text-xs text-muted empty:hidden" data-rec-status role="status" aria-live="polite"></p>
+  <div class="alert-error mt-2 text-sm" data-mic-error role="alert" hidden></div>
+</section>

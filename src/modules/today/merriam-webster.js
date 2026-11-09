@@ -39,6 +39,15 @@ function examplesOf(entry, limit = 2) {
   return out;
 }
 
+export const AUDIO_ORIGIN = 'https://media.merriam-webster.com';
+
+/** Tệp phát âm MW (giọng người thật, Anh-Mỹ). Quy tắc thư mục theo tài liệu API của MW. */
+export function audioUrl(name) {
+  if (!name || !/^[\w-]+$/.test(name)) return null;
+  const dir = name.startsWith('bix') ? 'bix' : name.startsWith('gg') ? 'gg' : /^[a-z]/i.test(name) ? name[0].toLowerCase() : 'number';
+  return `${AUDIO_ORIGIN}/audio/prons/en/us/mp3/${dir}/${name}.mp3`;
+}
+
 /**
  * Chuyển JSON của API thành dữ liệu hiển thị. Không thấy từ → API trả mảng chuỗi gợi ý → null.
  * Chỉ giữ mục khớp với từ (headword hoặc dạng từ trong meta.stems), tối đa 3 mục.
@@ -54,6 +63,7 @@ export function parseEntries(json, word) {
     headword: String(e.hwi?.hw || e.meta.id.split(':')[0]).replace(/\*/g, '·'),
     pos: e.fl || null,
     pronunciation: e.hwi?.prs?.[0]?.mw || null,
+    audio: audioUrl(e.hwi?.prs?.find((p) => p.sound?.audio)?.sound.audio),
     definitions: e.shortdef.map(cleanMarkup),
     examples: examplesOf(e),
   }));

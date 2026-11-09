@@ -1,4 +1,6 @@
-<a href="{{href}}" class="tab-link {{#if (isActive currentPath href)}}tab-link-active{{/if}}"{{#if (isActive currentPath href)}} aria-current="page"{{/if}}>
-  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{icon}}"/></svg>
-  <span>{{label}}</span>
+<a href="{{href}}" class="tab-link {{#if (isActive currentPath href)}}tab-link-active{{/if}}" title="{{label}}"{{#if (isActive currentPath href)}} aria-current="page"{{/if}}>
+  <span class="tab-pill">
+    <svg class="h-[22px] w-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{icon}}"/></svg>
+  </span>
+  <span class="sr-only">{{label}}</span>
 </a>

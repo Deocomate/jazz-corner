@@ -1,33 +1,36 @@
 {{!-- Trình đọc dùng chung cho PDF và EPUB. Hành vi nằm ở /js/reader/*.js --}}
 <div class="reader" data-reader data-config="{{json config}}" data-theme="light">
+  {{!-- Mobile: 1 dòng, nút chỉ có icon (nhãn chữ hiện từ sm trở lên). --}}
   <div class="reader-toolbar sticky top-0 z-30 border-b">
-    <div class="mx-auto flex max-w-5xl flex-wrap items-center gap-1 px-3 py-2">
-      <a href="/books" class="btn-ghost btn-sm" aria-label="Back to the library">← Books</a>
-      <h1 class="mx-2 min-w-0 flex-1 truncate font-serif text-base font-semibold">{{book.title}}</h1>
-      <button type="button" class="btn-ghost btn-sm" data-panel-open="toc" aria-haspopup="dialog">Contents</button>
-      <button type="button" class="btn-ghost btn-sm" data-panel-open="marks" aria-haspopup="dialog">Marks</button>
-      <button type="button" class="btn-ghost btn-sm" data-add-bookmark>+ Bookmark</button>
-      <span class="mx-1 h-5 w-px bg-current opacity-20" aria-hidden="true"></span>
+    <div class="mx-auto flex max-w-5xl flex-nowrap items-center justify-between gap-0 px-2 sm:justify-start py-2 sm:gap-1 sm:px-3">
+      <a href="/books" class="btn-ghost btn-sm rt-btn" aria-label="Back to the library" title="Books">{{> reader/icon d="M15 18l-6-6 6-6"}}<span class="hidden sm:inline">← Books</span></a>
+      {{!-- Mobile: ẩn tên sách (chỉ để trình đọc màn hình), các icon dàn đều cả hàng. --}}
+      <h1 class="sr-only min-w-0 truncate font-serif text-base font-semibold sm:not-sr-only sm:mx-2 sm:flex-1">{{book.title}}</h1>
+      <button type="button" class="btn-ghost btn-sm rt-btn" data-panel-open="toc" aria-haspopup="dialog" aria-label="Contents" title="Contents">{{> reader/icon d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"}}<span class="hidden sm:inline">Contents</span></button>
+      <button type="button" class="btn-ghost btn-sm rt-btn" data-panel-open="marks" aria-haspopup="dialog" aria-label="Marks" title="Marks">{{> reader/icon d="M9 11l-6 6v3h3l6-6M22 12l-4.6 4.6a2 2 0 01-2.8 0l-5.2-5.2a2 2 0 010-2.8L14 4z"}}<span class="hidden sm:inline">Marks</span></button>
+      <button type="button" class="btn-ghost btn-sm rt-btn" data-add-bookmark aria-label="Add bookmark" title="Add bookmark">{{> reader/icon d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2zM12 7v6M9 10h6"}}<span class="hidden sm:inline">+ Bookmark</span></button>
+      <span class="mx-1 hidden h-5 w-px bg-current opacity-20 sm:block" aria-hidden="true"></span>
       {{#if (eq book.format "pdf")}}
-        <button type="button" class="btn-ghost btn-sm" data-zoom="-1" aria-label="Zoom out">−</button>
-        <span class="w-12 text-center text-xs" data-zoom-label>100%</span>
-        <button type="button" class="btn-ghost btn-sm" data-zoom="1" aria-label="Zoom in">+</button>
+        <button type="button" class="btn-ghost btn-sm rt-btn" data-zoom="-1" aria-label="Zoom out" title="Zoom out">{{> reader/icon d="M11 18a7 7 0 100-14 7 7 0 000 14zM21 21l-4.35-4.35M8 11h6"}}</button>
+        <span class="hidden w-12 text-center text-xs sm:inline" data-zoom-label>100%</span>
+        <button type="button" class="btn-ghost btn-sm rt-btn" data-zoom="1" aria-label="Zoom in" title="Zoom in">{{> reader/icon d="M11 18a7 7 0 100-14 7 7 0 000 14zM21 21l-4.35-4.35M8 11h6M11 8v6"}}</button>
       {{else}}
-        <button type="button" class="btn-ghost btn-sm" data-font="-1" aria-label="Smaller text">A−</button>
-        <button type="button" class="btn-ghost btn-sm" data-font="1" aria-label="Larger text">A+</button>
+        <button type="button" class="btn-ghost btn-sm rt-btn" data-font="-1" aria-label="Smaller text">A−</button>
+        <button type="button" class="btn-ghost btn-sm rt-btn" data-font="1" aria-label="Larger text">A+</button>
       {{/if}}
-      <button type="button" class="btn-ghost btn-sm" data-theme-toggle aria-pressed="false">Dark</button>
+      <button type="button" class="btn-ghost btn-sm rt-btn" data-theme-toggle aria-pressed="false" aria-label="Dark mode" title="Dark mode">{{> reader/icon d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"}}<span class="hidden sm:inline" data-theme-label>Dark</span></button>
     </div>
   </div>
 
-  <div class="mx-auto max-w-5xl px-3 py-6">
+  <div class="mx-auto max-w-5xl px-3 pt-6 pb-24 md:pb-28">
     <div class="alert-info mb-4" data-reader-notice role="status" hidden></div>
     <div class="alert-error mb-4" data-reader-error role="alert" hidden></div>
     <p class="py-16 text-center text-sm opacity-70" data-reader-loading>Opening the book…</p>
     <div data-reader-content tabindex="-1" aria-label="Book content"></div>
   </div>
 
-  <div class="reader-footer sticky bottom-14 z-30 border-t md:bottom-0">
+  {{!-- Ghim sát thanh tab dưới (mobile) / đáy màn hình (desktop), không trôi theo độ dài nội dung. --}}
+  <div class="reader-footer fixed inset-x-0 bottom-[5.25rem] z-30 border-t md:bottom-0">
     <div class="mx-auto flex max-w-5xl items-center gap-3 px-3 py-2">
       <button type="button" class="btn-secondary btn-sm" data-prev>‹ Previous</button>
       <div class="min-w-0 flex-1 text-center">
@@ -40,12 +43,21 @@
   </div>
 </div>
 
+{{!-- Thanh nhỏ ngay cạnh vùng chọn; nghĩa hiện ở bảng cố định bên dưới để không che chữ. --}}
 <div class="selection-bar" data-selection-bar role="toolbar" aria-label="Actions for the selected text" hidden>
+  <button type="button" data-sel-action="translate" data-sel-keep data-sel-long hidden>Translate</button>
   <button type="button" data-sel-action="highlight">Highlight</button>
-  <button type="button" data-sel-action="note">Note</button>
-  <button type="button" data-sel-action="notebook">Save to Notebook</button>
-  <button type="button" data-sel-action="speak">Practise speaking</button>
+  <button type="button" data-sel-action="notebook">Save</button>
+  <button type="button" data-sel-action="speak">Speak</button>
 </div>
+
+<aside class="lookup-sheet" data-lookup-sheet aria-labelledby="lookup-title" hidden>
+  <div class="lookup-head">
+    <p id="lookup-title" class="lookup-title" data-lookup-title>Meaning</p>
+    <button type="button" class="lookup-close" data-lookup-close aria-label="Close the meaning panel">✕</button>
+  </div>
+  <div class="lookup-body" data-sel-meaning aria-live="polite"></div>
+</aside>
 
 {{> reader/panels}}
 {{> notebook/save-dialog}}

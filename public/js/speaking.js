@@ -14,26 +14,110 @@ function highlight(index) {
   if (index >= 0) $$(`[data-seg-index="${index}"]`).forEach((el) => el.classList.add('is-playing'));
 }
 
+// Ô chọn giọng: dựng lại khi danh sách giọng của trình duyệt tải xong hoặc đổi accent.
+const voiceSelect = $('[data-voice]');
+function renderVoices() {
+  if (!voiceSelect) return;
+  const { options, selected, human } = player.voiceOptions();
+  const hide = human || options.length < 2; // đang dùng giọng người thật thì ô chọn giọng không có tác dụng
+  $('[data-voice-row]').hidden = hide;
+  $('[data-voice-hint]').hidden = hide;
+  voiceSelect.replaceChildren(...options.map((o) => new Option(o.label, o.value, false, o.value === selected)));
+}
+
 const player = createPlayer({
   audioUrl: config.audioUrl,
   audioVoice: config.audioVoice,
+  humanAudioUrl: config.humanAudio,
   segments: config.segments,
   onStatus: (text, warn) => {
     statusEl.textContent = text;
     statusEl.classList.toggle('text-amber-800', Boolean(warn));
   },
   onSegment: highlight,
+  onVoices: () => setTimeout(renderVoices),
 });
 
+voiceSelect?.addEventListener('change', (e) => player.setVoice(e.target.value));
 $('[data-accent]').addEventListener('change', (e) => player.setAccent(e.target.value));
 $('[data-rate]').addEventListener('change', (e) => player.setRate(Number(e.target.value)));
 $('[data-loop]').addEventListener('change', (e) => player.setLoop(e.target.checked));
-$('[data-play-all]').addEventListener('click', () => player.playAll(config.text, config.phrases));
-$('[data-stop]').addEventListener('click', () => {
+// --- Nghe: nút Listen thành Stop khi đang phát (dù phát từ nút nào trên trang) ---
+const playBtn = $('[data-play-all]');
+let playToken = null;
+let mine = null; // <audio> bản thu đang phát khi So sánh
+function setPlaying(on) {
+  playBtn.setAttribute('aria-pressed', String(on));
+  $('[data-play-icon]').textContent = on ? '■' : '▶';
+  $('[data-play-label]').textContent = on ? 'Stop' : 'Listen';
+}
+function stopAll() {
+  playToken = null;
   shadowRun = null;
   player.stop();
+  if (mine && !mine.paused) mine.pause();
   setShadowStatus('');
-});
+  setPlaying(false);
+}
+/** Chạy một lượt phát; trả về false nếu bị dừng/thay bằng lượt khác giữa chừng. */
+async function track(fn) {
+  stopAll();
+  const token = (playToken = {});
+  setPlaying(true);
+  try {
+    await fn(() => playToken === token);
+  } finally {
+    if (playToken === token) {
+      playToken = null;
+      setPlaying(false);
+    }
+  }
+}
+/** Mẫu cho nội dung đang luyện: một câu đã chọn hoặc cả bài. */
+function playModel(text = target) {
+  if (text && text !== config.text) return player.playText(text);
+  return player.playAll(config.text, config.phrases);
+}
+playBtn.addEventListener('click', () => (playToken ? stopAll() : track(() => playModel())));
+
+// --- So sánh: phát mẫu rồi phát lần thu mới nhất ---
+function playAudio(el) {
+  return new Promise((resolve) => {
+    const done = () => {
+      el.removeEventListener('ended', done);
+      el.removeEventListener('pause', done);
+      resolve();
+    };
+    el.addEventListener('ended', done);
+    el.addEventListener('pause', done);
+    el.currentTime = 0;
+    el.play().catch(done);
+  });
+}
+function compare() {
+  const latest = $('[data-latest-take] [data-recording-audio]');
+  if (!latest) {
+    // Chưa có bản thu: nút tự báo ngắn gọn thay vì hiện thêm dòng chữ dưới thanh.
+    const btn = $('[data-compare]');
+    btn.dataset.label ??= btn.innerHTML;
+    btn.textContent = 'No take yet';
+    clearTimeout(btn.resetTimer);
+    btn.resetTimer = setTimeout(() => (btn.innerHTML = btn.dataset.label), 1600);
+    return;
+  }
+  track(async (alive) => {
+    recStatus.textContent = 'Comparing: model…';
+    await playModel(latest.dataset.target || null);
+    if (!alive()) return;
+    recStatus.textContent = 'Comparing: your latest take…';
+    mine = latest;
+    await playAudio(latest);
+    if (alive()) recStatus.textContent = '';
+  });
+}
+$('[data-compare]').addEventListener('click', compare);
+// Tự bấm nghe một bản thu → dừng giọng mẫu để không chồng tiếng.
+root.addEventListener('play', (e) => e.target.matches('[data-recording-audio]') && e.target !== mine && stopAll(), true);
 
 // --- Rhythm: phát từng cụm, bật/tắt nhấn ---
 const pendingStress = {};
@@ -41,7 +125,7 @@ root.addEventListener('click', (e) => {
   const seg = e.target.closest('[data-play-seg]');
   if (seg) {
     const i = Number(seg.dataset.playSeg);
-    player.playSegment(i, config.phrases[i]);
+    track(() => player.playSegment(i, config.phrases[i]));
   }
   const word = e.target.closest('[data-word-index]');
   if (word) {
@@ -73,26 +157,22 @@ let target = config.kind === 'word' ? config.text : null;
 const targetLabel = $('[data-target-label]');
 root.addEventListener('click', (e) => {
   const play = e.target.closest('[data-play-sentence]');
-  if (play) player.playText(config.sentences[Number(play.dataset.playSentence)]);
+  if (play) track(() => player.playText(config.sentences[Number(play.dataset.playSentence)]));
   const pick = e.target.closest('[data-target-sentence]');
   if (pick) {
     const i = Number(pick.dataset.targetSentence);
-    target = config.sentences[i];
-    targetLabel.textContent = target;
-    $$('.sentence').forEach((el) => el.classList.toggle('is-playing', el.dataset.sentence === String(i)));
-    $('[data-record]').focus();
+    const again = pick.getAttribute('aria-pressed') === 'true';
+    target = again ? null : config.sentences[i]; // chạm lại câu đang chọn = bỏ chọn
+    targetLabel.textContent = target || 'the whole passage';
+    $$('[data-target-sentence]').forEach((el) => el.setAttribute('aria-pressed', String(!again && el === pick)));
   }
   if (e.target.closest('[data-target-all]')) {
     target = null;
     targetLabel.textContent = 'the whole passage';
-    $$('.sentence').forEach((el) => el.classList.remove('is-playing'));
+    $$('[data-target-sentence]').forEach((el) => el.setAttribute('aria-pressed', 'false'));
   }
-  const compare = e.target.closest('[data-compare-model]');
-  if (compare) {
-    const t = compare.dataset.compareModel;
-    if (t && t !== config.text) player.playText(t);
-    else player.playAll(config.text, config.phrases);
-  }
+  const model = e.target.closest('[data-compare-model]');
+  if (model) track(() => playModel(model.dataset.compareModel || null));
 });
 
 // --- Shadowing 3 bước ---
@@ -104,31 +184,34 @@ $('[data-transcript-toggle]')?.addEventListener('change', (e) => $('[data-transc
 root.addEventListener('click', async (e) => {
   const step = e.target.closest('[data-step]')?.dataset.step;
   if (!step) return;
-  player.stop();
-  const run = (shadowRun = {});
   if (step === '1') {
-    setShadowStatus('Step 1: listening to the whole text…');
-    await player.playAll(config.text, config.phrases);
-    if (shadowRun === run) setShadowStatus('Step 1 done. Go to step 2 to repeat phrase by phrase.');
+    track(async (alive) => {
+      setShadowStatus('Step 1: listening to the whole text…');
+      await player.playAll(config.text, config.phrases);
+      if (alive()) setShadowStatus('Step 1 done. Go to step 2 to repeat phrase by phrase.');
+    });
   }
   if (step === '2') {
-    for (let i = 0; i < config.phrases.length && shadowRun === run; i++) {
-      setShadowStatus(`Step 2: listen to phrase ${i + 1}/${config.phrases.length}…`);
-      const startedAt = Date.now();
-      await player.playSegment(i, config.phrases[i]);
-      if (shadowRun !== run) return;
-      highlight(i);
-      setShadowStatus(`Repeat phrase ${i + 1}: “${config.phrases[i]}”`);
-      await wait(Math.max(1200, (Date.now() - startedAt) * 1.4));
-    }
-    if (shadowRun === run) setShadowStatus('Step 2 done. Go to step 3 to shadow the audio.');
-    highlight(-1);
+    track(async (alive) => {
+      for (let i = 0; i < config.phrases.length && alive(); i++) {
+        setShadowStatus(`Step 2: listen to phrase ${i + 1}/${config.phrases.length}…`);
+        const startedAt = Date.now();
+        await player.playSegment(i, config.phrases[i]);
+        if (!alive()) return;
+        highlight(i);
+        setShadowStatus(`Repeat phrase ${i + 1}: “${config.phrases[i]}”`);
+        await wait(Math.max(1200, (Date.now() - startedAt) * 1.4));
+      }
+      if (alive()) setShadowStatus('Step 2 done. Go to step 3 to shadow the audio.');
+      highlight(-1);
+    });
   }
   if (step === '3') {
+    stopAll();
     setShadowStatus('Step 3: recording — speak along with the audio…');
     const ok = await startRecording('shadowing');
     if (!ok) return setShadowStatus('');
-    await player.playAll(config.text, config.phrases);
+    await track(() => (setShadowStatus('Step 3: recording — speak along with the audio…'), player.playAll(config.text, config.phrases)));
     if (recorder.active) await stopRecording();
   }
 });
@@ -136,6 +219,8 @@ root.addEventListener('click', async (e) => {
 // --- Ghi âm ---
 const recBtn = $('[data-record]');
 const recTimer = $('[data-rec-timer]');
+const recLabel = $('[data-rec-label]');
+const recState = $('[data-rec-state]');
 const recStatus = $('[data-rec-status]');
 const micError = $('[data-mic-error]');
 const recorder = createRecorder({
@@ -153,16 +238,21 @@ async function startRecording(mode = config.mode) {
     return false;
   }
   recordMode = mode;
-  recBtn.textContent = '■ Stop';
+  recLabel.textContent = '■ Stop';
+  recTimer.hidden = false;
+  recState.textContent = 'Recording:';
   recBtn.classList.add('record-on');
   recBtn.setAttribute('aria-pressed', 'true');
-  recStatus.textContent = 'Recording…';
+  recStatus.textContent = '';
   return true;
 }
 
 async function stopRecording() {
   const result = await recorder.stop();
-  recBtn.textContent = '● Record';
+  recLabel.textContent = '● Record';
+  recTimer.hidden = true;
+  recTimer.textContent = '00:00';
+  recState.textContent = 'Practising:';
   recBtn.classList.remove('record-on');
   recBtn.setAttribute('aria-pressed', 'false');
   if (!result?.blob.size) return (recStatus.textContent = 'The recording is empty.');
@@ -191,17 +281,56 @@ async function stopRecording() {
 
 recBtn.addEventListener('click', async () => {
   if (recorder.active) {
-    player.stop();
+    stopAll();
     await stopRecording();
-  } else await startRecording(config.mode);
+  } else {
+    stopAll();
+    await startRecording(config.mode);
+  }
 });
 
-// Phím tắt: R = ghi âm/dừng, Space ở ngoài ô nhập = nghe toàn bộ.
+// Phím tắt: R = thu/dừng, Space = nghe/dừng, C = so sánh (khi không gõ trong ô nhập).
 document.addEventListener('keydown', (e) => {
-  if (e.target.closest('input, textarea, select, button, a, [contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest('input, textarea, select, button, a, summary, [contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === 'r' || e.key === 'R') recBtn.click();
+  if (e.key === 'c' || e.key === 'C') compare();
   if (e.key === ' ') {
     e.preventDefault();
-    player.playAll(config.text, config.phrases);
+    playBtn.click();
   }
+});
+
+// --- Lịch sử bản thu: lọc theo chế độ; mở sẵn khi link trỏ tới một bản thu cũ ---
+const recHistory = $('[data-history]');
+recHistory?.addEventListener('click', (e) => {
+  const chip = e.target.closest('[data-filter]');
+  if (!chip) return;
+  recHistory.querySelectorAll('[data-filter]').forEach((c) => {
+    c.classList.toggle('is-on', c === chip);
+    c.setAttribute('aria-pressed', String(c === chip));
+  });
+  recHistory.querySelectorAll('[data-rec-mode]').forEach((li) => (li.hidden = Boolean(chip.dataset.filter) && li.dataset.recMode !== chip.dataset.filter));
+});
+const hashEl = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+if (recHistory && hashEl && recHistory.contains(hashEl)) {
+  recHistory.open = true;
+  hashEl.scrollIntoView();
+}
+
+// --- Menu ⋯ và bảng cài đặt: đóng khi chạm ra ngoài / Esc; nút xem bản gốc ---
+// Máy tính (lg): cài đặt luôn hiện trong thẻ ở cột phải, không phải bảng bật/tắt.
+const wide = window.matchMedia('(min-width: 1024px)');
+const settings = $('[data-settings]');
+const syncSettings = () => (settings.open = wide.matches);
+syncSettings();
+wide.addEventListener('change', syncSettings);
+const popovers = $$('details[data-more], details[data-settings]');
+const closable = () => popovers.filter((d) => d !== settings || !wide.matches);
+document.addEventListener('click', (e) => closable().forEach((d) => d.open && !d.contains(e.target) && (d.open = false)));
+document.addEventListener('keydown', (e) => e.key === 'Escape' && closable().forEach((d) => (d.open = false)));
+$('[data-show-original]')?.addEventListener('click', () => {
+  const box = $('[data-original]');
+  box.hidden = false;
+  $('[data-more]').open = false;
+  box.scrollIntoView({ block: 'nearest' });
 });

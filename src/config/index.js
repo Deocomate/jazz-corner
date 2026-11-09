@@ -31,6 +31,16 @@ export const config = Object.freeze({
     apiKey: env.MW_API_KEY || '',
     baseUrl: env.MW_API_URL || 'https://www.dictionaryapi.com/api/v3/references/collegiate/json',
   }),
+  // Nghĩa tiếng Việt: Wiktionary tiếng Việt (không cần khoá), không có thì dịch máy (DeepL nếu có khoá, không thì MyMemory).
+  // Khi chạy test thì tắt (không gọi mạng thật) trừ khi đặt VI_DICTIONARY=on.
+  vietnamese: Object.freeze({
+    enabled: env.VI_DICTIONARY ? env.VI_DICTIONARY !== 'off' : nodeEnv !== 'test',
+    wiktionaryUrl: env.VI_WIKTIONARY_URL || 'https://vi.wiktionary.org/w/api.php',
+    translateUrl: env.VI_TRANSLATE_URL || 'https://api.mymemory.translated.net/get',
+    // DeepL (dịch mượt hơn MyMemory). Khoá miễn phí: https://www.deepl.com/pro-api → DeepL API Free.
+    deeplKey: env.DEEPL_API_KEY || '',
+    deeplUrl: env.DEEPL_API_URL || '', // để trống: tự chọn api-free / api theo khoá
+  }),
   // [vibe:config]
 });
 

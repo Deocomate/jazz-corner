@@ -45,7 +45,8 @@ export function createApp() {
           'upgrade-insecure-requests': null,
           // blob: cho ảnh bìa/trang PDF, bản ghi âm và worker của pdf.js.
           'img-src': ["'self'", 'data:', 'blob:'],
-          'media-src': ["'self'", 'blob:'],
+          // + file phát âm của Merriam-Webster (nút loa trong bảng nghĩa).
+          'media-src': ["'self'", 'blob:', 'https://media.merriam-webster.com'],
           'worker-src': ["'self'", 'blob:'],
         },
       },

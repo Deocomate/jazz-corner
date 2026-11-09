@@ -1,7 +1,7 @@
 // Mở hộp thoại "Lưu vào Notebook" (partial notebook/save-dialog) và gửi lên /api/notebook.
 //   await openNotebookDialog({ content, excerpt, kind, source: { type, label, url, bookId, location } })
 
-export function openNotebookDialog({ content = '', excerpt = '', kind = 'word', source = {} } = {}) {
+export function openNotebookDialog({ content = '', excerpt = '', kind = 'word', meaning = '', source = {} } = {}) {
   const dialog = document.querySelector('[data-notebook-dialog]');
   const form = dialog.querySelector('[data-notebook-form]');
   const error = dialog.querySelector('[data-nb-error]');
@@ -10,6 +10,7 @@ export function openNotebookDialog({ content = '', excerpt = '', kind = 'word', 
   form.kind.value = kind;
   form.content.value = content.slice(0, 500);
   form.excerpt.value = excerpt;
+  form.meaning.value = meaning;
   dialog.querySelector('[data-nb-source]').textContent = source.label ? `Source: ${source.label}` : '';
 
   return new Promise((resolve) => {

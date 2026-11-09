@@ -7,10 +7,10 @@ export const KIND_OPTIONS = [
   { value: 'passage', label: 'Passage' },
 ];
 export const MODES = [
-  { value: 'pronunciation', label: 'Pronunciation' },
-  { value: 'rhythm', label: 'Rhythm and Intonation' },
-  { value: 'read_aloud', label: 'Read Aloud' },
-  { value: 'shadowing', label: 'Shadowing' },
+  { value: 'pronunciation', label: 'Pronunciation', short: 'Pronunciation' },
+  { value: 'rhythm', label: 'Rhythm and Intonation', short: 'Rhythm' },
+  { value: 'read_aloud', label: 'Read Aloud', short: 'Read aloud' },
+  { value: 'shadowing', label: 'Shadowing', short: 'Shadowing' },
 ];
 export const modesFor = (kind) => (kind === 'word' ? MODES.filter((m) => m.value === 'pronunciation' || m.value === 'read_aloud') : MODES.filter((m) => m.value !== 'pronunciation'));
 export const defaultMode = (kind) => (kind === 'word' ? 'pronunciation' : 'rhythm');

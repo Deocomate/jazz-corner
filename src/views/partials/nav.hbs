@@ -1,7 +1,7 @@
 {{!-- Điều hướng chính: cùng tên và thứ tự trên desktop (trên cùng) và mobile (thanh tab dưới). --}}
-<header class="border-b border-line bg-white/80 backdrop-blur">
+<header class="site-header">
   <div class="container-page flex h-14 items-center justify-between gap-6">
-    <a href="/" class="font-serif text-xl font-semibold tracking-tight text-brand-700">jazz<span class="text-ink">corner</span></a>
+    <a href="/" class="logo">jazz<span class="text-brand-500">corner</span></a>
     <nav class="hidden items-center gap-1 md:flex" aria-label="Main navigation">
       {{> nav-link href="/" label="Today"}}
       {{> nav-link href="/books" label="Books"}}
@@ -10,15 +10,24 @@
       {{> nav-link href="/notebook" label="Notebook"}}
       {{> nav-link href="/progress" label="Progress"}}
     </nav>
-    <a href="/status" class="text-xs font-medium text-muted hover:text-ink">Feature status</a>
+    <div class="flex items-center gap-1 md:gap-3">
+      {{!-- Mobile: Progress nằm ở thanh trên (thanh tab dưới chỉ giữ 5 mục chính, chỉ có icon, KHÔNG thêm nhãn chữ). --}}
+      <a href="/progress" class="header-icon md:hidden {{#if (isActive currentPath "/progress")}}header-icon-active{{/if}}" title="Progress" aria-label="Progress"{{#if (isActive currentPath "/progress")}} aria-current="page"{{/if}}>
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      </a>
+      {{!-- Mobile: Feature status thu gọn thành icon ⓘ; desktop giữ chữ. --}}
+      <a href="/status" class="header-icon md:hidden {{#if (isActive currentPath "/status")}}header-icon-active{{/if}}" title="Feature status" aria-label="Feature status"{{#if (isActive currentPath "/status")}} aria-current="page"{{/if}}>
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+      </a>
+      <a href="/status" class="hidden text-[11px] font-semibold tracking-[0.12em] text-brand-700/80 uppercase hover:text-brand-700 md:inline">Feature status</a>
+    </div>
   </div>
 </header>
 
-<nav class="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-white md:hidden" aria-label="Main navigation (mobile)">
+<nav class="tab-bar" aria-label="Main navigation (mobile)">
   {{> tab-link href="/" label="Today" icon="M3 12l9-8 9 8M5 10v10h14V10"}}
   {{> tab-link href="/books" label="Books" icon="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5zM12 6v13"}}
   {{> tab-link href="/ielts" label="IELTS" icon="M9 4h6M6 4h12v16H6zM9 9h6M9 13h6M9 17h3"}}
   {{> tab-link href="/speaking" label="Speaking" icon="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3zM6 11a6 6 0 0012 0M12 17v4"}}
   {{> tab-link href="/notebook" label="Notebook" icon="M6 3h11a1 1 0 011 1v16a1 1 0 01-1 1H6zM6 3v18M9 8h6M9 12h6"}}
-  {{> tab-link href="/progress" label="Progress" icon="M4 20V10M10 20V4M16 20v-7M22 20H2"}}
 </nav>

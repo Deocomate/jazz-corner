@@ -6,6 +6,7 @@ import { markText, unmark } from './mark.js';
 import { attachSelectionBar } from '../selection.js';
 import { openNotebookDialog } from '../notebook-save.js';
 import { sendToSpeaking } from '../speaking-handoff.js';
+import { createMeaningPanel, isShort } from '../meaning.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -107,7 +108,7 @@ export async function setupReader(createAdapter) {
     }
     const hl = $('[data-highlight-list]');
     hl.replaceChildren();
-    if (!marks.highlights.length) hl.append(li('<p class="text-sm text-muted">Select some text, then choose Highlight or Note.</p>'));
+    if (!marks.highlights.length) hl.append(li('<p class="text-sm text-muted">Select some text, then choose Highlight. Add a note to any highlight here.</p>'));
     for (const h of marks.highlights) {
       const item = li(`<div class="rounded-xl border border-line p-3"><button type="button" class="w-full text-left"><span class="block font-serif text-sm italic">“${esc(h.text.slice(0, 220))}${h.text.length > 220 ? '…' : ''}”</span>${h.note ? `<span class="mt-1 block text-sm">✎ ${esc(h.note)}</span>` : ''}<span class="mt-1 block text-xs text-muted">${esc(h.location_label || '')}</span></button><div class="mt-2 flex gap-1"><button type="button" class="btn-ghost btn-sm" data-act="note">Note</button><button type="button" class="btn-ghost btn-sm text-red-700" data-act="del">Delete</button></div></div>`);
       item.querySelector('button').addEventListener('click', () => goTo(h.location, h.text));
@@ -180,23 +181,34 @@ export async function setupReader(createAdapter) {
     await loadMarks();
     afterRender();
   }
-  attachSelectionBar(content, $('[data-selection-bar]'), {
-    onAction: async (action, text) => {
+  const meaning = createMeaningPanel($('[data-lookup-sheet]'));
+  const selBar = $('[data-selection-bar]');
+  const translateBtn = $('[data-sel-long]', selBar);
+  const toolbar = $('.reader-toolbar', root);
+  attachSelectionBar(content, selBar, {
+    // Từ/cụm ngắn: tự hiện nghĩa. Câu/đoạn dài: hiện nút Translate.
+    onShow: (text, range) => {
+      translateBtn.hidden = isShort(text);
+      return meaning.show(text, range);
+    },
+    topInset: () => Math.max(8, toolbar.getBoundingClientRect().bottom + 8),
+    onAction: async (action, text, range) => {
+      if (action === 'translate') return meaning.translate(text, range);
       if (action === 'highlight') return saveHighlight(text);
-      if (action === 'note') {
-        const note = await askNote(text);
-        if (note !== null) await saveHighlight(text, note);
-        return;
-      }
       const source = sourceFor(text);
       if (action === 'notebook') {
         const short = text.split(' ').length <= 8;
-        const item = await openNotebookDialog({ content: short ? text : '', excerpt: text, kind: short ? 'word' : 'pattern', source });
+        const definition = await meaning.firstDefinition(text);
+        const item = await openNotebookDialog({ content: short ? text : '', excerpt: text, kind: short ? 'word' : 'pattern', meaning: definition, source });
         if (item) ctx.showNotice('Saved to today’s page in your Notebook.');
         return;
       }
       if (action === 'speak') sendToSpeaking({ text, sourceType: 'book', sourceLabel: source.label, sourceUrl: source.url });
     },
+  });
+  // Chạm/bấm vào trang sách (không chọn gì) → đóng bảng nghĩa.
+  content.addEventListener('click', () => {
+    if (meaning.isOpen && window.getSelection()?.isCollapsed) meaning.close();
   });
 
   // --- Thanh công cụ ---
@@ -224,8 +236,12 @@ export async function setupReader(createAdapter) {
   }
   function setTheme(theme) {
     root.dataset.theme = theme;
+    document.documentElement.dataset.readerTheme = theme; // header + thanh tab của trang cũng tối theo
     const btn = $('[data-theme-toggle]', root);
-    btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    const label = theme === 'dark' ? 'Light' : 'Dark';
+    $('[data-theme-label]', btn).textContent = label;
+    btn.setAttribute('aria-label', `${label} mode`);
+    btn.title = `${label} mode`;
     btn.setAttribute('aria-pressed', String(theme === 'dark'));
     try {
       localStorage.setItem('readerTheme', theme);

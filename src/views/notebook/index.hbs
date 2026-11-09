@@ -32,8 +32,8 @@
           class="block w-full resize-y border-0 bg-transparent p-0 font-serif text-[17px] leading-8 text-ink placeholder:text-slate-400 focus:ring-0 focus:outline-none"
           placeholder="The first line becomes the title. E.g. “Much as I sympathise with…” — a way to concede before disagreeing"></textarea>
         <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <label class="nb-meta flex items-center gap-2">Type
-            <select name="kind" class="rounded-md border border-line bg-white px-2 py-1 text-sm text-ink">
+          <label class="nb-meta flex max-w-full items-center gap-2">Type
+            <select name="kind" class="min-w-0 rounded-md border border-line bg-white px-2 py-1 text-sm text-ink">
               {{#each quickKinds}}<option value="{{value}}">{{label}}</option>{{/each}}
             </select>
           </label>

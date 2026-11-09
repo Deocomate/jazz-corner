@@ -139,3 +139,20 @@ test('trang Speaking và minimal pairs mở được', async () => {
   assert.equal(mp.status, 200);
   assert.match(mp.text, /sheep/);
 });
+
+test('trang luyện: lần thu mới nhất mở sẵn, các lần trước thu gọn và lọc được theo chế độ', async () => {
+  const item = await get("SELECT id FROM speaking_items WHERE sample_key = 'passage-slow-reading'");
+  const token = await csrfToken(agent, '/speaking');
+  const upload = (mode) =>
+    agent.post(`/api/speaking/items/${item.id}/recordings`).set('x-csrf-token', token).set('Content-Type', 'audio/webm').set('x-mode', mode).send(Buffer.from('fake'));
+  const older = await upload('rhythm');
+  await upload('shadowing');
+  const latest = await upload('read_aloud');
+  const page = await agent.get(`/speaking/items/${item.id}?mode=read_aloud`);
+  assert.match(page.text, new RegExp(`id="rec-${latest.body.id}"[^>]*data-latest-take`));
+  assert.match(page.text, /Earlier takes <span[^>]*>\(2\)/);
+  assert.match(page.text, new RegExp(`id="rec-${older.body.id}"[^>]*data-rec-mode="rhythm"`));
+  assert.match(page.text, /data-filter="shadowing"/);
+  assert.match(page.text, /data-practice-bar/);
+  assert.match(page.text, /aria-current="step"/);
+});

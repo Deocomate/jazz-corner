@@ -4,6 +4,7 @@ import { validate } from '#lib/validate.js';
 import { analyzeRhythm, splitSentences, phraseTexts } from '#lib/rhythm.js';
 import { saveFile, removeFile } from '#lib/storage.js';
 import { config } from '#config';
+import * as merriamWebster from '#modules/today/merriam-webster.js';
 import * as repo from './speaking.repo.js';
 import * as notebook from '#modules/notebook/notebook.service.js';
 import { itemSchema, markupSchema, recordingNoteSchema, guessKind, RECORDING_MODES, SOURCE_LABELS, modesFor, defaultMode } from './speaking.schema.js';
@@ -60,6 +61,26 @@ export function practiceData(item) {
     pronunciation,
     missingPronunciation: item.kind === 'word' && pronunciation.length === 0,
   };
+}
+
+// File phát âm người thật (Merriam-Webster, Anh-Mỹ) cho bài luyện từ. Chỉ lấy mục có headword đúng
+// bằng từ đang luyện (không lấy dạng gốc, vì "mitigated" ≠ "mitigate"). Nhớ trong RAM; lỗi mạng thì không nhớ.
+const humanAudioCache = new Map();
+export async function humanAudio(item) {
+  if (item.kind !== 'word' || !merriamWebster.isConfigured()) return [];
+  const term = item.text.trim().replace(/[^\p{L}\p{N}' -]/gu, '').replace(/\s+/g, ' ');
+  if (!term || term.split(' ').length > 4) return [];
+  const key = term.toLowerCase();
+  if (humanAudioCache.has(key)) return humanAudioCache.get(key);
+  const result = await merriamWebster.lookup(term);
+  if (!result) return [];
+  const seen = new Set();
+  const list = (result.entries || [])
+    .filter((e) => e.audio && e.headword.replace(/·/g, '').toLowerCase() === key && !seen.has(e.audio) && seen.add(e.audio))
+    .map((e) => ({ pos: e.pos, pronunciation: e.pronunciation, url: e.audio }));
+  if (humanAudioCache.size >= 200) humanAudioCache.delete(humanAudioCache.keys().next().value);
+  humanAudioCache.set(key, list);
+  return list;
 }
 
 export async function createItem(input, { origin = 'mine' } = {}) {

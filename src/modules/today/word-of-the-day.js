@@ -9,6 +9,7 @@ import * as repo from './today.repo.js';
 import { findCandidates, pickCandidate } from './word-picker.js';
 import { wordForDate } from './words.js';
 import * as merriamWebster from './merriam-webster.js';
+import * as vietnamese from './vietnamese.js';
 
 const wotdKey = (word) => `wotd:${word.toLowerCase()}`;
 
@@ -68,26 +69,51 @@ export async function wordOfTheDay(date = todayISO()) {
   }
   const data = JSON.parse(row.data_json);
   // Tra Merriam-Webster một lần rồi lưu lại; lỗi mạng/chưa có khoá → không lưu, lần sau thử lại.
-  if (!data.mw) {
+  // Bản lưu cũ chưa có trường `audio` (file phát âm) → tra lại một lần.
+  const missingAudio = data.mw?.found && !('audio' in (data.mw.entries[0] ?? {}));
+  if (!data.mw || missingAudio) {
     const mw = await merriamWebster.lookup(data.word);
     if (mw) {
       data.mw = mw;
       await repo.updateDailyWordData(date, data);
     }
   }
+  // Nghĩa tiếng Việt: cũng tra một lần rồi lưu (key `vi`); null = lỗi mạng/tắt → lần sau thử lại.
+  if (!data.vi) {
+    const vi = await vietnamese.lookup(data.word, { also: data.mw?.found ? [data.mw.word] : [] });
+    if (vi) {
+      data.vi = vi;
+      await repo.updateDailyWordData(date, data);
+    }
+  }
   return {
     ...data,
     mwFound: Boolean(data.mw?.found),
+    viFound: Boolean(data.vi?.found),
+    viShort: shortVietnamese(data.vi),
     mwUrl: merriamWebster.mwPageUrl(data.word),
     saved: await notebook.findByDedupeKey(wotdKey(data.word)),
   };
 }
 
-/** Nghĩa dùng khi lưu vào Notebook: từ điển dự án trước, không có thì nghĩa đầu tiên của MW. */
+/** Bản rút gọn để hiện trên Today: tối đa 2 từ loại × 2 nghĩa, mỗi từ loại một dòng, bỏ ví dụ. */
+function shortVietnamese(vi) {
+  if (!vi?.found || vi.source !== 'wiktionary') return null;
+  return vi.entries.slice(0, 2).map((e) => ({
+    pos: e.pos,
+    text: e.senses
+      .slice(0, 2)
+      .map((s) => s.text.replace(/[.;]+$/, ''))
+      .join('; '),
+  }));
+}
+
+/** Nghĩa dùng khi lưu vào Notebook: từ điển dự án (không có thì MW), kèm một dòng nghĩa tiếng Việt. */
 function meaningFor(w) {
-  if (w.meaning) return w.meaning;
   const first = w.mw?.found ? w.mw.entries[0] : null;
-  return first ? first.definitions.slice(0, 2).join('; ') : undefined;
+  const en = w.meaning || (first ? first.definitions.slice(0, 2).join('; ') : '');
+  const vi = vietnamese.shortMeaning(w.vi);
+  return [en, vi && `VI: ${vi}`].filter(Boolean).join(' · ') || undefined;
 }
 
 export async function saveWordOfTheDay() {

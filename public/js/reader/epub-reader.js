@@ -98,6 +98,15 @@ setupReader((ctx) => {
     return Math.min(1, Math.max(0, (window.scrollY - top) / max));
   }
 
+  function seenRatio() {
+    const doc = document.documentElement;
+    if (window.scrollY + window.innerHeight >= doc.scrollHeight - 4) return 1;
+    const r = ctx.content.getBoundingClientRect();
+    if (!r.height) return 0;
+    const footer = document.querySelector('.reader-footer')?.getBoundingClientRect().top ?? window.innerHeight;
+    return Math.min(1, Math.max(0, (footer - r.top) / r.height));
+  }
+
   let scrollTimer;
   window.addEventListener(
     'scroll',
@@ -157,7 +166,8 @@ setupReader((ctx) => {
       const toc = currentTocLabel();
       return `${toc ? toc : `Part ${chapter + 1}`} · ${chapter + 1}/${spine.length}`;
     },
-    progress: () => (spine.length ? (chapter + scrollRatio) / spine.length : 0),
+    // Tiến độ = phần chương đã thấy (đáy chương hiện trên màn hình ⇒ đọc xong chương), nên chương cuối đạt 100%.
+    progress: () => (spine.length ? (chapter + seenRatio()) / spine.length : 0),
     sameUnit: (a, b) => Boolean(a && b && a.chapter === b.chapter),
     roots: () => (textRoot ? [textRoot] : []),
   };

@@ -1,0 +1,19 @@
+{{!-- Một bản thu: nghe mẫu / nghe mình, ghi chú, "cần luyện", xoá. Dùng cho "Lần thu mới nhất" và lịch sử. --}}
+<div class="flex flex-wrap items-center gap-2 text-sm">
+  <span class="chip">{{modeLabel}}</span>
+  <span class="text-muted">{{formatDate created_at}}</span>
+  {{#if needs_review}}<span class="badge-yellow">Needs work</span>{{/if}}
+  {{#if target_text}}<span class="min-w-0 flex-1 truncate font-serif text-muted">“{{target_text}}”</span>{{/if}}
+</div>
+<div class="mt-3 flex flex-wrap items-center gap-2">
+  <button type="button" class="btn-secondary btn-sm" data-compare-model="{{target_text}}">▶ Model</button>
+  <audio controls preload="none" src="/speaking/recordings/{{id}}/audio" class="h-10 min-w-0 flex-1" data-recording-audio data-target="{{target_text}}">Your browser cannot play this recording.</audio>
+</div>
+<form method="post" action="/speaking/recordings/{{id}}" class="mt-3 flex flex-wrap items-center gap-2">
+  {{> form/csrf}}
+  <label for="note-{{id}}" class="sr-only">Note for this recording</label>
+  <input id="note-{{id}}" name="note" value="{{note}}" class="input min-w-0 flex-1" placeholder="Wrong syllable stressed, paused mid-phrase…">
+  <label class="inline-flex items-center gap-1.5 text-sm text-muted"><input type="checkbox" name="needs_review" {{checked needs_review}} class="accent-brand-600"> Needs work</label>
+  <button type="submit" class="btn-secondary btn-sm">Save</button>
+  {{> form/delete-button action=(concat "/speaking/recordings/" id "/delete") confirm="Delete this recording?"}}
+</form>

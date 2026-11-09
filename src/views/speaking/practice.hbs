@@ -1,48 +1,71 @@
-{{!-- Trang luyện một bài. Hành vi: /js/speaking.js --}}
-<div data-speaking data-config="{{json config}}">
+{{!-- Trang luyện một bài, xếp theo vòng Nghe → Nói → So sánh:
+     nội dung luyện ở trên, lần thu mới nhất ngay dưới, lịch sử + ghi chú thu gọn, việc phụ trong menu ⋯.
+     Thanh luyện (Nghe · Thu · So sánh · Cài đặt) luôn trong tầm tay. Hành vi: /js/speaking.js --}}
+<div data-speaking data-config="{{json config}}" class="pb-28 lg:pb-0">
   <p class="mb-3"><a href="/speaking" class="text-sm text-muted hover:text-ink">← Speaking</a></p>
-  <header class="mb-6">
-    <div class="mb-2 flex flex-wrap items-center gap-1.5">
+
+  <header class="mb-5">
+    <div class="flex items-start gap-2">
+      <h1 class="min-w-0 flex-1 font-serif text-2xl leading-snug font-semibold sm:text-3xl">{{#if (eq item.kind "word")}}{{item.text}}{{else}}{{default item.title (truncate item.text 90)}}{{/if}}</h1>
+      <details class="menu-more" data-more>
+        <summary class="header-icon list-none text-xl" aria-label="More actions" title="More actions">⋯</summary>
+        <div class="menu-panel" role="menu">
+          <p class="px-3 pt-1 pb-2 text-xs text-muted">Source: {{item.sourceLabel}}</p>
+          {{#if item.source_url}}<a role="menuitem" class="menu-item" href="{{item.source_url}}">Open the original: {{item.source_label}}</a>{{/if}}
+          {{#if item.original_text}}{{#unless (eq item.original_text item.text)}}
+            <button type="button" role="menuitem" class="menu-item" data-show-original>Show the original passage (before editing)</button>
+          {{/unless}}{{/if}}
+          <form method="post" action="/speaking/items/{{item.id}}/notebook">{{> form/csrf}}<button type="submit" role="menuitem" class="menu-item">Save to Notebook for review</button></form>
+          {{#unless (eq item.origin "sample")}}
+            {{> form/delete-button action=(concat "/speaking/items/" item.id "/delete") confirm="Delete this exercise and all its recordings?" label="Delete this exercise" buttonClass="menu-item text-red-700"}}
+          {{/unless}}
+        </div>
+      </details>
+    </div>
+    <div class="mt-2 flex flex-wrap items-center gap-1.5">
       <span class="chip">{{#if (eq item.kind "word")}}Word / phrase{{else if (eq item.kind "sentence")}}Sentence{{else}}Passage{{/if}}</span>
       {{> origin-tag origin=item.origin}}
-      <span class="chip">Source: {{item.sourceLabel}}</span>
     </div>
-    <h1 class="font-serif text-2xl leading-snug font-semibold sm:text-3xl">{{#if (eq item.kind "word")}}{{item.text}}{{else}}{{default item.title (truncate item.text 90)}}{{/if}}</h1>
-    {{#if item.source_url}}<p class="mt-2 text-sm"><a href="{{item.source_url}}">Open the original: {{item.source_label}}</a></p>{{/if}}
     {{#if item.original_text}}{{#unless (eq item.original_text item.text)}}
-      <details class="mt-2 text-sm"><summary class="cursor-pointer text-muted">Show the original passage (before editing)</summary><p class="mt-2 rounded-lg bg-paper p-3 font-serif">{{item.original_text}}</p></details>
+      <div class="mt-3 rounded-lg bg-paper p-3 text-sm" data-original hidden>
+        <p class="mb-1 text-xs text-muted">Original passage (before editing)</p>
+        <p class="font-serif">{{item.original_text}}</p>
+      </div>
     {{/unless}}{{/if}}
   </header>
 
-  <nav class="mb-6 flex flex-wrap gap-1 border-b border-line" aria-label="Practice modes">
+  <nav class="step-nav mb-6" aria-label="Practice steps">
     {{#each item.modes}}
-      <a href="?mode={{value}}" class="-mb-px border-b-2 px-3 py-2 text-sm font-medium {{#if (eq value ../mode)}}border-brand-600 text-brand-700{{else}}border-transparent text-muted hover:text-ink{{/if}}"{{#if (eq value ../mode)}} aria-current="page"{{/if}}>{{label}}</a>
+      {{#unless @first}}<span class="hidden text-muted sm:inline" aria-hidden="true">›</span>{{/unless}}
+      <a href="?mode={{value}}" class="step-link {{#if (eq value ../mode)}}step-link-active{{/if}}"{{#if (eq value ../mode)}} aria-current="step"{{/if}}><span class="step-num">{{add @index 1}}</span>{{short}}</a>
     {{/each}}
   </nav>
 
   <div class="grid gap-6 lg:grid-cols-3">
-    <div class="space-y-6 lg:col-span-2">
-      {{> speaking/audio-panel}}
+    <div class="min-w-0 space-y-6 lg:col-span-2">
       {{#if (eq mode "pronunciation")}}{{> speaking/mode-pronunciation}}{{/if}}
       {{#if (eq mode "rhythm")}}{{> speaking/mode-rhythm}}{{/if}}
       {{#if (eq mode "read_aloud")}}{{> speaking/mode-read-aloud}}{{/if}}
       {{#if (eq mode "shadowing")}}{{> speaking/mode-shadowing}}{{/if}}
+
+      {{> speaking/recordings}}
+
+      <details class="card card-body group" {{#if item.notes}}open{{/if}}>
+        <summary class="flex cursor-pointer list-none items-center gap-2">
+          <span class="section-title flex-1 text-base">My notes</span>
+          <span class="text-muted transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+        </summary>
+        <form method="post" action="/speaking/items/{{item.id}}/notes" class="mt-3 space-y-3">
+          {{> form/csrf}}
+          <input type="hidden" name="mode" value="{{mode}}">
+          <label for="item-notes" class="sr-only">My notes</label>
+          <textarea id="item-notes" name="notes" rows="4" class="input" placeholder="Stressed the wrong syllable; too flat; paused in the middle of a thought group…">{{item.notes}}</textarea>
+          <button type="submit" class="btn-secondary btn-sm">Save notes</button>
+        </form>
+      </details>
     </div>
-    <aside class="space-y-6">
-      {{> speaking/recorder}}
-      <form method="post" action="/speaking/items/{{item.id}}/notes" class="card card-body space-y-3">
-        {{> form/csrf}}
-        <input type="hidden" name="mode" value="{{mode}}">
-        <label for="item-notes" class="section-title block text-base">My notes</label>
-        <textarea id="item-notes" name="notes" rows="4" class="input" placeholder="E.g. stressed the wrong syllable; too flat; paused in the middle of a thought group…">{{item.notes}}</textarea>
-        <button type="submit" class="btn-secondary btn-sm">Save notes</button>
-      </form>
-      <div class="flex flex-wrap gap-2">
-        <form method="post" action="/speaking/items/{{item.id}}/notebook">{{> form/csrf}}<button type="submit" class="btn-secondary btn-sm">Save to Notebook for review</button></form>
-        {{#unless (eq item.origin "sample")}}{{> form/delete-button action=(concat "/speaking/items/" item.id "/delete") confirm="Delete this exercise and all its recordings?"}}{{/unless}}
-      </div>
+    <aside class="lg:sticky lg:top-6 lg:self-start">
+      {{> speaking/practice-bar}}
     </aside>
   </div>
-
-  {{> speaking/recordings}}
 </div>

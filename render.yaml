@@ -27,4 +27,7 @@ services:
         sync: false
       - key: APP_TIMEZONE
         value: Asia/Ho_Chi_Minh
+      # Khoá DeepL API Free (dịch câu mượt hơn). Để trống thì dùng MyMemory.
+      - key: DEEPL_API_KEY
+        sync: false
       # [vibe:render-env]

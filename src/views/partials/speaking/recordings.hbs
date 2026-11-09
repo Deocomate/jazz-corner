@@ -1,32 +1,29 @@
-{{!-- Recording history: replay, compare with the model, notes, "needs work". --}}
-<section id="recordings" class="mt-10" aria-labelledby="recs-title">
-  <h2 id="recs-title" class="section-title mb-3">My recordings</h2>
+{{!-- Bản thu: lần mới nhất mở sẵn (để tự đánh giá ngay), các lần trước thu gọn và lọc được theo chế độ. --}}
+<section id="recordings" class="card card-body scroll-mt-24" aria-labelledby="recs-title">
+  <h2 id="recs-title" class="section-title text-base">Your latest take</h2>
   {{#if recordings.length}}
-    <ul class="space-y-3">
-      {{#each recordings}}
-        <li id="rec-{{id}}" class="card card-body scroll-mt-24">
-          <div class="flex flex-wrap items-center gap-2 text-sm">
-            <span class="chip">{{modeLabel}}</span>
-            <span class="text-muted">{{formatDate created_at}}</span>
-            {{#if needs_review}}<span class="badge-yellow">Needs work</span>{{/if}}
-            {{#if target_text}}<span class="min-w-0 flex-1 truncate font-serif text-muted">“{{target_text}}”</span>{{/if}}
-          </div>
-          <div class="mt-3 flex flex-wrap items-center gap-2">
-            <button type="button" class="btn-secondary btn-sm" data-compare-model="{{target_text}}">▶ Model</button>
-            <audio controls preload="none" src="/speaking/recordings/{{id}}/audio" class="h-10 min-w-0 flex-1" data-recording-audio>Your browser cannot play this recording.</audio>
-          </div>
-          <form method="post" action="/speaking/recordings/{{id}}" class="mt-3 flex flex-wrap items-center gap-2">
-            {{> form/csrf}}
-            <label for="note-{{id}}" class="sr-only">Note for this recording</label>
-            <input id="note-{{id}}" name="note" value="{{note}}" class="input min-w-0 flex-1" placeholder="E.g. wrong syllable stressed, paused mid-phrase…">
-            <label class="inline-flex items-center gap-1.5 text-sm text-muted"><input type="checkbox" name="needs_review" {{checked needs_review}} class="accent-brand-600"> Needs work</label>
-            <button type="submit" class="btn-secondary btn-sm">Save</button>
-          </form>
-          <div class="mt-2">{{> form/delete-button action=(concat "/speaking/recordings/" id "/delete") confirm="Delete this recording?"}}</div>
-        </li>
-      {{/each}}
-    </ul>
+    {{#with recordings.[0]}}
+      <div id="rec-{{id}}" class="mt-3 scroll-mt-24" data-latest-take>{{> speaking/recording-item}}</div>
+    {{/with}}
   {{else}}
-    <p class="text-sm text-muted">No recordings yet. Press <strong>Record</strong> to capture your voice; recordings are kept so you can listen and compare later.</p>
+    <p class="mt-2 text-sm text-muted">Press <strong>● Record</strong> and say it. Your take appears here so you can compare it with the model straight away.</p>
   {{/if}}
 </section>
+
+{{#if (gt recordings.length 1)}}
+  <details class="card card-body group" data-history>
+    <summary class="flex cursor-pointer list-none items-center gap-2">
+      <span class="section-title flex-1 text-base">Earlier takes <span class="text-sm font-normal text-muted">({{add recordings.length -1}})</span></span>
+      <span class="text-muted transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+    </summary>
+    <div class="mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Filter by mode" data-history-filter>
+      <button type="button" class="chip is-on" data-filter="" aria-pressed="true">All</button>
+      {{#each recordingModes}}<button type="button" class="chip" data-filter="{{value}}" aria-pressed="false">{{label}}</button>{{/each}}
+    </div>
+    <ul class="mt-3 divide-y divide-line">
+      {{#each recordings}}{{#unless @first}}
+        <li id="rec-{{id}}" class="scroll-mt-24 py-4" data-rec-mode="{{mode}}">{{> speaking/recording-item}}</li>
+      {{/unless}}{{/each}}
+    </ul>
+  </details>
+{{/if}}

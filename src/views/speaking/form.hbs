@@ -1,0 +1,26 @@
+{{#> page-header title="Tạo bài luyện nói" eyebrow="Speaking" subtitle="Bạn có thể chỉnh hoặc rút ngắn nội dung để luyện; bản gốc và liên kết nguồn vẫn được giữ."}}
+  <a href="/speaking" class="btn-ghost">Huỷ</a>
+{{/page-header}}
+<form method="post" action="/speaking/items" class="card card-body max-w-3xl space-y-5" data-speaking-form>
+  {{> form/csrf}}
+  <input type="hidden" name="source_type" value="{{default values.source_type 'manual'}}" data-field="sourceType">
+  <input type="hidden" name="source_label" value="{{values.source_label}}" data-field="sourceLabel">
+  <input type="hidden" name="source_url" value="{{values.source_url}}" data-field="sourceUrl">
+  <input type="hidden" name="original_text" value="{{values.original_text}}" data-field="originalText">
+  <p class="text-sm text-muted" data-source-line {{#unless values.source_label}}hidden{{/unless}}>Nguồn: <a href="{{values.source_url}}" data-source-link>{{values.source_label}}</a></p>
+  {{#if errors._form}}<div class="alert-error">{{errors._form}}</div>{{/if}}
+  <div class="field">
+    <label for="f-text" class="label">Nội dung luyện <span class="text-red-600" aria-hidden="true">*</span></label>
+    <textarea id="f-text" name="text" rows="6" class="input font-serif text-base{{#if errors.text}} input-error{{/if}}" lang="en" required data-field="text">{{values.text}}</textarea>
+    {{#if errors.text}}<p class="field-error">{{errors.text}}</p>{{/if}}
+  </div>
+  <details class="rounded-lg bg-paper p-3 text-sm" data-original-box {{#unless values.original_text}}hidden{{/unless}}>
+    <summary class="cursor-pointer font-medium">Xem bản gốc</summary>
+    <p class="mt-2 font-serif whitespace-pre-line" lang="en" data-original-view>{{values.original_text}}</p>
+  </details>
+  <div class="grid gap-4 sm:grid-cols-2">
+    {{> form/select name="kind" label="Loại bài" options=kindOptions value=values.kind placeholder="Tự nhận theo độ dài"}}
+    {{> form/field name="title" label="Tên bài (không bắt buộc)" value=values.title error=errors.title}}
+  </div>
+  <div class="flex justify-end"><button type="submit" class="btn-primary">Bắt đầu luyện</button></div>
+</form>

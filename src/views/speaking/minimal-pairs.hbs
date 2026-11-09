@@ -1,0 +1,36 @@
+{{#> page-header title="Minimal pairs" eyebrow="Speaking · Pronunciation" subtitle="Nghe một từ trong cặp rồi chọn từ bạn nghe được. Audio dùng giọng tổng hợp của trình duyệt."}}
+  <a href="/speaking" class="btn-ghost">← Speaking</a>
+{{/page-header}}
+
+<section class="card card-body mb-8 max-w-2xl" data-mp-quiz aria-labelledby="quiz-title">
+  <h2 id="quiz-title" class="section-title">Bạn nghe thấy từ nào?</h2>
+  <p class="mt-1 text-xs text-muted" data-mp-status role="status" aria-live="polite"></p>
+  <div class="mt-4 flex flex-wrap items-center gap-2">
+    <button type="button" class="btn-primary" data-mp-play>▶ Nghe</button>
+    <button type="button" class="btn-ghost" data-mp-next>Cặp khác</button>
+    <span class="ml-auto text-sm text-muted">Điểm: <strong data-mp-score>0/0</strong></span>
+  </div>
+  <div class="mt-4 grid grid-cols-2 gap-3" data-mp-choices></div>
+  <p class="mt-3 text-sm" data-mp-feedback role="status" aria-live="polite"></p>
+</section>
+
+<section aria-labelledby="pairs-title">
+  <h2 id="pairs-title" class="section-title mb-3">Các cặp âm</h2>
+  <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    {{#each pairs}}
+      <li class="card card-body">
+        <p class="font-serif text-xl" lang="en"><button type="button" class="hover:text-brand-700" data-say="{{a}}">{{a}}</button> · <button type="button" class="hover:text-brand-700" data-say="{{b}}">{{b}}</button></p>
+        <p class="mt-1 font-mono text-sm text-muted">{{sound}}</p>
+        <p class="mt-2 text-sm">{{tip}}</p>
+        <form method="post" action="/speaking/items" class="mt-3">
+          {{> form/csrf}}
+          <input type="hidden" name="text" value="{{a}} – {{b}}">
+          <input type="hidden" name="kind" value="word">
+          <input type="hidden" name="title" value="Minimal pair: {{a}} / {{b}}">
+          <button type="submit" class="btn-ghost btn-sm">Luyện ghi âm cặp này</button>
+        </form>
+      </li>
+    {{/each}}
+  </ul>
+</section>
+<div data-mp-data data-pairs="{{json pairs}}" hidden></div>

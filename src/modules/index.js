@@ -6,23 +6,27 @@
 //   <ten>.repo.js       -> câu SQL (chỉ chỗ này được viết SQL)
 //   <ten>.schema.js     -> schema zod cho form
 //   <ten>.api.js        -> API JSON cho JS phía trình duyệt (nếu cần)
-import homeRoutes from './home/home.routes.js';
+import todayRoutes from './today/today.routes.js';
 import booksRoutes from './books/books.routes.js';
 import booksApi from './books/books.api.js';
 import notebookRoutes from './notebook/notebook.routes.js';
 import notebookApi from './notebook/notebook.api.js';
 import ieltsRoutes from './ielts/ielts.routes.js';
 import ieltsApi from './ielts/ielts.api.js';
+import speakingRoutes from './speaking/speaking.routes.js';
+import speakingApi from './speaking/speaking.api.js';
 // [vibe:module-imports]
 
 export const modules = [
-  { path: '/', router: homeRoutes },
+  { path: '/', router: todayRoutes },
   { path: '/books', router: booksRoutes },
   { path: '/api/books', router: booksApi },
   { path: '/notebook', router: notebookRoutes },
   { path: '/api/notebook', router: notebookApi },
   { path: '/ielts', router: ieltsRoutes },
   { path: '/api/ielts', router: ieltsApi },
+  { path: '/speaking', router: speakingRoutes },
+  { path: '/api/speaking', router: speakingApi },
   // [vibe:module-mounts]
 ];
 

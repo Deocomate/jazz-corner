@@ -1,0 +1,38 @@
+<section class="card card-body space-y-5" aria-labelledby="rhythm-title">
+  <div class="flex flex-wrap items-center gap-2">
+    <h2 id="rhythm-title" class="section-title flex-1 text-base">Rhythm and Intonation</h2>
+    {{#if item.hasEdits}}<span class="badge-green">Đã chỉnh bởi bạn</span>{{else}}<span class="badge-yellow">Gợi ý tự động</span>{{/if}}
+  </div>
+  <ul class="flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted" aria-label="Chú giải">
+    <li><span class="rw rw-stress">NHẤN</span> từ được nhấn</li>
+    <li><span class="rw rw-weak">nhẹ</span> từ thường đọc nhẹ</li>
+    <li><span class="font-semibold text-brand-600">‿</span> nối âm</li>
+    <li><span class="font-semibold text-brand-600">|</span> ngắt cụm · <span class="font-semibold text-brand-600">||</span> hết câu</li>
+  </ul>
+  <div class="space-y-4 font-serif text-xl leading-loose" lang="en" data-rhythm>
+    {{#each rhythm}}
+      <p>
+        {{#each phrases}}
+          <span class="phrase" data-seg-index="{{globalIndex}}">{{#each words}}<button type="button" class="rw {{#if stressed}}rw-stress{{else if weak}}rw-weak{{/if}}{{#if edited}} rw-edited{{/if}}" data-word-index="{{index}}" aria-pressed="{{#if stressed}}true{{else}}false{{/if}}">{{text}}</button>{{#if linkNext}}<span class="link-mark" aria-label="nối âm">‿</span>{{else}} {{/if}}{{/each}}</span>
+          <button type="button" class="play-seg" data-play-seg="{{globalIndex}}" aria-label="Phát cụm này">▶</button>
+          {{#unless @last}}<span class="pause-mark" aria-hidden="true">|</span>{{/unless}}
+        {{/each}}
+        <span class="pause-mark" aria-hidden="true">||</span>
+      </p>
+    {{/each}}
+  </div>
+  <div class="flex flex-wrap items-center gap-2 border-t border-line pt-4">
+    <p class="flex-1 text-xs text-muted">Bấm vào một từ để bật/tắt nhấn. Đánh dấu tự động dựa trên luật đơn giản (từ nội dung thường được nhấn) — có thể sai, hãy chỉnh theo ý câu.</p>
+    <button type="button" class="btn-secondary btn-sm" data-save-markup disabled>Lưu chỉnh sửa</button>
+  </div>
+  <p class="text-xs text-muted" data-segment-note>{{#if item.segments}}Phát từng cụm dùng mốc thời gian của audio mẫu.{{else}}Phát từng cụm dùng giọng đọc của trình duyệt cho từng cụm.{{/if}}</p>
+</section>
+
+<section class="card card-body" aria-labelledby="contrast-title">
+  <h2 id="contrast-title" class="section-title text-base">Trọng âm câu có thể đổi nghĩa</h2>
+  <div class="mt-3 grid gap-3 sm:grid-cols-2" lang="en">
+    <div class="rounded-xl bg-paper p-4"><p class="font-serif text-lg">I wanted the <strong class="text-brand-700 uppercase">blue</strong> one.</p><p class="mt-1 text-sm text-muted" lang="vi">Đối chiếu màu: cái màu xanh, không phải màu khác.</p></div>
+    <div class="rounded-xl bg-paper p-4"><p class="font-serif text-lg"><strong class="text-brand-700 uppercase">I</strong> wanted the blue one.</p><p class="mt-1 text-sm text-muted" lang="vi">Đối chiếu người: chính tôi muốn, không phải người khác.</p></div>
+  </div>
+  <p class="mt-3 text-xs text-muted">Giọng tổng hợp không nhấn theo ý được — hãy tự ghi âm cả hai cách và nghe lại.</p>
+</section>

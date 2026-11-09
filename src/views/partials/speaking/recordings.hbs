@@ -1,0 +1,32 @@
+{{!-- Lịch sử bản ghi của bài: nghe lại, so sánh với mẫu, ghi chú, đánh dấu cần ôn. --}}
+<section id="recordings" class="mt-10" aria-labelledby="recs-title">
+  <h2 id="recs-title" class="section-title mb-3">Bản ghi của tôi</h2>
+  {{#if recordings.length}}
+    <ul class="space-y-3">
+      {{#each recordings}}
+        <li id="rec-{{id}}" class="card card-body scroll-mt-24">
+          <div class="flex flex-wrap items-center gap-2 text-sm">
+            <span class="chip">{{modeLabel}}</span>
+            <span class="text-muted">{{formatDate created_at}}</span>
+            {{#if needs_review}}<span class="badge-yellow">Cần ôn</span>{{/if}}
+            {{#if target_text}}<span class="min-w-0 flex-1 truncate font-serif text-muted" lang="en">“{{target_text}}”</span>{{/if}}
+          </div>
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <button type="button" class="btn-secondary btn-sm" data-compare-model="{{target_text}}">▶ Mẫu</button>
+            <audio controls preload="none" src="/speaking/recordings/{{id}}/audio" class="h-10 min-w-0 flex-1" data-recording-audio>Trình duyệt không phát được bản ghi.</audio>
+          </div>
+          <form method="post" action="/speaking/recordings/{{id}}" class="mt-3 flex flex-wrap items-center gap-2">
+            {{> form/csrf}}
+            <label for="note-{{id}}" class="sr-only">Ghi chú cho bản ghi</label>
+            <input id="note-{{id}}" name="note" value="{{note}}" class="input min-w-0 flex-1" placeholder="VD: nhấn sai âm tiết, ngắt giữa cụm…">
+            <label class="inline-flex items-center gap-1.5 text-sm text-muted"><input type="checkbox" name="needs_review" {{checked needs_review}} class="accent-brand-600"> Cần ôn</label>
+            <button type="submit" class="btn-secondary btn-sm">Lưu</button>
+          </form>
+          <div class="mt-2">{{> form/delete-button action=(concat "/speaking/recordings/" id "/delete") confirm="Xoá bản ghi này?"}}</div>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p class="text-sm text-muted">Chưa có bản ghi. Bấm <strong>Ghi âm</strong> để thu giọng của bạn; bản ghi được lưu lại để nghe và so sánh sau.</p>
+  {{/if}}
+</section>

@@ -36,6 +36,8 @@ CREATE TABLE speaking_recordings (
   size_bytes INTEGER NOT NULL DEFAULT 0,
   duration_ms INTEGER,
   note TEXT,
+  -- Câu/cụm cụ thể đang tập khi ghi (VD: một câu trong đoạn Read Aloud).
+  target_text TEXT,
   needs_review INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

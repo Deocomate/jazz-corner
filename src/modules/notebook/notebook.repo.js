@@ -27,7 +27,9 @@ function whereFor({ q, kind, source, tag } = {}) {
     parts.push("(', ' || tags || ',') LIKE ?");
     args.push(`%, ${tag},%`);
   }
-  return { whereSql: parts.length ? `WHERE ${parts.join(' AND ')}` : '', args };
+  // parts chỉ chứa đoạn SQL cố định viết trong hàm này; giá trị người dùng nằm trong args.
+  const whereSql = parts.length ? ['WHERE', parts.join(' AND ')].join(' ') : '';
+  return { whereSql, args };
 }
 
 export function listItems(filters, { limit = 30, offset = 0 } = {}) {

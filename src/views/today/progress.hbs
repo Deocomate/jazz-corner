@@ -1,0 +1,78 @@
+{{#> page-header title="Progress" eyebrow="Từ dữ liệu bạn đã lưu" subtitle="Mọi số liệu ở đây lấy từ sách, Notebook, bài IELTS và bản ghi Speaking thật của bạn."}}{{/page-header}}
+
+<section class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Tổng quan">
+  <div class="card card-body"><p class="text-sm text-muted">Mục đến hạn ôn</p><p class="mt-1 font-serif text-3xl font-semibold">{{dueCount}}</p><a href="/notebook/review" class="text-xs">Ôn ngay</a></div>
+  <div class="card card-body"><p class="text-sm text-muted">Lượt ôn 7 ngày qua</p><p class="mt-1 font-serif text-3xl font-semibold">{{reviewed}}</p></div>
+  <div class="card card-body"><p class="text-sm text-muted">Bài Reading đã nộp</p><p class="mt-1 font-serif text-3xl font-semibold">{{submittedCount}}</p></div>
+  <div class="card card-body"><p class="text-sm text-muted">Ngày luyện Speaking</p><p class="mt-1 font-serif text-3xl font-semibold">{{sessions.days}}</p><p class="text-xs text-muted">{{sessions.total}} bản ghi</p></div>
+</section>
+
+<div class="grid gap-6 lg:grid-cols-2">
+  <section class="card card-body" aria-labelledby="pr-books">
+    <h2 id="pr-books" class="section-title mb-4">Sách đang đọc</h2>
+    {{#if reading.length}}
+      <ul class="space-y-3">
+        {{#each reading}}
+          <li><a href="/books/{{id}}" class="font-medium hover:text-brand-700">{{title}}</a>
+            <div class="mt-1 flex items-center gap-2"><div class="progress"><span style="width: {{percent}}%"></span></div><span class="w-10 text-right text-xs text-muted">{{percent}}%</span></div>
+            {{#if location_label}}<p class="text-xs text-muted">{{location_label}}</p>{{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}<p class="text-sm text-muted">Chưa có dữ liệu đọc. <a href="/books">Mở một cuốn sách</a> để bắt đầu theo dõi.</p>{{/if}}
+  </section>
+
+  <section class="card card-body" aria-labelledby="pr-ielts">
+    <h2 id="pr-ielts" class="section-title mb-4">IELTS Reading gần đây</h2>
+    {{#if recent.length}}
+      <ul class="divide-y divide-line">
+        {{#each recent}}
+          <li class="flex items-center gap-3 py-2 text-sm"><a href="/ielts/attempts/{{id}}/result" class="min-w-0 flex-1 truncate hover:text-brand-700">{{test_title}}</a><span class="text-muted">{{modeLabel}}</span><strong>{{score}}/{{total}}</strong></li>
+        {{/each}}
+      </ul>
+    {{else}}<p class="text-sm text-muted">Chưa nộp bài nào. <a href="/ielts">Làm một đề Reading</a>.</p>{{/if}}
+  </section>
+
+  <section class="card card-body" aria-labelledby="pr-types">
+    <h2 id="pr-types" class="section-title mb-1">Dạng câu hay sai</h2>
+    <p class="mb-4 text-xs text-muted">Tỉ lệ sai theo dạng, tính trên các bài đã nộp.</p>
+    {{#if hasTypeData}}
+      <ul class="space-y-3">
+        {{#each types}}
+          <li class="text-sm"><div class="flex justify-between"><span>{{label}}</span><span class="text-muted">sai {{wrong}}/{{total}} · {{rate}}%</span></div><div class="progress mt-1"><span style="width: {{rate}}%"></span></div></li>
+        {{/each}}
+      </ul>
+    {{else}}<p class="text-sm text-muted">Cần ít nhất một bài đã nộp để thống kê.</p>{{/if}}
+  </section>
+
+  <section class="card card-body" aria-labelledby="pr-reasons">
+    <h2 id="pr-reasons" class="section-title mb-1">Lỗi lặp lại</h2>
+    <p class="mb-4 text-xs text-muted">Từ lý do bạn ghi khi lưu câu sai vào Notebook ({{mistakeCount}} câu).</p>
+    {{#if reasons.length}}
+      <ul class="space-y-2">{{#each reasons}}<li class="flex items-start gap-3 text-sm"><span class="badge-red shrink-0">{{count}}×</span><span>{{text}}</span></li>{{/each}}</ul>
+      <a href="/notebook?kind=ielts_mistake" class="mt-4 inline-block text-sm">Xem tất cả lỗi IELTS →</a>
+    {{else}}<p class="text-sm text-muted">Chưa đủ dữ liệu. Khi lưu câu sai, hãy ghi lý do (VD: đọc nhầm phạm vi nhận định) để thấy lỗi nào lặp lại.</p>{{/if}}
+  </section>
+
+  <section class="card card-body" aria-labelledby="pr-speak">
+    <h2 id="pr-speak" class="section-title mb-4">Speaking gần đây</h2>
+    {{#if recordings.length}}
+      <ul class="divide-y divide-line">
+        {{#each recordings}}
+          <li class="py-2 text-sm"><a href="/speaking/items/{{item_id}}?mode={{mode}}#rec-{{id}}" class="font-medium hover:text-brand-700" lang="en">{{default item_title item_text}}</a><p class="text-xs text-muted">{{mode}} · {{formatDate created_at}}{{#if note}} · {{note}}{{/if}}</p></li>
+        {{/each}}
+      </ul>
+    {{else}}<p class="text-sm text-muted">Chưa có bản ghi. <a href="/speaking">Luyện nói</a> và ghi âm để theo dõi tiến bộ.</p>{{/if}}
+  </section>
+
+  <section class="card card-body" aria-labelledby="pr-flag">
+    <h2 id="pr-flag" class="section-title mb-4">Từ / câu cần ôn (Speaking)</h2>
+    {{#if flagged.length}}
+      <ul class="divide-y divide-line">
+        {{#each flagged}}
+          <li class="py-2 text-sm"><a href="/speaking/items/{{item_id}}?mode={{mode}}#rec-{{id}}" class="font-serif hover:text-brand-700" lang="en">{{default target_text (default item_title item_text)}}</a>{{#if note}}<p class="text-xs text-muted">{{note}}</p>{{/if}}</li>
+        {{/each}}
+      </ul>
+    {{else}}<p class="text-sm text-muted">Đánh dấu "Cần ôn" ở một bản ghi để nó xuất hiện ở đây.</p>{{/if}}
+  </section>
+</div>

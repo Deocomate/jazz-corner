@@ -37,6 +37,8 @@ export const helpers = {
   and: (...args) => args.slice(0, -1).every(Boolean),
   or: (...args) => args.slice(0, -1).some(Boolean),
   not: (value) => !value,
+  gt: (a, b) => Number(a) > Number(b),
+  add: (a, b) => Number(a) + Number(b),
   // Ngày giờ: "28/10/2026, 14:30"
   formatDate: (value) => {
     const date = toDate(value);

@@ -2,6 +2,7 @@
 import { notFound } from '#lib/errors.js';
 import { filePath } from '#lib/storage.js';
 import * as service from './ielts.service.js';
+import { importTest as importTestData, parseImportJson } from './ielts.import.js';
 import * as attempts from './attempts.service.js';
 import { QUESTION_TYPES, TFNG_OPTIONS, MODES, optionsToLines } from './ielts.schema.js';
 import { SAMPLE_TEST } from './sample-test.js';
@@ -85,8 +86,8 @@ export const importForm = (req, res) =>
   res.render('ielts/import', { title: 'Nhập đề', values: { json: '' }, errors: {}, example: JSON.stringify(SAMPLE_TEST, null, 2).slice(0, 1800) });
 
 export async function importTest(req, res) {
-  const parsed = service.parseImportJson(req.body.json);
-  const result = parsed.ok ? await service.importTest(parsed.data) : parsed;
+  const parsed = parseImportJson(req.body.json);
+  const result = parsed.ok ? await importTestData(parsed.data) : parsed;
   if (!result.ok) {
     return res.status(422).render('ielts/import', { title: 'Nhập đề', values: req.body, errors: result.errors, example: '' });
   }

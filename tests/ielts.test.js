@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { setup, postForm, csrfToken } from './helpers.js';
-import { ensureSampleTest } from '../src/modules/ielts/ielts.service.js';
+import { ensureSampleTest } from '../src/modules/ielts/ielts.import.js';
 import { gradeAnswer, normalizeAnswer } from '../src/modules/ielts/scoring.js';
 import { get, run } from '../src/db/client.js';
 

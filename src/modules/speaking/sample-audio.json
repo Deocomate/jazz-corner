@@ -1,0 +1,87 @@
+{
+  "word-phenomenon": {
+    "duration": 1.97,
+    "segments": [
+      {
+        "text": "phenomenon",
+        "start": 0.12,
+        "end": 1.97
+      }
+    ]
+  },
+  "sentence-blue-one": {
+    "duration": 3.76,
+    "segments": [
+      {
+        "text": "I wanted the blue one,",
+        "start": 0.11,
+        "end": 1.84
+      },
+      {
+        "text": "not the green one.",
+        "start": 1.79,
+        "end": 3.76
+      }
+    ]
+  },
+  "passage-slow-reading": {
+    "duration": 16.92,
+    "segments": [
+      {
+        "text": "Slow reading",
+        "start": 0.11,
+        "end": 0.82
+      },
+      {
+        "text": "is not merely reading",
+        "start": 0.77,
+        "end": 2
+      },
+      {
+        "text": "at a lower speed.",
+        "start": 1.95,
+        "end": 3.94
+      },
+      {
+        "text": "It is a deliberate practice",
+        "start": 3.89,
+        "end": 5.34
+      },
+      {
+        "text": "of noticing:",
+        "start": 5.29,
+        "end": 6.52
+      },
+      {
+        "text": "the choice of a verb,",
+        "start": 6.47,
+        "end": 8.05
+      },
+      {
+        "text": "the rhythm of a clause,",
+        "start": 8,
+        "end": 9.68
+      },
+      {
+        "text": "and the way a writer concedes a point",
+        "start": 9.63,
+        "end": 11.48
+      },
+      {
+        "text": "before overturning it.",
+        "start": 11.43,
+        "end": 13.68
+      },
+      {
+        "text": "Admittedly,",
+        "start": 13.63,
+        "end": 14.84
+      },
+      {
+        "text": "this takes patience.",
+        "start": 14.79,
+        "end": 16.92
+      }
+    ]
+  }
+}

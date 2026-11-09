@@ -1,0 +1,48 @@
+{{!-- Trang luyện một bài. Hành vi: /js/speaking.js --}}
+<div data-speaking data-config="{{json config}}">
+  <p class="mb-3"><a href="/speaking" class="text-sm text-muted hover:text-ink">← Speaking</a></p>
+  <header class="mb-6">
+    <div class="mb-2 flex flex-wrap items-center gap-1.5">
+      <span class="chip">{{#if (eq item.kind "word")}}Từ / cụm từ{{else if (eq item.kind "sentence")}}Câu{{else}}Đoạn{{/if}}</span>
+      {{> origin-tag origin=item.origin}}
+      <span class="chip">Nguồn: {{item.sourceLabel}}</span>
+    </div>
+    <h1 class="font-serif text-2xl leading-snug font-semibold sm:text-3xl" lang="en">{{#if (eq item.kind "word")}}{{item.text}}{{else}}{{default item.title "Bài luyện nói"}}{{/if}}</h1>
+    {{#if item.source_url}}<p class="mt-2 text-sm"><a href="{{item.source_url}}">Mở bản gốc: {{item.source_label}}</a></p>{{/if}}
+    {{#if item.original_text}}{{#unless (eq item.original_text item.text)}}
+      <details class="mt-2 text-sm"><summary class="cursor-pointer text-muted">Xem đoạn gốc (trước khi chỉnh)</summary><p class="mt-2 rounded-lg bg-paper p-3 font-serif" lang="en">{{item.original_text}}</p></details>
+    {{/unless}}{{/if}}
+  </header>
+
+  <nav class="mb-6 flex flex-wrap gap-1 border-b border-line" aria-label="Chế độ luyện">
+    {{#each item.modes}}
+      <a href="?mode={{value}}" class="-mb-px border-b-2 px-3 py-2 text-sm font-medium {{#if (eq value ../mode)}}border-brand-600 text-brand-700{{else}}border-transparent text-muted hover:text-ink{{/if}}"{{#if (eq value ../mode)}} aria-current="page"{{/if}}>{{label}}</a>
+    {{/each}}
+  </nav>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="space-y-6 lg:col-span-2">
+      {{> speaking/audio-panel}}
+      {{#if (eq mode "pronunciation")}}{{> speaking/mode-pronunciation}}{{/if}}
+      {{#if (eq mode "rhythm")}}{{> speaking/mode-rhythm}}{{/if}}
+      {{#if (eq mode "read_aloud")}}{{> speaking/mode-read-aloud}}{{/if}}
+      {{#if (eq mode "shadowing")}}{{> speaking/mode-shadowing}}{{/if}}
+    </div>
+    <aside class="space-y-6">
+      {{> speaking/recorder}}
+      <form method="post" action="/speaking/items/{{item.id}}/notes" class="card card-body space-y-3">
+        {{> form/csrf}}
+        <input type="hidden" name="mode" value="{{mode}}">
+        <label for="item-notes" class="section-title block text-base">Ghi chú của tôi</label>
+        <textarea id="item-notes" name="notes" rows="4" class="input" placeholder="VD: nhấn sai âm tiết thứ hai; đọc đều quá; ngắt giữa cụm ý…">{{item.notes}}</textarea>
+        <button type="submit" class="btn-secondary btn-sm">Lưu ghi chú</button>
+      </form>
+      <div class="flex flex-wrap gap-2">
+        <form method="post" action="/speaking/items/{{item.id}}/notebook">{{> form/csrf}}<button type="submit" class="btn-secondary btn-sm">Lưu vào Notebook để ôn</button></form>
+        {{#unless (eq item.origin "sample")}}{{> form/delete-button action=(concat "/speaking/items/" item.id "/delete") confirm="Xoá bài luyện này cùng mọi bản ghi?"}}{{/unless}}
+      </div>
+    </aside>
+  </div>
+
+  {{> speaking/recordings}}
+</div>

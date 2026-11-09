@@ -50,9 +50,9 @@ export async function getBook(id) {
 }
 
 /** Tải sách lên. Trả { ok, data: book } hoặc { ok: false, errors: { _form } } với lý do dễ hiểu. */
-export async function uploadBook(buffer, originalName, { origin = 'mine' } = {}) {
+export async function uploadBook(buffer, originalName, { origin = 'mine', title = null } = {}) {
   if (!buffer?.length) return { ok: false, errors: { _form: 'Tệp trống. Hãy chọn lại tệp PDF hoặc EPUB.' } };
-  const fallbackTitle = titleFromFileName(originalName);
+  const fallbackTitle = title || titleFromFileName(originalName);
 
   if (isPdf(buffer)) {
     const storedName = await saveFile('books', buffer, 'pdf');

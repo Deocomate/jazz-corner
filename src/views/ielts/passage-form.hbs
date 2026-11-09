@@ -1,0 +1,13 @@
+{{#> page-header title=(concat (default passage.title "Bài đọc mới")) eyebrow=test.title}}
+  <a href="/ielts/tests/{{test.id}}/edit" class="btn-ghost">Huỷ</a>
+{{/page-header}}
+<form method="post" action="/ielts/tests/{{test.id}}/passages{{#if passage}}/{{passage.id}}{{/if}}" class="card card-body max-w-4xl space-y-5">
+  {{> form/csrf}}
+  <div class="grid gap-4 sm:grid-cols-4">
+    <div class="sm:col-span-3">{{> form/field name="title" label="Tiêu đề bài đọc" value=values.title error=errors.title required=true}}</div>
+    {{> form/field name="position" type="number" label="Thứ tự" value=values.position error=errors.position}}
+  </div>
+  {{> form/textarea name="body" label="Nội dung bài đọc (tiếng Anh)" value=values.body error=errors.body rows=18 required=true hint="Mỗi đoạn cách nhau MỘT dòng trống. Hệ thống tự gán nhãn đoạn A, B, C… (dùng cho Matching Headings)."}}
+  <p class="text-xs text-muted">Audio, transcript và hình/sơ đồ cho bài đọc: giai đoạn sau (cấu trúc dữ liệu đã sẵn).</p>
+  <div class="flex justify-end"><button type="submit" class="btn-primary">Lưu bài đọc</button></div>
+</form>

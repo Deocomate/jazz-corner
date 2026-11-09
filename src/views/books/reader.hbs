@@ -1,0 +1,52 @@
+{{!-- Trình đọc dùng chung cho PDF và EPUB. Hành vi nằm ở /js/reader/*.js --}}
+<div class="reader" data-reader data-config="{{json config}}" data-theme="light">
+  <div class="reader-toolbar sticky top-0 z-30 border-b">
+    <div class="mx-auto flex max-w-5xl flex-wrap items-center gap-1 px-3 py-2">
+      <a href="/books" class="btn-ghost btn-sm" aria-label="Về thư viện">← Books</a>
+      <h1 class="mx-2 min-w-0 flex-1 truncate font-serif text-base font-semibold">{{book.title}}</h1>
+      <button type="button" class="btn-ghost btn-sm" data-panel-open="toc" aria-haspopup="dialog">Mục lục</button>
+      <button type="button" class="btn-ghost btn-sm" data-panel-open="marks" aria-haspopup="dialog">Đánh dấu</button>
+      <button type="button" class="btn-ghost btn-sm" data-add-bookmark>+ Bookmark</button>
+      <span class="mx-1 h-5 w-px bg-current opacity-20" aria-hidden="true"></span>
+      {{#if (eq book.format "pdf")}}
+        <button type="button" class="btn-ghost btn-sm" data-zoom="-1" aria-label="Thu nhỏ">−</button>
+        <span class="w-12 text-center text-xs" data-zoom-label>100%</span>
+        <button type="button" class="btn-ghost btn-sm" data-zoom="1" aria-label="Phóng to">+</button>
+      {{else}}
+        <button type="button" class="btn-ghost btn-sm" data-font="-1" aria-label="Giảm cỡ chữ">A−</button>
+        <button type="button" class="btn-ghost btn-sm" data-font="1" aria-label="Tăng cỡ chữ">A+</button>
+      {{/if}}
+      <button type="button" class="btn-ghost btn-sm" data-theme-toggle aria-pressed="false">Tối</button>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-5xl px-3 py-6">
+    <div class="alert-info mb-4" data-reader-notice role="status" hidden></div>
+    <div class="alert-error mb-4" data-reader-error role="alert" hidden></div>
+    <p class="py-16 text-center text-sm opacity-70" data-reader-loading>Đang mở sách…</p>
+    <div data-reader-content tabindex="-1" aria-label="Nội dung sách"></div>
+  </div>
+
+  <div class="reader-footer sticky bottom-14 z-30 border-t md:bottom-0">
+    <div class="mx-auto flex max-w-5xl items-center gap-3 px-3 py-2">
+      <button type="button" class="btn-secondary btn-sm" data-prev>‹ Trước</button>
+      <div class="min-w-0 flex-1 text-center">
+        <p class="truncate text-xs" data-location-label>—</p>
+        <div class="progress mx-auto mt-1 max-w-xs"><span data-progress-bar style="width:0%"></span></div>
+      </div>
+      <button type="button" class="btn-secondary btn-sm" data-next>Sau ›</button>
+    </div>
+    <p class="hidden pb-2 text-center text-[11px] opacity-60 md:block">Phím <span class="kbd">←</span> <span class="kbd">→</span> để lật trang/chương · Vị trí đọc được tự lưu</p>
+  </div>
+</div>
+
+{{!-- Thanh thao tác khi bôi chọn --}}
+<div class="selection-bar" data-selection-bar role="toolbar" aria-label="Thao tác với đoạn đã chọn" hidden>
+  <button type="button" data-sel-action="highlight">Highlight</button>
+  <button type="button" data-sel-action="note">Ghi chú</button>
+  <button type="button" data-sel-action="notebook">Lưu vào Notebook</button>
+  <button type="button" data-sel-action="speak">Luyện nói</button>
+</div>
+
+{{> reader/panels}}
+{{> notebook/save-dialog}}

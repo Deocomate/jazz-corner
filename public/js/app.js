@@ -44,3 +44,28 @@ window.api = async (url, { method = 'GET', body } = {}) => {
   if (!response.ok) throw new Error(data.error || `Lỗi ${response.status}`);
   return data;
 };
+
+/** Tải tệp lên dạng thân request thô (không multipart). Trả về JSON server gửi về. */
+window.uploadFile = async (url, file, name = 'file') => {
+  const token = document.querySelector('meta[name="csrf-token"]')?.content;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': file.type || 'application/octet-stream',
+      Accept: 'application/json',
+      'x-csrf-token': token,
+      'x-file-name': encodeURIComponent(name),
+    },
+    body: file,
+  });
+  const data = await response.json().catch(() => ({}));
+  if (response.status === 413) throw new Error('Tệp quá lớn. Hãy chọn tệp nhỏ hơn.');
+  if (!response.ok) throw new Error(data.error || `Lỗi ${response.status}`);
+  return data;
+};
+
+// <button data-dialog-cancel> trong <dialog> -> đóng hộp thoại.
+document.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-dialog-cancel]');
+  if (button) button.closest('dialog')?.close();
+});

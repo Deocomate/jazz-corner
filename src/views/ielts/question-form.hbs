@@ -1,0 +1,49 @@
+{{#> page-header title=(concat "Câu hỏi · " group.typeLabel) eyebrow=test.title}}
+  <a href="/ielts/tests/{{test.id}}/edit#group-{{group.id}}" class="btn-ghost">Huỷ</a>
+{{/page-header}}
+<div class="mb-4 max-w-3xl rounded-xl bg-paper p-4 text-sm">
+  <p class="italic">{{group.instructions}}</p>
+  {{#if group.options.length}}<ul class="mt-2">{{#each group.options}}<li><strong>{{key}}</strong>. {{text}}</li>{{/each}}</ul>{{/if}}
+</div>
+<form method="post" action="/ielts/tests/{{test.id}}/groups/{{group.id}}/questions{{#if question}}/{{question.id}}{{/if}}" class="card card-body max-w-3xl space-y-5">
+  {{> form/csrf}}
+  <div class="grid gap-4 sm:grid-cols-4">
+    {{> form/field name="number" type="number" label="Số câu" value=values.number error=errors.number required=true}}
+    <div class="sm:col-span-3">
+      {{#if (eq group.type "headings")}}
+        {{> form/field name="prompt" label="Đoạn văn" value=values.prompt error=errors.prompt required=true placeholder="VD: Paragraph B"}}
+      {{else}}
+        {{> form/textarea name="prompt" label="Câu hỏi / nhận định" value=values.prompt error=errors.prompt rows=2 required=true}}
+      {{/if}}
+    </div>
+  </div>
+
+  {{#if (eq group.type "mcq")}}
+    {{> form/textarea name="options_text" label="Các lựa chọn" value=values.options_text error=errors.options_text rows=5 hint="Mỗi dòng một lựa chọn: A. … / B. … / C. … / D. …"}}
+    {{> form/field name="answer" label="Đáp án đúng (ký hiệu)" value=values.answer error=errors.answer required=true placeholder="VD: C"}}
+  {{/if}}
+  {{#if (eq group.type "tfng")}}
+    {{> form/select name="answer" label="Đáp án đúng" options=tfngOptions value=values.answer error=errors.answer required=true placeholder="— Chọn —"}}
+  {{/if}}
+  {{#if (eq group.type "headings")}}
+    <div class="field">
+      <label for="f-answer" class="label">Tiêu đề đúng <span class="text-red-600" aria-hidden="true">*</span></label>
+      <select id="f-answer" name="answer" class="input" required>
+        <option value="">— Chọn —</option>
+        {{#each group.options}}<option value="{{key}}" {{selected key ../values.answer}}>{{key}}. {{text}}</option>{{/each}}
+      </select>
+      {{#if errors.answer}}<p class="field-error">{{errors.answer}}</p>{{/if}}
+    </div>
+  {{/if}}
+  {{#if (eq group.type "completion")}}
+    {{> form/field name="answer" label="Đáp án chuẩn" value=values.answer error=errors.answer required=true hint=(concat "Giới hạn của nhóm: " (default group.word_limit "không giới hạn") " từ. Khi chấm, chữ hoa/thường và khoảng trắng thừa được bỏ qua.")}}
+    {{> form/textarea name="accepted_text" label="Biến thể đáp án được chấp nhận" value=values.accepted_text error=errors.accepted_text rows=3 hint="Mỗi dòng một biến thể (VD: chính tả Anh/Mỹ, có/không gạch nối)."}}
+  {{/if}}
+
+  {{> form/textarea name="evidence" label="Bằng chứng trong bài đọc (trích nguyên văn)" value=values.evidence error=errors.evidence rows=2}}
+  {{> form/textarea name="explanation" label="Giải thích — câu hỏi diễn đạt lại bài đọc thế nào" value=values.explanation error=errors.explanation rows=3}}
+  <div class="flex flex-wrap justify-end gap-2">
+    {{#unless question}}<button type="submit" name="next" value="add" class="btn-secondary">Lưu &amp; thêm câu tiếp</button>{{/unless}}
+    <button type="submit" class="btn-primary">Lưu câu hỏi</button>
+  </div>
+</form>

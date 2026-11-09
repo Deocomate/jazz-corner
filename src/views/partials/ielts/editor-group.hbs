@@ -1,0 +1,32 @@
+{{!-- Một nhóm câu hỏi trong màn hình soạn đề. Tham số: group, testId --}}
+<div id="group-{{group.id}}" class="card mb-4">
+  <div class="flex flex-wrap items-center gap-2 border-b border-line px-5 py-3">
+    <span class="badge-yellow">{{group.typeLabel}}</span>
+    {{#if group.word_limit}}<span class="chip">Tối đa {{group.word_limit}} từ</span>{{/if}}
+    <span class="flex-1"></span>
+    <a href="/ielts/tests/{{testId}}/groups/{{group.id}}/edit" class="btn-ghost btn-sm">Sửa nhóm</a>
+    {{> form/delete-button action=(concat "/ielts/tests/" testId "/groups/" group.id "/delete") confirm="Xoá nhóm này cùng các câu hỏi bên trong?"}}
+  </div>
+  <div class="card-body space-y-3">
+    <p class="text-sm italic">{{group.instructions}}</p>
+    {{#if group.options.length}}
+      <ul class="rounded-lg bg-paper p-3 text-sm">{{#each group.options}}<li><strong>{{key}}</strong>. {{text}}</li>{{/each}}</ul>
+    {{/if}}
+    <ol class="divide-y divide-line">
+      {{#each group.questions}}
+        <li class="flex flex-wrap items-start gap-3 py-2">
+          <span class="w-8 shrink-0 font-semibold">{{number}}</span>
+          <div class="min-w-0 flex-1 text-sm">
+            <p>{{prompt}}</p>
+            <p class="mt-0.5 text-xs text-muted">Đáp án: <strong class="text-emerald-800">{{answer}}</strong>{{#if accepted.length}} · chấp nhận: {{#each accepted}}{{this}}{{#unless @last}} / {{/unless}}{{/each}}{{/if}}{{#unless explanation}} · <span class="text-amber-700">chưa có giải thích</span>{{/unless}}{{#unless evidence}} · <span class="text-amber-700">chưa có bằng chứng</span>{{/unless}}</p>
+          </div>
+          <a href="/ielts/tests/{{../testId}}/groups/{{../group.id}}/questions/{{id}}/edit" class="btn-ghost btn-sm">Sửa</a>
+          {{> form/delete-button action=(concat "/ielts/tests/" ../testId "/questions/" id "/delete") confirm="Xoá câu hỏi này?"}}
+        </li>
+      {{else}}
+        <li class="py-2 text-sm text-muted">Chưa có câu hỏi.</li>
+      {{/each}}
+    </ol>
+    <a href="/ielts/tests/{{testId}}/groups/{{group.id}}/questions/new" class="btn-secondary btn-sm">+ Thêm câu hỏi</a>
+  </div>
+</div>

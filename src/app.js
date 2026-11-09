@@ -38,7 +38,19 @@ export function createApp() {
   app.set('view engine', 'hbs');
   app.set('views', VIEWS);
 
-  app.use(helmet({ contentSecurityPolicy: { directives: { 'upgrade-insecure-requests': null } } }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          'upgrade-insecure-requests': null,
+          // blob: cho ảnh bìa/trang PDF, bản ghi âm và worker của pdf.js.
+          'img-src': ["'self'", 'data:', 'blob:'],
+          'media-src': ["'self'", 'blob:'],
+          'worker-src': ["'self'", 'blob:'],
+        },
+      },
+    }),
+  );
   app.use(express.static(path.join(ROOT, 'public'), { maxAge: config.isProd ? '7d' : 0 }));
   app.use(express.urlencoded({ extended: true, limit: '1mb' }));
   app.use(express.json({ limit: '1mb' }));

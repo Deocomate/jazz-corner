@@ -1,0 +1,7 @@
+{{!-- Bài đọc có nhãn đoạn A, B, C… Tham số: passage --}}
+<article class="ielts-passage" lang="en" aria-labelledby="passage-{{passage.id}}">
+  <h2 id="passage-{{passage.id}}" class="mb-4 font-serif text-2xl font-semibold">{{passage.title}}</h2>
+  {{#each passage.paragraphs}}
+    <p class="mb-4 flex gap-3 font-serif text-[17px] leading-[1.75]"><span class="mt-1 w-4 shrink-0 font-sans text-xs font-bold text-brand-700" aria-label="Đoạn {{label}}">{{label}}</span><span>{{text}}</span></p>
+  {{/each}}
+</article>

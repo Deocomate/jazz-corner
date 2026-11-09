@@ -1,0 +1,48 @@
+{{!-- Hộp thoại "Lưu vào Notebook" dùng chung (trình đọc sách, IELTS). Hành vi: /js/notebook-save.js --}}
+<dialog class="modal" data-notebook-dialog aria-labelledby="nb-title">
+  <form class="space-y-4 p-6" data-notebook-form>
+    <div>
+      <h2 id="nb-title" class="section-title">Lưu vào Notebook</h2>
+      <p class="mt-1 text-xs text-muted">Chỉ cần nội dung chính để lưu nhanh. Giải thích và ví dụ có thể bổ sung sau. Mục sẽ vào hàng ôn từ hôm nay.</p>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="field">
+        <label for="nb-kind" class="label">Loại mục</label>
+        <select id="nb-kind" name="kind" class="input">
+          <option value="word">Từ &amp; collocation</option>
+          <option value="pattern">Mẫu câu &amp; ngữ pháp</option>
+          <option value="idiom">Idiom &amp; cách diễn đạt</option>
+          <option value="discourse">Cách triển khai ý</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="nb-tags" class="label">Nhãn</label>
+        <input id="nb-tags" name="tags" class="input" list="nb-tag-options" placeholder="Academic Writing, Speaking…">
+        <datalist id="nb-tag-options">
+          <option value="Academic Writing"></option>
+          <option value="Speaking"></option>
+          <option value="Văn chương"></option>
+        </datalist>
+      </div>
+    </div>
+    <div class="field">
+      <label for="nb-content" class="label">Nội dung chính <span class="text-red-600" aria-hidden="true">*</span></label>
+      <input id="nb-content" name="content" class="input" required maxlength="500" placeholder="VD: Much as I sympathise with this view">
+      <p class="hint">Rút gọn còn từ, cụm hoặc cấu trúc bạn muốn nhớ.</p>
+    </div>
+    <div class="field">
+      <label for="nb-excerpt" class="label">Trích đoạn gốc</label>
+      <textarea id="nb-excerpt" name="excerpt" class="input font-serif" rows="3"></textarea>
+    </div>
+    <div class="field">
+      <label for="nb-meaning" class="label">Nghĩa / tác dụng (không bắt buộc)</label>
+      <input id="nb-meaning" name="meaning" class="input" placeholder="VD: nhượng bộ trước khi phản biện">
+    </div>
+    <p class="text-xs text-muted" data-nb-source></p>
+    <div class="alert-error" data-nb-error role="alert" hidden></div>
+    <div class="flex justify-end gap-2">
+      <button type="button" class="btn-ghost" data-dialog-cancel>Huỷ</button>
+      <button type="submit" class="btn-primary">Lưu vào Notebook</button>
+    </div>
+  </form>
+</dialog>

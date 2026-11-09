@@ -6,19 +6,26 @@
   <title>{{#if title}}{{title}} · {{/if}}{{appName}}</title>
   <meta name="csrf-token" content="{{csrfToken}}">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
   <link rel="stylesheet" href="/css/app.css">
   <script src="/js/app.js" defer></script>
+  {{#each scripts}}<script src="{{this}}" type="module"></script>{{/each}}
 </head>
-<body class="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-800 antialiased">
+<body class="flex min-h-screen flex-col bg-paper font-sans text-ink antialiased{{#if fullBleed}} reader-body{{/if}}">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow">Bỏ qua đến nội dung</a>
   {{> nav}}
 
-  <main class="container-page flex-1 py-8">
-    {{> flash}}
-    {{{body}}}
-  </main>
-
-  <footer class="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
-    © {{year}} {{appName}}
-  </footer>
+  {{#if fullBleed}}
+    <main id="main" class="flex-1 pb-16 md:pb-0">
+      <div class="container-page">{{> flash}}</div>
+      {{{body}}}
+    </main>
+  {{else}}
+    <main id="main" class="container-page flex-1 pt-8 pb-24 md:pb-12">
+      {{> flash}}
+      {{{body}}}
+    </main>
+  {{/if}}
 </body>
 </html>

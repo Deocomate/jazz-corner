@@ -1,0 +1,54 @@
+{{#> page-header title=test.title eyebrow="Duyệt đề · IELTS Reading" subtitle="Kiểm tra thứ tự câu, nội dung, đáp án và giải thích. Chỉ đề đã duyệt mới làm bài được."}}
+  <a href="/ielts/tests/{{test.id}}/edit" class="btn-secondary">Sửa đề</a>
+  {{#if test.isDraft}}
+    <form method="post" action="/ielts/tests/{{test.id}}/publish">{{> form/csrf}}<button type="submit" class="btn-primary"{{#if problems.length}} disabled{{/if}}>Duyệt đề</button></form>
+  {{else}}
+    <form method="post" action="/ielts/tests/{{test.id}}/unpublish">{{> form/csrf}}<button type="submit" class="btn-ghost">Chuyển về nháp</button></form>
+  {{/if}}
+{{/page-header}}
+
+<div class="mb-6 flex flex-wrap items-center gap-2 text-sm">
+  {{#if test.isDraft}}<span class="badge-yellow">Bản nháp</span>{{else}}<span class="badge-green">Đã duyệt</span>{{/if}}
+  {{> origin-tag origin=test.origin}}
+  <span class="text-muted">{{questions.length}} câu · {{test.time_limit_minutes}} phút</span>
+  {{#if test.source_pdf_name}}<a href="/ielts/tests/{{test.id}}/source.pdf" target="_blank" rel="noopener" class="chip">Mở PDF nguồn</a>{{/if}}
+</div>
+
+{{#if problems.length}}
+  <div class="alert-error mb-6"><p class="font-medium">Chưa duyệt được:</p><ul class="mt-1 list-disc pl-5">{{#each problems}}<li>{{this}}</li>{{/each}}</ul></div>
+{{else}}
+  {{#unless test.isDraft}}
+    <div class="card card-body mb-8 flex flex-wrap items-center gap-3">
+      <p class="flex-1 text-sm">Đề đã sẵn sàng. Chọn chế độ:</p>
+      {{#each modes}}
+        <form method="post" action="/ielts/tests/{{../test.id}}/start">{{> form/csrf}}<input type="hidden" name="mode" value="{{value}}"><button type="submit" class="{{#if (eq value 'exam')}}btn-primary{{else}}btn-secondary{{/if}}" title="{{hint}}">{{label}}</button></form>
+      {{/each}}
+    </div>
+  {{/unless}}
+{{/if}}
+
+{{#each passages}}
+  <div class="mb-10 grid gap-8 lg:grid-cols-2">
+    <div class="card card-body">{{> ielts/passage passage=this}}</div>
+    <div class="space-y-6">
+      {{#each groups}}
+        <section class="card card-body">
+          <p class="mb-1"><span class="badge-yellow">{{typeLabel}}</span>{{#if word_limit}} <span class="chip">Tối đa {{word_limit}} từ</span>{{/if}}</p>
+          <p class="mb-3 text-sm italic">{{instructions}}</p>
+          {{#if options.length}}<ul class="mb-3 rounded-lg bg-paper p-3 text-sm">{{#each options}}<li><strong>{{key}}</strong>. {{text}}</li>{{/each}}</ul>{{/if}}
+          <ol class="space-y-4">
+            {{#each questions}}
+              <li class="text-sm">
+                <p><strong>{{number}}.</strong> <span lang="en">{{prompt}}</span></p>
+                {{#if options.length}}<ul class="mt-1 pl-5">{{#each options}}<li>{{key}}. {{text}}</li>{{/each}}</ul>{{/if}}
+                <p class="mt-1">→ <strong class="text-emerald-800">{{answer}}</strong>{{#if accepted.length}} <span class="text-muted">(chấp nhận: {{#each accepted}}{{this}}{{#unless @last}} / {{/unless}}{{/each}})</span>{{/if}}</p>
+                {{#if evidence}}<p class="mt-1 font-serif text-muted italic" lang="en">“{{evidence}}”</p>{{/if}}
+                {{#if explanation}}<p class="mt-1 text-muted">{{explanation}}</p>{{/if}}
+              </li>
+            {{/each}}
+          </ol>
+        </section>
+      {{/each}}
+    </div>
+  </div>
+{{/each}}

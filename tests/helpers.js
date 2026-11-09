@@ -3,6 +3,11 @@
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL = ':memory:';
 process.env.SESSION_SECRET = 'test-secret';
+// Mỗi file test có thư mục upload tạm riêng.
+const { mkdtempSync } = await import('node:fs');
+const { tmpdir } = await import('node:os');
+const { join } = await import('node:path');
+process.env.UPLOAD_DIR = mkdtempSync(join(tmpdir(), 'studyhub-test-'));
 
 // Tài khoản admin cho test (chỉ có tác dụng khi dự án gắn addon auth).
 export const TEST_ADMIN = { email: 'admin@test.local', password: 'test-password-123' };

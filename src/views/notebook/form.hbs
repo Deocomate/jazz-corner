@@ -1,0 +1,25 @@
+{{#> page-header title=title subtitle="Chỉ nội dung chính là bắt buộc. Bạn có thể bổ sung giải thích và ví dụ sau."}}
+  <a href="{{#if item}}/notebook/{{item.id}}{{else}}/notebook{{/if}}" class="btn-ghost">Huỷ</a>
+{{/page-header}}
+
+<form method="post" action="{{#if item}}/notebook/{{item.id}}{{else}}/notebook{{/if}}" class="card card-body max-w-3xl space-y-5">
+  {{> form/csrf}}
+  {{#if errors._form}}<div class="alert-error">{{errors._form}}</div>{{/if}}
+  <div class="grid gap-4 sm:grid-cols-2">
+    {{> form/select name="kind" label="Loại mục" options=kindOptions value=values.kind error=errors.kind required=true}}
+    <div class="field">
+      <label for="f-tags" class="label">Nhãn</label>
+      <input id="f-tags" name="tags" value="{{values.tags}}" class="input" list="tag-suggestions" placeholder="Academic Writing, Speaking">
+      <datalist id="tag-suggestions">{{#each suggestedTags}}<option value="{{this}}"></option>{{/each}}</datalist>
+      <p class="hint">Cách nhau bằng dấu phẩy.</p>
+    </div>
+  </div>
+  {{> form/field name="content" label="Nội dung chính" value=values.content error=errors.content required=true placeholder="VD: Much as I sympathise with this view"}}
+  {{> form/textarea name="meaning" label="Nghĩa / tác dụng / sắc thái" value=values.meaning error=errors.meaning rows=2 hint="Ưu tiên giải thích bằng tiếng Anh; thêm nghĩa tiếng Việt nếu hữu ích."}}
+  {{> form/textarea name="excerpt" label="Câu / trích đoạn gốc" value=values.excerpt error=errors.excerpt rows=3}}
+  {{> form/textarea name="example" label="Ví dụ của tôi / câu biến thể" value=values.example error=errors.example rows=2 hint="VD: dùng lại mẫu câu cho một chủ đề khác."}}
+  {{> form/textarea name="note" label="Ghi chú (giọng điệu, mức trang trọng, ngữ cảnh, collocations…)" value=values.note error=errors.note rows=3}}
+  <div class="flex justify-end gap-2">
+    <button type="submit" class="btn-primary">{{#if item}}Lưu thay đổi{{else}}Thêm vào Notebook{{/if}}</button>
+  </div>
+</form>

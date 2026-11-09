@@ -1,0 +1,66 @@
+{{#> page-header title="Notebook" eyebrow="Kho kiến thức & lỗi IELTS" subtitle="Từ vựng, mẫu câu, idiom, cách triển khai ý và những câu IELTS bạn từng làm sai — tất cả có lịch ôn riêng."}}
+  <a href="/notebook/new" class="btn-secondary">+ Thêm mục</a>
+  <a href="/notebook/review" class="btn-primary">Ôn tập{{#if dueCount}} · {{dueCount}} mục đến hạn{{/if}}</a>
+{{/page-header}}
+
+<form method="get" action="/notebook" class="card card-body mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5" role="search">
+  <div class="field lg:col-span-2">
+    <label for="f-q" class="label">Tìm kiếm</label>
+    <input id="f-q" name="q" value="{{filters.q}}" class="input" placeholder="Từ, cụm, ghi chú, trích đoạn…">
+  </div>
+  <div class="field">
+    <label for="f-kind" class="label">Loại</label>
+    <select id="f-kind" name="kind" class="input" data-autosubmit>
+      <option value="">Tất cả</option>
+      {{#each kindOptions}}<option value="{{value}}" {{selected value ../filters.kind}}>{{label}}</option>{{/each}}
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-source" class="label">Nguồn</label>
+    <select id="f-source" name="source" class="input" data-autosubmit>
+      <option value="">Tất cả</option>
+      {{#each sourceOptions}}<option value="{{value}}" {{selected value ../filters.source}}>{{label}}</option>{{/each}}
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-tag" class="label">Nhãn</label>
+    <select id="f-tag" name="tag" class="input" data-autosubmit>
+      <option value="">Tất cả</option>
+      {{#each tagOptions}}<option value="{{value}}" {{selected value ../filters.tag}}>{{label}}</option>{{/each}}
+    </select>
+  </div>
+  <div class="flex items-center gap-2 sm:col-span-2 lg:col-span-5">
+    <button type="submit" class="btn-primary btn-sm">Lọc</button>
+    {{#if hasFilters}}<a href="/notebook" class="btn-ghost btn-sm">Xoá bộ lọc</a>{{/if}}
+    <span class="ml-auto text-xs text-muted">{{formatNumber total}} mục</span>
+  </div>
+</form>
+
+{{#if items.length}}
+  <ul class="grid gap-4 md:grid-cols-2">
+    {{#each items}}
+      <li class="card card-body flex flex-col gap-2">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="{{kindInfo.badge}}">{{kindInfo.label}}</span>
+          {{#each tagList}}<span class="chip">{{this}}</span>{{/each}}
+          {{#if isDue}}<span class="badge-yellow ml-auto">Đến hạn ôn</span>{{/if}}
+        </div>
+        <a href="/notebook/{{id}}" class="font-serif text-lg leading-snug font-semibold hover:text-brand-700">{{content}}</a>
+        {{#if meaning}}<p class="text-sm">{{meaning}}</p>{{/if}}
+        {{#if ielts}}
+          <p class="text-sm">Bạn chọn <strong>{{default ielts.myAnswer "(bỏ trống)"}}</strong> · đáp án <strong>{{ielts.correctAnswer}}</strong></p>
+          {{#if note}}<p class="text-sm text-muted">Lý do: {{note}}</p>{{/if}}
+        {{/if}}
+        {{#if excerpt}}<p class="line-clamp-2 font-serif text-sm text-muted italic">“{{excerpt}}”</p>{{/if}}
+        <p class="mt-auto pt-1 text-xs text-muted">{{#if source_label}}{{source_label}} · {{/if}}ôn tiếp: {{formatDay due_date}}</p>
+      </li>
+    {{/each}}
+  </ul>
+  {{> pagination pagination}}
+{{else}}
+  {{#if hasFilters}}
+    {{> empty-state title="Không có mục nào khớp bộ lọc" text="Thử từ khoá khác hoặc xoá bộ lọc." actionHref="/notebook" actionLabel="Xoá bộ lọc"}}
+  {{else}}
+    {{> empty-state title="Notebook đang trống" text="Bôi chọn một đoạn trong sách rồi chọn Lưu vào Notebook, lưu Word of the Day ở trang Today, hoặc tự thêm mục." actionHref="/notebook/new" actionLabel="+ Thêm mục đầu tiên"}}
+  {{/if}}
+{{/if}}

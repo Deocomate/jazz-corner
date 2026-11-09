@@ -1,0 +1,45 @@
+{{!-- Một câu hỏi khi làm bài. Tham số: q, group, tfng (danh sách TRUE/FALSE/NOT GIVEN), practice --}}
+<div id="q-{{q.id}}" class="question rounded-xl border border-line bg-white p-4 scroll-mt-40" data-question data-question-id="{{q.id}}" data-number="{{q.number}}">
+  <div class="flex items-start gap-3">
+    <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">{{q.number}}</span>
+    <div class="min-w-0 flex-1">
+      {{#if (eq group.type "headings")}}
+        <label for="ans-{{q.id}}" class="font-medium" lang="en">{{q.prompt}}</label>
+        <select id="ans-{{q.id}}" class="input mt-2" data-answer data-qid="{{q.id}}">
+          <option value="">— Chọn tiêu đề —</option>
+          {{#each group.options}}<option value="{{key}}" {{selected key ../q.value}}>{{key}}. {{text}}</option>{{/each}}
+        </select>
+      {{else if (eq group.type "completion")}}
+        <label for="ans-{{q.id}}" class="block" lang="en">{{q.prompt}}</label>
+        <input id="ans-{{q.id}}" class="input mt-2" value="{{q.value}}" autocomplete="off" spellcheck="false" data-answer data-qid="{{q.id}}" {{#if group.word_limit}}data-word-limit="{{group.word_limit}}"{{/if}}>
+        {{#if group.word_limit}}<p class="hint mt-1" data-word-count>Tối đa {{group.word_limit}} từ</p>{{/if}}
+      {{else}}
+        <fieldset>
+          <legend class="mb-2" lang="en">{{q.prompt}}</legend>
+          <div class="space-y-1.5">
+            {{#if (eq group.type "tfng")}}
+              {{#each tfng}}
+                <label class="flex min-h-10 cursor-pointer items-center gap-3 rounded-lg border border-line px-3 py-2 hover:bg-brand-50 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+                  <input type="radio" name="ans-{{../q.id}}" value="{{value}}" {{#if (eq value ../q.value)}}checked{{/if}} data-answer data-qid="{{../q.id}}" class="accent-brand-600"> <span>{{label}}</span>
+                </label>
+              {{/each}}
+            {{else}}
+              {{#each q.options}}
+                <label class="flex min-h-10 cursor-pointer items-center gap-3 rounded-lg border border-line px-3 py-2 hover:bg-brand-50 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+                  <input type="radio" name="ans-{{../q.id}}" value="{{key}}" {{#if (eq key ../q.value)}}checked{{/if}} data-answer data-qid="{{../q.id}}" class="accent-brand-600"> <span lang="en"><strong>{{key}}</strong> {{text}}</span>
+                </label>
+              {{/each}}
+            {{/if}}
+          </div>
+        </fieldset>
+      {{/if}}
+      <div class="mt-3 flex flex-wrap items-center gap-2">
+        <label class="inline-flex cursor-pointer items-center gap-2 text-xs text-muted">
+          <input type="checkbox" data-flag data-qid="{{q.id}}" {{#if q.flagged}}checked{{/if}} class="accent-brand-600"> Đánh dấu xem lại
+        </label>
+        {{#if practice}}<button type="button" class="btn-ghost btn-sm ml-auto" data-check="{{q.id}}">Kiểm tra</button>{{/if}}
+      </div>
+      <div class="mt-2 rounded-lg p-3 text-sm" data-feedback hidden></div>
+    </div>
+  </div>
+</div>

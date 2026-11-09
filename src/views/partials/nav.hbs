@@ -1,15 +1,24 @@
-<header class="border-b border-slate-200 bg-white">
-  <div class="container-page flex h-14 items-center gap-6">
-    <a href="/" class="flex shrink-0 items-center gap-2 font-semibold text-slate-900">
-      <img src="/img/favicon.svg" alt="" class="h-6 w-6">
-      <span>{{appName}}</span>
-    </a>
-
-    <nav class="flex flex-1 items-center gap-1 overflow-x-auto" aria-label="Điều hướng chính">
-      {{> nav-link href="/" label="Trang chủ"}}
-      {{!-- [vibe:nav-links] Thêm link module mới: {{> nav-link href="/tasks" label="Công việc"}} --}}
+{{!-- Điều hướng chính: cùng tên và thứ tự trên desktop (trên cùng) và mobile (thanh tab dưới). --}}
+<header class="border-b border-line bg-white/80 backdrop-blur">
+  <div class="container-page flex h-14 items-center justify-between gap-6">
+    <a href="/" class="font-serif text-xl font-semibold tracking-tight text-brand-700">study<span class="text-ink">hub</span></a>
+    <nav class="hidden items-center gap-1 md:flex" aria-label="Điều hướng chính">
+      {{> nav-link href="/" label="Today"}}
+      {{> nav-link href="/books" label="Books"}}
+      {{> nav-link href="/ielts" label="IELTS"}}
+      {{> nav-link href="/speaking" label="Speaking"}}
+      {{> nav-link href="/notebook" label="Notebook"}}
+      {{> nav-link href="/progress" label="Progress"}}
     </nav>
-
-    {{!-- [vibe:nav-right] --}}
+    <a href="/status" class="text-xs font-medium text-muted hover:text-ink">Trạng thái tính năng</a>
   </div>
 </header>
+
+<nav class="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-white md:hidden" aria-label="Điều hướng chính (điện thoại)">
+  {{> tab-link href="/" label="Today" icon="M3 12l9-8 9 8M5 10v10h14V10"}}
+  {{> tab-link href="/books" label="Books" icon="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5zM12 6v13"}}
+  {{> tab-link href="/ielts" label="IELTS" icon="M9 4h6M6 4h12v16H6zM9 9h6M9 13h6M9 17h3"}}
+  {{> tab-link href="/speaking" label="Speaking" icon="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3zM6 11a6 6 0 0012 0M12 17v4"}}
+  {{> tab-link href="/notebook" label="Notebook" icon="M6 3h11a1 1 0 011 1v16a1 1 0 01-1 1H6zM6 3v18M9 8h6M9 12h6"}}
+  {{> tab-link href="/progress" label="Progress" icon="M4 20V10M10 20V4M16 20v-7M22 20H2"}}
+</nav>

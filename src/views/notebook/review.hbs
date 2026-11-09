@@ -1,0 +1,52 @@
+{{#> page-header title="Ôn tập" eyebrow="Notebook" subtitle="Đọc gợi ý, tự nhớ lại trong đầu, rồi lật thẻ để kiểm tra."}}
+  <a href="/notebook" class="btn-ghost">← Notebook</a>
+{{/page-header}}
+
+{{#if item}}
+  <p class="mb-3 text-sm text-muted">Còn {{dueCount}} mục đến hạn hôm nay</p>
+  <article class="card mx-auto max-w-2xl">
+    <div class="card-body space-y-4 text-center">
+      <span class="{{item.kindInfo.badge}}">{{item.kindInfo.label}}</span>
+      {{#if item.ielts}}
+        <p class="eyebrow">{{item.ielts.testTitle}} · {{item.ielts.typeLabel}}</p>
+        <p class="font-serif text-xl leading-snug" lang="en">{{item.ielts.prompt}}</p>
+        <p class="text-sm text-muted">Bạn từng chọn <strong>{{default item.ielts.myAnswer "(bỏ trống)"}}</strong>. Đáp án đúng là gì, và vì sao?</p>
+      {{else}}
+        <p class="font-serif text-3xl leading-tight font-semibold" lang="en">{{item.content}}</p>
+        <p class="text-sm text-muted">Nghĩa, sắc thái và cách dùng là gì? Thử đặt một câu về chủ đề khác.</p>
+      {{/if}}
+    </div>
+    <details class="group border-t border-line">
+      <summary class="cursor-pointer list-none px-6 py-4 text-center font-medium text-brand-700 hover:bg-brand-50">Lật xem nội dung</summary>
+      <div class="space-y-3 px-6 pb-6 text-left">
+        {{#if item.ielts}}
+          <p>Đáp án: <strong class="text-emerald-800">{{item.ielts.correctAnswer}}</strong></p>
+          {{#if item.ielts.evidence}}<p class="font-serif italic" lang="en">“{{item.ielts.evidence}}”</p>{{/if}}
+          {{#if item.ielts.explanation}}<p class="text-sm">{{item.ielts.explanation}}</p>{{/if}}
+          {{#if item.note}}<p class="text-sm text-muted">Lý do bạn ghi: {{item.note}}</p>{{/if}}
+        {{else}}
+          {{#if item.meaning}}<p>{{item.meaning}}</p>{{/if}}
+          {{#if item.excerpt}}<p class="font-serif italic" lang="en">“{{item.excerpt}}”</p>{{/if}}
+          {{#if item.example}}<p class="text-sm" lang="en">Ví dụ: {{item.example}}</p>{{/if}}
+          {{#if item.note}}<p class="text-sm text-muted whitespace-pre-line">{{item.note}}</p>{{/if}}
+          {{#unless (or item.meaning item.excerpt item.example item.note)}}<p class="text-sm text-muted">Mục này chưa có giải thích. <a href="/notebook/{{item.id}}/edit">Bổ sung ngay</a>.</p>{{/unless}}
+        {{/if}}
+        {{#if item.source_url}}<p class="text-xs"><a href="{{item.source_url}}">Mở nguồn: {{item.source_label}}</a></p>{{/if}}
+      </div>
+    </details>
+    <div class="grid grid-cols-2 gap-3 border-t border-line p-4">
+      <form method="post" action="/notebook/{{item.id}}/review">
+        {{> form/csrf}}
+        <input type="hidden" name="result" value="again">
+        <button type="submit" class="btn-secondary w-full py-3">Ôn lại <span class="text-xs text-muted">(ngày mai)</span></button>
+      </form>
+      <form method="post" action="/notebook/{{item.id}}/review">
+        {{> form/csrf}}
+        <input type="hidden" name="result" value="remembered">
+        <button type="submit" class="btn-primary w-full py-3">Đã nhớ</button>
+      </form>
+    </div>
+  </article>
+{{else}}
+  {{> empty-state title="Hết mục cần ôn hôm nay" text="Bạn đã ôn xong. Mục mới lưu từ sách, IELTS hoặc Word of the Day sẽ xuất hiện ở đây." actionHref="/notebook" actionLabel="Về Notebook"}}
+{{/if}}

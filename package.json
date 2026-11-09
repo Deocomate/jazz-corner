@@ -23,7 +23,9 @@
     "migrate": "node --env-file-if-exists=.env src/db/migrate.js",
     "test": "node --test --test-concurrency=1 \"tests/**/*.test.js\"",
     "check": "bash scripts/check.sh",
-    "share": "bash scripts/share.sh"
+    "share": "bash scripts/share.sh",
+    "vendor": "node scripts/vendor.mjs",
+    "seed": "node --env-file-if-exists=.env scripts/seed.mjs"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",
@@ -36,6 +38,7 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.0",
     "concurrently": "^9.2.0",
+    "pdfjs-dist": "^4.10.38",
     "supertest": "^7.1.0",
     "tailwindcss": "^4.1.0"
   }

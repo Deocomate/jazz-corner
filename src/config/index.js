@@ -21,6 +21,10 @@ export const config = Object.freeze({
     url: env.DATABASE_URL || 'file:data/app.db',
     authToken: env.DATABASE_AUTH_TOKEN || undefined,
   }),
+  // Thư mục lưu tệp người dùng tải lên (sách, PDF đề, bản ghi âm).
+  uploadDir: env.UPLOAD_DIR || 'data/uploads',
+  // Giới hạn dung lượng một tệp tải lên (MB).
+  maxUploadMb: Number(env.MAX_UPLOAD_MB ?? 200),
   // [vibe:config]
 });
 

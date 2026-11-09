@@ -3,10 +3,13 @@ import { config } from '#config';
 import { usingEphemeralDb } from '#db';
 import { runMigrations } from './db/migrate.js';
 import { createApp } from './app.js';
+import { ensureSamples } from './samples.js';
 // [vibe:server-imports]
 
 async function main() {
   await runMigrations();
+  // Dữ liệu mẫu tối thiểu (đề Reading mẫu, bài luyện nói mẫu) — không tạo trùng.
+  await ensureSamples();
   // [vibe:server-startup]
 
   if (usingEphemeralDb()) {

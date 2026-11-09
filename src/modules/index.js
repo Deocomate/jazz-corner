@@ -5,12 +5,24 @@
 //   <ten>.service.js    -> nghiệp vụ + kiểm tra dữ liệu
 //   <ten>.repo.js       -> câu SQL (chỉ chỗ này được viết SQL)
 //   <ten>.schema.js     -> schema zod cho form
-// `middleware` (tuỳ chọn) chạy trước mọi route của module, VD: [requireAuth].
+//   <ten>.api.js        -> API JSON cho JS phía trình duyệt (nếu cần)
 import homeRoutes from './home/home.routes.js';
+import booksRoutes from './books/books.routes.js';
+import booksApi from './books/books.api.js';
+import notebookRoutes from './notebook/notebook.routes.js';
+import notebookApi from './notebook/notebook.api.js';
+import ieltsRoutes from './ielts/ielts.routes.js';
+import ieltsApi from './ielts/ielts.api.js';
 // [vibe:module-imports]
 
 export const modules = [
   { path: '/', router: homeRoutes },
+  { path: '/books', router: booksRoutes },
+  { path: '/api/books', router: booksApi },
+  { path: '/notebook', router: notebookRoutes },
+  { path: '/api/notebook', router: notebookApi },
+  { path: '/ielts', router: ieltsRoutes },
+  { path: '/api/ielts', router: ieltsApi },
   // [vibe:module-mounts]
 ];
 

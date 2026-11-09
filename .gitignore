@@ -1,0 +1,9 @@
+node_modules/
+.env
+data/*.db
+data/*.db-*
+public/css/app.css
+.bin/
+.run/
+*.log
+.DS_Store

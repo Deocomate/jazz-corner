@@ -14,9 +14,27 @@
     <p class="mt-3 font-serif text-4xl font-semibold tracking-tight text-brand-700 sm:text-5xl">{{wotd.word}}</p>
     {{#if wotd.hasDefinition}}
       <p class="mt-3 text-lg">{{wotd.meaning}}</p>
-    {{else}}
-      <p class="mt-3 text-sm text-muted">This word is not in the built-in dictionary yet. Work out the meaning from the sentence, check it, then save it with your own definition.
-        <a href="https://dictionary.cambridge.org/dictionary/english/{{wotd.word}}" target="_blank" rel="noopener noreferrer">Look it up in the Cambridge Dictionary ↗</a></p>
+    {{/if}}
+
+    {{#if wotd.mwFound}}
+      <div class="mt-5 rounded-xl border border-line p-4 sm:p-5" aria-labelledby="mw-title">
+        <p id="mw-title" class="eyebrow mb-3">Merriam-Webster</p>
+        <div class="space-y-4">
+          {{#each wotd.mw.entries}}
+            <div>
+              <p class="text-sm"><span class="font-serif text-lg font-semibold">{{headword}}</span>{{#if pos}} <span class="chip ml-1">{{pos}}</span>{{/if}}{{#if pronunciation}} <span class="ml-1 text-muted">&#92;{{pronunciation}}&#92;</span>{{/if}}</p>
+              <ol class="mt-1.5 list-decimal space-y-1 pl-5">
+                {{#each definitions}}<li>{{this}}</li>{{/each}}
+              </ol>
+              {{#each examples}}<p class="mt-1.5 pl-5 text-sm text-muted italic">“{{this}}”</p>{{/each}}
+            </div>
+          {{/each}}
+        </div>
+        <p class="mt-4 text-xs text-muted">Definitions from the Merriam-Webster Collegiate® Dictionary · <a href="{{wotd.mwUrl}}" target="_blank" rel="noopener noreferrer">Full entry on merriam-webster.com ↗</a></p>
+      </div>
+    {{else unless wotd.hasDefinition}}
+      <p class="mt-3 text-sm text-muted">{{#if wotd.mw}}Merriam-Webster has no entry for this word form. Work out the meaning from the sentence, then save it with your own definition.{{else}}The definition could not be loaded from Merriam-Webster right now.{{/if}}
+        <a href="{{wotd.mwUrl}}" target="_blank" rel="noopener noreferrer">Open Merriam-Webster ↗</a></p>
     {{/if}}
 
     {{#if wotd.sentence}}

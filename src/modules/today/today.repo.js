@@ -7,5 +7,9 @@ export const findDailyWord = (date) => get('SELECT date, word, data_json FROM da
 export const saveDailyWord = (date, word, data) =>
   run('INSERT OR IGNORE INTO daily_words (date, word, data_json) VALUES (?, ?, ?)', [date, word, JSON.stringify(data)]);
 
+/** Cập nhật dữ liệu của ngày (vd. thêm nghĩa Merriam-Webster tra được sau). */
+export const updateDailyWordData = (date, data) =>
+  run('UPDATE daily_words SET data_json = ? WHERE date = ?', [JSON.stringify(data), date]);
+
 /** Các từ đã dùng gần đây, để không lặp lại quá sớm. */
 export const recentDailyWords = (sinceDate) => all('SELECT word FROM daily_words WHERE date >= ?', [sinceDate]);

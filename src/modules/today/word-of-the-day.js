@@ -8,6 +8,7 @@ import { listTests, getStructure } from '#modules/ielts/ielts.service.js';
 import * as repo from './today.repo.js';
 import { findCandidates, pickCandidate } from './word-picker.js';
 import { wordForDate } from './words.js';
+import * as merriamWebster from './merriam-webster.js';
 
 const wotdKey = (word) => `wotd:${word.toLowerCase()}`;
 
@@ -66,7 +67,27 @@ export async function wordOfTheDay(date = todayISO()) {
     row = await repo.findDailyWord(date);
   }
   const data = JSON.parse(row.data_json);
-  return { ...data, saved: await notebook.findByDedupeKey(wotdKey(data.word)) };
+  // Tra Merriam-Webster một lần rồi lưu lại; lỗi mạng/chưa có khoá → không lưu, lần sau thử lại.
+  if (!data.mw) {
+    const mw = await merriamWebster.lookup(data.word);
+    if (mw) {
+      data.mw = mw;
+      await repo.updateDailyWordData(date, data);
+    }
+  }
+  return {
+    ...data,
+    mwFound: Boolean(data.mw?.found),
+    mwUrl: merriamWebster.mwPageUrl(data.word),
+    saved: await notebook.findByDedupeKey(wotdKey(data.word)),
+  };
+}
+
+/** Nghĩa dùng khi lưu vào Notebook: từ điển dự án trước, không có thì nghĩa đầu tiên của MW. */
+function meaningFor(w) {
+  if (w.meaning) return w.meaning;
+  const first = w.mw?.found ? w.mw.entries[0] : null;
+  return first ? first.definitions.slice(0, 2).join('; ') : undefined;
 }
 
 export async function saveWordOfTheDay() {
@@ -75,9 +96,9 @@ export async function saveWordOfTheDay() {
     {
       kind: ['idiom', 'phrase'].includes(w.pos) ? 'idiom' : 'word',
       content: w.word,
-      meaning: w.meaning || undefined,
-      note: w.hasDefinition ? `${w.nuance}\nCollocations: ${w.collocations.join('; ')}` : undefined,
-      example: w.example || undefined,
+      meaning: meaningFor(w),
+      note: w.hasDefinition ? `${w.nuance}\nCollocations: ${w.collocations.join('; ')}` : w.mwFound ? 'Definition: Merriam-Webster' : undefined,
+      example: w.example || (w.mwFound ? w.mw.entries[0].examples[0] : undefined) || undefined,
       excerpt: w.sentence || undefined,
       source_type: 'word_of_day',
       source_label: w.source ? `Word of the Day · ${w.source.label}` : `Word of the Day · ${todayISO()}`,

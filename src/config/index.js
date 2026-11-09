@@ -25,6 +25,12 @@ export const config = Object.freeze({
   uploadDir: env.UPLOAD_DIR || 'data/uploads',
   // Giới hạn dung lượng một tệp tải lên (MB).
   maxUploadMb: Number(env.MAX_UPLOAD_MB ?? 200),
+  // Merriam-Webster Collegiate Dictionary API (khoá miễn phí tại dictionaryapi.com).
+  // Không có khoá → Word of the Day chỉ hiện link sang merriam-webster.com.
+  merriamWebster: Object.freeze({
+    apiKey: env.MW_API_KEY || '',
+    baseUrl: env.MW_API_URL || 'https://www.dictionaryapi.com/api/v3/references/collegiate/json',
+  }),
   // [vibe:config]
 });
 

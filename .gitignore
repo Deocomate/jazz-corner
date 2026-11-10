@@ -8,3 +8,6 @@ public/css/app.css
 *.log
 .DS_Store
 data/uploads/
+.ssh
+*.pem
+id_*

@@ -1,18 +1,58 @@
-// Kết nối SQLite qua libsql: chạy được với file local (dev/VPS)
-// lẫn Turso (host free) mà không đổi code.
+// Kết nối SQLite:
+//  - file local (dev/VPS): dùng node:sqlite có sẵn trong Node, không cần thư viện native
+//    (chạy được trên cả CentOS 7 / glibc cũ).
+//  - Turso (host free, libsql://...): nạp @libsql/client khi cần, cùng API.
 import fs from 'node:fs';
 import path from 'node:path';
-import { createClient } from '@libsql/client';
+import { DatabaseSync } from 'node:sqlite';
 import { config } from '#config';
 
 const { url, authToken } = config.db;
 const isLocalFile = url.startsWith('file:');
 
-if (isLocalFile) {
-  fs.mkdirSync(path.dirname(path.resolve(url.slice('file:'.length))), { recursive: true });
+/** Bọc node:sqlite thành client có cùng giao diện với @libsql/client (execute, executeMultiple, batch). */
+function createLocalClient(file) {
+  fs.mkdirSync(path.dirname(path.resolve(file)), { recursive: true });
+  const sqlite = new DatabaseSync(file);
+  const bind = (args) => args.map((v) => (v === undefined ? null : typeof v === 'boolean' ? Number(v) : v));
+
+  const execute = async (stmt) => {
+    const { sql, args = [] } = typeof stmt === 'string' ? { sql: stmt } : stmt;
+    const statement = sqlite.prepare(sql);
+    if (statement.columns().length > 0) {
+      return { rows: statement.all(...bind(args)), rowsAffected: 0, lastInsertRowid: null };
+    }
+    const result = statement.run(...bind(args));
+    return { rows: [], rowsAffected: Number(result.changes), lastInsertRowid: result.lastInsertRowid };
+  };
+
+  return {
+    execute,
+    async executeMultiple(sql) {
+      sqlite.exec(sql);
+    },
+    async batch(statements) {
+      sqlite.exec('BEGIN');
+      try {
+        const results = [];
+        for (const stmt of statements) results.push(await execute(stmt));
+        sqlite.exec('COMMIT');
+        return results;
+      } catch (err) {
+        sqlite.exec('ROLLBACK');
+        throw err;
+      }
+    },
+  };
 }
 
-export const db = createClient({ url, authToken });
+async function createDb() {
+  if (isLocalFile) return createLocalClient(url.slice('file:'.length));
+  const { createClient } = await import('@libsql/client');
+  return createClient({ url, authToken });
+}
+
+export const db = await createDb();
 
 /** Áp dụng các thiết lập SQLite nên có. Gọi một lần lúc khởi động. */
 export async function initDb() {

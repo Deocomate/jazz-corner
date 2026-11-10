@@ -1,0 +1,36 @@
+# Compose cho Coolify (Build Pack: Docker Compose).
+# Chỉ dùng `expose`, KHÔNG dùng `ports`: Coolify (Traefik) tự nối domain vào cổng 3000
+# nên không bao giờ trùng cổng với dự án khác trên cùng server.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      # Coolify tự tạo ô nhập domain cho dịch vụ `app` (cổng 3000) và gắn HTTPS.
+      - SERVICE_FQDN_APP_3000
+      - NODE_ENV=production
+      - PORT=3000
+      - APP_NAME=${APP_NAME:-Jazz Corner}
+      - APP_TIMEZONE=${APP_TIMEZONE:-Asia/Ho_Chi_Minh}
+      # Coolify tự sinh và giữ cố định chuỗi bí mật này.
+      - SESSION_SECRET=${SERVICE_PASSWORD_SESSION}
+      # Khoá tuỳ chọn: để trống thì tính năng tương ứng tự dùng phương án dự phòng.
+      - MW_API_KEY=${MW_API_KEY:-}
+      - DEEPL_API_KEY=${DEEPL_API_KEY:-}
+      - MAX_UPLOAD_MB=${MAX_UPLOAD_MB:-200}
+    volumes:
+      # Database SQLite và tệp tải lên (sách, PDF, ghi âm) - phải giữ lại giữa các lần deploy.
+      - jazz-corner-data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  jazz-corner-data:

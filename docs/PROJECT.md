@@ -9,8 +9,9 @@
 - Ngôn ngữ: toàn bộ giao diện web bằng tiếng Anh (người dùng yêu cầu 2026-11-09); tài liệu dự án và comment code bằng tiếng Việt.
 
 ## Link
-- Link chia sẻ / production: (chưa deploy — chạy local `npm run dev`)
-- Repo: (chưa có)
+- Link chia sẻ / production: https://jazz-corner.thceramics.admirable.site (VPS CentOS 7, nginx + systemd, xem `scripts/deploy-server.sh`)
+- Repo: https://github.com/Deocomate/jazz-corner
+- Coolify (Docker): xem mục "Deploy bằng Docker / Coolify" bên dưới
 
 ## Tính năng
 <!-- Cập nhật trạng thái: [x] xong · [ ] dự kiến -->
@@ -42,6 +43,14 @@
 | daily_words | Word of the Day đã chọn cho từng ngày (ổn định khi tải lại); data_json chứa cả kết quả tra Merriam-Webster (key `mw`) và nghĩa tiếng Việt (key `vi`) |
 | speaking_recordings | bản ghi âm (tệp ở data/uploads/recordings), ghi chú, cần ôn |
 
+## Deploy bằng Docker / Coolify
+- Tệp: `Dockerfile` (2 giai đoạn, chạy bằng user `node`), `docker-compose.yml`, `.dockerignore`.
+- Coolify: New Resource → Public/Private Repository → Build Pack **Docker Compose** → đường dẫn `/docker-compose.yml` → ô Domain của dịch vụ `app` nhập tên miền (cổng 3000).
+- Cổng: compose chỉ dùng `expose: 3000`, không map `ports` ra máy chủ, nên không đụng cổng của dự án khác; Coolify (Traefik) nối domain vào container.
+- Biến môi trường: `SESSION_SECRET` Coolify tự sinh (`SERVICE_PASSWORD_SESSION`); tuỳ chọn `MW_API_KEY`, `DEEPL_API_KEY`, `APP_NAME`, `APP_TIMEZONE`, `MAX_UPLOAD_MB`.
+- Dữ liệu (SQLite + sách/PDF/ghi âm tải lên) nằm ở volume `jazz-corner-data` → `/app/data`; không xoá volume khi deploy lại. Sao lưu bằng cách copy volume này.
+- Migration tự chạy khi app khởi động. Kiểm tra: `/healthz` trả `{"ok":true}`.
+
 ## Quyết định quan trọng
 - Stack: Node.js 22 + Express 5 + Handlebars + Tailwind CSS 4 + SQLite (libsql) — theo skill vibe-coder (prompt gốc gợi ý Next.js; người dùng gọi skill nên giữ stack chuẩn của skill).
 - pdf.js (`pdfjs-dist` 4.10, chép vào public/vendor) cho PDF: giữ bố cục + lớp văn bản để bôi chọn. Không dùng epub.js: EPUB được giải nén bằng zlib có sẵn (src/lib/zip.js), chương được làm sạch phía trình duyệt rồi mới hiển thị → kiểm soát highlight/cỡ chữ/vị trí và không chạy script trong sách.
@@ -54,6 +63,7 @@
 - `numericId` nhận tên tham số (đối số thứ 5 của Express) — bản gốc template luôn ghi đè `req.params.id`.
 
 ## Nhật ký thay đổi
+- 2026-11-10 — Thêm Dockerfile + docker-compose cho Coolify (dùng `expose`, volume dữ liệu) — người dùng yêu cầu. Chưa build thử được vì Docker Desktop không chạy trên máy dev.
 <!-- Mới nhất ở trên. Mỗi dòng: ngày — thay đổi — ai yêu cầu (nếu biết) -->
 - 2026-11-09 — Rà soát trước khi bàn giao cho lập trình viên: thanh Highlight/Save/Speak né bảng nghĩa khi hai thứ chồng nhau (màn hình máy tính hẹp); tách dịch máy (DeepL/MyMemory) sang src/modules/today/translate.js; `npm run check` 0 lỗi 0 cảnh báo, 52 test đạt — người dùng yêu cầu.
 - 2026-11-09 — Speaking: sắp xếp lại trang luyện theo vòng Nghe → Nói → So sánh — nội dung luyện lên đầu, các chế độ thành bước đánh số; thanh luyện Listen/Stop · Record · Compare (phát mẫu rồi lần thu mới nhất) · ⚙ (accent, giọng, tốc độ, loop) dính đáy trên điện thoại, thẻ dính cột phải trên máy tính; "Your latest take" ngay dưới nội dung, "Earlier takes" thu gọn + lọc theo chế độ; My notes thu gọn; nguồn/bản gốc/Notebook/xoá vào menu ⋯; Read Aloud chạm câu để chọn; phím C = so sánh — người dùng yêu cầu.

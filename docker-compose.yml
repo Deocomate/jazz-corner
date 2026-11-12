@@ -18,8 +18,9 @@ services:
       - APP_TIMEZONE=${APP_TIMEZONE:-Asia/Ho_Chi_Minh}
       # Coolify tự sinh và giữ cố định chuỗi bí mật này.
       - SESSION_SECRET=${SERVICE_PASSWORD_SESSION}
+      # Khoá Merriam-Webster Collegiate (dictionaryapi.com) - Coolify hiện ô bắt buộc để điền.
+      - MW_API_KEY=${MW_API_KEY}
       # Khoá tuỳ chọn: để trống thì tính năng tương ứng tự dùng phương án dự phòng.
-      - MW_API_KEY=${MW_API_KEY:-}
       - DEEPL_API_KEY=${DEEPL_API_KEY:-}
       - MAX_UPLOAD_MB=${MAX_UPLOAD_MB:-200}
     volumes:

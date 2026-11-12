@@ -30,4 +30,7 @@ services:
       # Khoá DeepL API Free (dịch câu mượt hơn). Để trống thì dùng MyMemory.
       - key: DEEPL_API_KEY
         sync: false
+      # Khoá Merriam-Webster Collegiate (dictionaryapi.com). Thiếu → bảng nghĩa báo "Dictionary key not set".
+      - key: MW_API_KEY
+        sync: false
       # [vibe:render-env]

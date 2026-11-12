@@ -79,6 +79,7 @@
         <form method="post" action="/today/word/save">{{> form/csrf}}<button type="submit" class="btn-primary">Save to Notebook</button></form>
         <form method="post" action="/speaking/items">{{> form/csrf}}<input type="hidden" name="text" value="{{wotd.word}}"><input type="hidden" name="title" value="Word of the Day: {{wotd.word}}"><button type="submit" class="btn-ghost">Practise speaking</button></form>
       {{/if}}
+      <form method="post" action="/today/word/shuffle" class="ml-auto">{{> form/csrf}}<button type="submit" class="btn-ghost" title="Skip this word for good and pick another one">↻ Another word</button></form>
     </div>
     {{#unless wotd.fromSources}}<p class="mt-4 text-xs text-muted">Upload a book or publish an IELTS test and tomorrow’s word will come from your own material.</p>{{/unless}}
   </div>

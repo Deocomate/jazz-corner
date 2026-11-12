@@ -37,9 +37,14 @@ async function collectChunks() {
   return chunks;
 }
 
-async function choose(date) {
-  const recent = new Set((await repo.recentDailyWords(addDays(date, -30))).map((r) => r.word.toLowerCase()));
-  const picked = pickCandidate(findCandidates(await collectChunks()), date, recent);
+/** Các từ không được chọn: đã dùng trong 30 ngày qua + từ người dùng đã bỏ qua. */
+async function excludedWords(date) {
+  const [recent, skipped] = await Promise.all([repo.recentDailyWords(addDays(date, -30)), repo.skippedWords()]);
+  return new Set([...recent, ...skipped].map((r) => r.word.toLowerCase()));
+}
+
+async function choose(date, exclude) {
+  const picked = pickCandidate(findCandidates(await collectChunks()), date, exclude);
   if (picked) {
     const e = picked.entry;
     const url = picked.source.type === 'book' ? `${picked.source.url}&find=${encodeURIComponent(picked.sentence.slice(0, 300))}` : picked.source.url;
@@ -56,14 +61,16 @@ async function choose(date) {
       source: { ...picked.source, url },
     };
   }
-  const fallback = wordForDate(date);
+  const fallback = wordForDate(date, exclude);
+  if (!fallback) return null;
   return { ...fallback, hasDefinition: true, fromSources: false, sentence: null, source: null };
 }
 
 export async function wordOfTheDay(date = todayISO()) {
   let row = await repo.findDailyWord(date);
   if (!row) {
-    const data = await choose(date);
+    // Hiếm: đã bỏ qua hết mọi từ → cho phép lặp lại thay vì để trống trang.
+    const data = (await choose(date, await excludedWords(date))) || (await choose(date, new Set()));
     await repo.saveDailyWord(date, data.word, data);
     row = await repo.findDailyWord(date);
   }
@@ -94,6 +101,20 @@ export async function wordOfTheDay(date = todayISO()) {
     mwUrl: merriamWebster.mwPageUrl(data.word),
     saved: await notebook.findByDedupeKey(wotdKey(data.word)),
   };
+}
+
+/**
+ * Nút "Another word": bỏ qua từ hiện tại (không chọn lại nữa) và chọn từ khác cho hôm nay.
+ * Trả về false nếu không còn từ nào để đổi.
+ */
+export async function shuffleWordOfTheDay(date = todayISO()) {
+  const row = await repo.findDailyWord(date);
+  if (row) await repo.skipWord(row.word);
+  const data = await choose(date, await excludedWords(date));
+  if (!data) return false;
+  if (row) await repo.replaceDailyWord(date, data.word, data);
+  else await repo.saveDailyWord(date, data.word, data);
+  return true;
 }
 
 /** Bản rút gọn để hiện trên Today: tối đa 2 từ loại × 2 nghĩa, mỗi từ loại một dòng, bỏ ví dụ. */

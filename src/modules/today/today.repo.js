@@ -13,3 +13,12 @@ export const updateDailyWordData = (date, data) =>
 
 /** Các từ đã dùng gần đây, để không lặp lại quá sớm. */
 export const recentDailyWords = (sinceDate) => all('SELECT word FROM daily_words WHERE date >= ?', [sinceDate]);
+
+/** Thay từ của ngày (nút "Another word"). */
+export const replaceDailyWord = (date, word, data) =>
+  run('UPDATE daily_words SET word = ?, data_json = ? WHERE date = ?', [word, JSON.stringify(data), date]);
+
+/** Ghi nhận từ người dùng bỏ qua — không chọn lại nữa. */
+export const skipWord = (word) => run('INSERT OR IGNORE INTO skipped_words (word) VALUES (?)', [word.toLowerCase()]);
+
+export const skippedWords = () => all('SELECT word FROM skipped_words');

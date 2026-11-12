@@ -1,7 +1,7 @@
 // Today (trang chủ), Progress và trang trạng thái tính năng.
 import { Router } from 'express';
 import * as service from './today.service.js';
-import { saveWordOfTheDay } from './word-of-the-day.js';
+import { saveWordOfTheDay, shuffleWordOfTheDay } from './word-of-the-day.js';
 
 const router = Router();
 
@@ -12,6 +12,11 @@ router.get('/', async (req, res) => {
 router.post('/today/word/save', async (req, res) => {
   const result = await saveWordOfTheDay();
   req.flash('success', result.duplicate ? 'This word is already in your Notebook.' : 'Word of the Day saved to your Notebook.');
+  res.redirect('/');
+});
+
+router.post('/today/word/shuffle', async (req, res) => {
+  if (!(await shuffleWordOfTheDay())) req.flash('error', 'No other words left to pick from — add a book or an IELTS test.');
   res.redirect('/');
 });
 

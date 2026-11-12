@@ -16,7 +16,7 @@
 ## Tính năng
 <!-- Cập nhật trạng thái: [x] xong · [ ] dự kiến -->
 - [x] Khung ứng dụng, điều hướng 6 mục (desktop: thanh trên; mobile: thanh tab dưới), trang /status
-- [x] Today: Word of the Day lấy từ sách đang đọc (quanh vị trí đọc) và bài đọc IELTS đã duyệt, kèm câu gốc + link mở đúng đoạn; từ có trong từ điển dự án (~45 mục) có nghĩa/sắc thái/collocations, mọi từ còn có nghĩa Merriam-Webster hiện ngay trên trang (từ loại, phiên âm, nghĩa, ví dụ; cần MW_API_KEY), lưu vào Notebook kèm nghĩa; bộ từ chọn lọc chỉ là dự phòng; lưu theo ngày (bảng daily_words)
+- [x] Today: Word of the Day lấy từ sách đang đọc (quanh vị trí đọc) và bài đọc IELTS đã duyệt, kèm câu gốc + link mở đúng đoạn; chỉ chọn từ nâng cao (từ điển dự án ~110 mục, các mục cơ bản như "deliberate" chỉ dùng để giải nghĩa), nút "↻ Another word" bỏ qua vĩnh viễn từ không hợp lý và chọn từ khác; từ có trong từ điển dự án có nghĩa/sắc thái/collocations, mọi từ còn có nghĩa Merriam-Webster hiện ngay trên trang (từ loại, phiên âm, nghĩa, ví dụ; cần MW_API_KEY), lưu vào Notebook kèm nghĩa; bộ từ chọn lọc chỉ là dự phòng; lưu theo ngày (bảng daily_words)
 - [x] Books: tải PDF/EPUB (báo lỗi rõ), thư viện có bìa + tiến độ, trình đọc: mục lục, bookmark, highlight, ghi chú, sáng/tối, cỡ chữ EPUB, zoom PDF, tự lưu vị trí, báo trang PDF thiếu lớp văn bản
 - [x] Bôi chọn trong sách → thanh nhỏ Highlight / Save / Speak (+ Translate khi chọn câu dài); từ/cụm ≤ 4 từ tự hiện bảng nghĩa (tiếng Việt + Merriam-Webster) cố định ở đáy màn hình (điện thoại) hoặc góc phải dưới (máy tính), không che chữ, đóng bằng ✕/Esc/chạm trang; Lưu vào Notebook điền sẵn nghĩa EN · VI (giữ trích đoạn, tên sách, vị trí; mở lại đúng chỗ và tô sáng)
 - [x] Notebook như một cuốn sổ thật: mỗi ngày một trang có số trang, lật trang trước/sau (nút + phím ←/→), mục lục, ô ghi nhanh trên trang hôm nay, loại Ghi chép (Note) tự do; tìm kiếm cho danh sách kết quả kèm "Go to page"
@@ -41,6 +41,7 @@
 | ielts_attempts | lượt làm bài: câu trả lời, đánh dấu, hạn nộp, ảnh chụp kết quả lúc nộp |
 | speaking_items | bài luyện nói, nguồn, audio mẫu + mốc thời gian, chỉnh trọng âm |
 | daily_words | Word of the Day đã chọn cho từng ngày (ổn định khi tải lại); data_json chứa cả kết quả tra Merriam-Webster (key `mw`) và nghĩa tiếng Việt (key `vi`) |
+| skipped_words | từ người dùng bấm "Another word" bỏ qua — không chọn lại làm Word of the Day |
 | speaking_recordings | bản ghi âm (tệp ở data/uploads/recordings), ghi chú, cần ôn |
 
 ## Deploy bằng Docker / Coolify
@@ -57,12 +58,13 @@
 - Tải tệp bằng thân request thô (`x-file-name`), không thêm multer.
 - Audio mẫu Speaking (2026-11-09, người dùng thấy giọng chưa ổn): ưu tiên (1) file người đọc thật Merriam-Webster cho bài luyện từ khi accent Mỹ (chỉ mục có headword đúng bằng từ, nhớ trong RAM; lỗi phát thì chuyển sang giọng trình duyệt); (2) giọng trình duyệt tốt nhất — window.voices trong public/js/app.js xếp hạng Natural/Online/Google/Premium lên trước, ô chọn Voice nhớ lựa chọn theo accent (localStorage jc:voice:<lang>); văn bản dài đọc từng câu (tránh Chrome cắt giọng Google sau ~15s); (3) file Zira có mốc thời gian chỉ mặc định khi máy không có giọng tự nhiên. Luôn ghi rõ loại audio (người thật / tổng hợp).
 - Kết quả IELTS lưu ảnh chụp lúc nộp để sửa đề sau không đổi kết quả cũ.
-- Word of the Day: quét tối đa 3 sách mở gần nhất (vài trang/chương từ vị trí đang đọc) + bài đọc của tối đa 6 đề đã duyệt, chỉ một lần mỗi ngày; ưu tiên từ có trong từ điển dự án, sau đó là từ dài ≥ 9 chữ viết thường không nằm trong danh sách từ phổ biến; không lặp từ trong 30 ngày.
+- Word of the Day: quét tối đa 3 sách mở gần nhất (vài trang/chương từ vị trí đang đọc) + bài đọc của tối đa 6 đề đã duyệt, chỉ một lần mỗi ngày; ưu tiên từ NÂNG CAO có trong từ điển dự án (bỏ các mục BASIC trong words.js), sau đó là từ dài ≥ 9 chữ viết thường không phổ biến, xếp theo `advancedScore` (đuôi học thuật -ous/-ity/-ate… cộng điểm, đuôi phái sinh -ly/-ness/-ing… trừ điểm; lấy 8 từ điểm cao nhất rồi chọn theo ngày); không lặp từ trong 30 ngày và không chọn lại từ trong skipped_words (2026-11-12, người dùng thấy từ quá dễ).
 - Từ điển ngoài: Merriam-Webster (người dùng chọn 2026-11-09, thay Cambridge). Dùng API chính thức Collegiate (dictionaryapi.com, khoá miễn phí trong `.env` → `MW_API_KEY`), không cào trang web. Tra một lần mỗi ngày, lưu trong daily_words; lỗi mạng/chưa có khoá thì không lưu để lần sau thử lại.
 - Nghĩa tiếng Việt (2026-11-09, người dùng yêu cầu): Wiktionary tiếng Việt (vi.wiktionary.org, API MediaWiki, không cần khoá; mục từ tiếng Anh phần lớn từ Từ điển Anh–Việt FVDP, CC BY-SA) → thử dạng gốc (headword MW, bỏ đuôi -d/-ed/-ing/-s) → không có thì dịch máy (ghi rõ "machine translation"; cũng dùng cho nút Translate câu ≤ 500 ký tự): DeepL API Free nếu có DEEPL_API_KEY (2026-11-09, người dùng chọn vì MyMemory dịch cứng; 500.000 ký tự/tháng), lỗi/hết hạn mức/không có khoá thì MyMemory. Bảng nghĩa (2026-11-09): Merriam-Webster trước, nghĩa tiếng Việt sau và rút gọn (≤ 2 từ loại × 2 nghĩa, không ví dụ); nút loa phát file MW (media.merriam-webster.com, đã mở trong CSP media-src), mục nào không có file thì dùng giọng đọc trình duyệt. Code: src/modules/today/vietnamese.js, public/js/meaning.js. Tắt khi chạy test (VI_DICTIONARY=on để bật).
 - `numericId` nhận tên tham số (đối số thứ 5 của Express) — bản gốc template luôn ghi đè `req.params.id`.
 
 ## Nhật ký thay đổi
+- 2026-11-12 — Word of the Day khó hơn: thêm ~65 từ C2, loại mục cơ bản khỏi vòng chọn, chấm điểm từ lạ theo độ học thuật; nút "↻ Another word" đổi từ trong ngày và không chọn lại từ đã bỏ (migration 007 skipped_words) — người dùng yêu cầu.
 - 2026-11-10 — Thêm Dockerfile + docker-compose cho Coolify (dùng `expose`, volume dữ liệu) — người dùng yêu cầu. Chưa build thử được vì Docker Desktop không chạy trên máy dev.
 <!-- Mới nhất ở trên. Mỗi dòng: ngày — thay đổi — ai yêu cầu (nếu biết) -->
 - 2026-11-09 — Rà soát trước khi bàn giao cho lập trình viên: thanh Highlight/Save/Speak né bảng nghĩa khi hai thứ chồng nhau (màn hình máy tính hẹp); tách dịch máy (DeepL/MyMemory) sang src/modules/today/translate.js; `npm run check` 0 lỗi 0 cảnh báo, 52 test đạt — người dùng yêu cầu.

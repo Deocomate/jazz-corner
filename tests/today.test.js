@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { setup, postForm, csrfToken } from './helpers.js';
 import { wordForDate, WORDS, ADVANCED, lookupLexicon } from '../src/modules/today/words.js';
-import { findCandidates, pickCandidate, advancedScore } from '../src/modules/today/word-picker.js';
+import { findCandidates, pickCandidate } from '../src/modules/today/word-picker.js';
 import { ensureSamples } from '../src/samples.js';
 import { buildSamplePdf } from '../scripts/sample-files.mjs';
 import { get, run } from '../src/db/client.js';
@@ -17,24 +17,22 @@ test('word picker: dictionary words found in the text come first, with their sen
   const exacerbate = candidates.find((c) => c.key === 'exacerbate');
   assert.ok(exacerbate.entry);
   assert.match(exacerbate.sentence, /Paving over gardens has exacerbated/);
-  assert.ok(candidates.some((c) => c.key === 'extraordinarily' && !c.entry));
-  assert.ok(!candidates.some((c) => c.key === 'riverside'), 'capitalised words (names) are skipped');
+  assert.ok(!candidates.some((c) => c.key === 'extraordinarily'), 'long but ordinary words are not candidates');
   assert.equal(pickCandidate(candidates, '2026-11-09').key, 'exacerbate');
-  assert.equal(pickCandidate(candidates, '2026-11-09', new Set(['exacerbate'])).key, 'extraordinarily');
+  assert.equal(pickCandidate(candidates, '2026-11-09', new Set(['exacerbate'])), null);
   assert.equal(lookupLexicon('Municipalities').word, 'municipality');
   assert.ok(WORDS.length >= 40);
   assert.notEqual(wordForDate('2026-11-09').word, wordForDate('2026-11-10').word);
 });
 
-test('word picker: basic words are never picked; advanced-looking words beat plain long ones', () => {
-  const chunks = [{ text: 'It was a deliberate choice to read slowly and carefully. Her comfortable chair stood in a ubiquitousness of clutter, oddly.', source: { type: 'book', label: 'B', url: '/books/1' } }];
+test('word picker: only C2+ words — C1 entries like "deliberate" or "much as" are never picked', () => {
+  const chunks = [{ text: 'It was a deliberate choice, much as she disliked it, to read slowly and carefully. The board remained obdurate despite the magnificent evidence.', source: { type: 'book', label: 'B', url: '/books/1' } }];
   const candidates = findCandidates(chunks);
-  assert.ok(!candidates.some((c) => c.key === 'deliberate'), 'basic dictionary entries are not candidates');
-  assert.equal(pickCandidate(candidates, '2026-11-12').key, 'ubiquitousness');
-  assert.ok(advancedScore('perfunctory') > advancedScore('carefully'));
-  assert.equal(pickCandidate(findCandidates([{ text: 'We walked carefully and thoughtfully home together that evening.', source: {} }]), '2026-11-12'), null);
-  assert.ok(ADVANCED.length >= 60 && !ADVANCED.some((w) => w.word === 'deliberate'));
-  const all = new Set(ADVANCED.map((w) => w.word));
+  assert.deepEqual(candidates.map((c) => c.key), ['obdurate']);
+  assert.equal(pickCandidate(findCandidates([{ text: 'We walked carefully and thoughtfully home together that extraordinary evening.', source: {} }]), '2026-11-12'), null);
+  assert.ok(ADVANCED.length >= 120);
+  for (const easy of ['deliberate', 'much as', 'mitigate', 'albeit', 'scrutiny']) assert.ok(!ADVANCED.some((w) => w.word === easy), easy);
+  const all = new Set(ADVANCED.map((w) => w.word.toLowerCase()));
   assert.equal(wordForDate('2026-11-12', all), null, 'returns null when every curated word is excluded');
 });
 
@@ -52,6 +50,16 @@ test('"Another word" skips today’s word for good and picks a different one', a
   assert.ok((await agent.get('/')).text.includes(after));
   await run('DELETE FROM daily_words');
   await run('DELETE FROM skipped_words');
+});
+
+test('a word saved today under the old, easier rules is replaced by a C2 word', async () => {
+  const { todayISO } = await import('../src/lib/dates.js');
+  await run('INSERT INTO daily_words (date, word, data_json) VALUES (?, ?, ?)', [todayISO(), 'much as', JSON.stringify({ word: 'much as', hasDefinition: true, fromSources: false, collocations: [] })]);
+  await agent.get('/');
+  const now = (await get('SELECT word FROM daily_words')).word;
+  assert.notEqual(now, 'much as');
+  assert.ok(ADVANCED.some((w) => w.word === now));
+  await run('DELETE FROM daily_words');
 });
 
 test('with no books or tests, the Word of the Day falls back to the curated list', async () => {

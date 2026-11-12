@@ -7,11 +7,15 @@ import * as notebook from '#modules/notebook/notebook.service.js';
 import { listTests, getStructure } from '#modules/ielts/ielts.service.js';
 import * as repo from './today.repo.js';
 import { findCandidates, pickCandidate } from './word-picker.js';
-import { wordForDate } from './words.js';
+import { wordForDate, ADVANCED } from './words.js';
 import * as merriamWebster from './merriam-webster.js';
 import * as vietnamese from './vietnamese.js';
 
 const wotdKey = (word) => `wotd:${word.toLowerCase()}`;
+
+const advancedWords = new Set(ADVANCED.map((w) => w.word.toLowerCase()));
+/** Từ đã lưu không còn đạt chuẩn C2: mục từ điển cơ bản, hoặc từ lấy trong sách mà không có trong từ điển dự án. */
+const isTooEasy = (data) => (data.hasDefinition || data.fromSources) && !advancedWords.has(String(data.word).toLowerCase());
 
 /** Gom đoạn văn: tối đa 3 sách đọc gần nhất (quanh vị trí đang đọc) + bài đọc của đề đã duyệt. */
 async function collectChunks() {
@@ -73,6 +77,13 @@ export async function wordOfTheDay(date = todayISO()) {
     const data = (await choose(date, await excludedWords(date))) || (await choose(date, new Set()));
     await repo.saveDailyWord(date, data.word, data);
     row = await repo.findDailyWord(date);
+  } else if (isTooEasy(JSON.parse(row.data_json))) {
+    // Từ đã lưu theo quy tắc cũ (vd. "much as", hoặc từ dài bất kỳ trong sách) → chọn lại từ C2.
+    const data = await choose(date, await excludedWords(date));
+    if (data) {
+      await repo.replaceDailyWord(date, data.word, data);
+      row = await repo.findDailyWord(date);
+    }
   }
   const data = JSON.parse(row.data_json);
   // Tra Merriam-Webster một lần rồi lưu lại; lỗi mạng/chưa có khoá → không lưu, lần sau thử lại.
